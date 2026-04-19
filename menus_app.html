@@ -6,324 +6,450 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mes Menus">
-<meta name="theme-color" content="#2D6A4F">
+<meta name="theme-color" content="#1B4332">
 <title>Mes Menus — Famille</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --green-dark: #2D6A4F;
-    --green-mid: #40916C;
-    --green-light: #D8F3DC;
-    --green-pale: #F0FAF3;
-    --amber: #E9C46A;
-    --coral: #E76F51;
-    --text: #1B1B1B;
-    --text-muted: #6B7280;
-    --border: #D1E7DD;
-    --bg: #F8FAFB;
-    --white: #FFFFFF;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-
-  /* NAV */
-  .nav { position: sticky; top: 0; z-index: 100; background: var(--green-dark); padding: env(safe-area-inset-top) 0 0; }
-  .nav-title { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
-  .nav-title h1 { font-size: 18px; font-weight: 700; color: white; letter-spacing: -0.3px; }
-  .nav-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
-  .nav-tabs { display: flex; border-top: 1px solid rgba(255,255,255,0.15); }
-  .nav-tab { flex: 1; padding: 10px 4px 12px; text-align: center; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
-  .nav-tab.active { color: white; border-bottom-color: var(--amber); }
-  .nav-tab .tab-icon { font-size: 18px; display: block; margin-bottom: 2px; }
-
-  /* CONTENT */
-  .content { padding: 16px; padding-bottom: 32px; display: none; }
-  .content.active { display: block; }
-
-  /* CARDS */
-  .card { background: var(--white); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
-  .card-header { font-size: 12px; font-weight: 600; color: var(--green-mid); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
-
-  /* SEMAINE GRID */
-  .week-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px 4px; }
-  .week-row { display: flex; gap: 10px; width: max-content; }
-  .day-card { width: 140px; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); flex-shrink: 0; cursor: pointer; }
-  .day-head { background: var(--green-dark); color: white; font-size: 12px; font-weight: 700; padding: 8px 10px; text-align: center; }
-  .meal-slot { padding: 10px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
-  .meal-slot:last-child { border-bottom: none; }
-  .meal-slot:active { background: var(--green-pale); }
-  .meal-type-badge { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 20px; margin-bottom: 4px; }
-  .badge-midi { background: var(--green-light); color: var(--green-dark); }
-  .badge-soir { background: #FFF3CD; color: #856404; }
-  .meal-name-sm { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; }
-  .meal-time-sm { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
-
-  /* DETAIL */
-  .detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; }
-  .detail-overlay.open { display: flex; align-items: flex-end; }
-  .detail-sheet { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-height: 85vh; overflow-y: auto; padding: 0 0 env(safe-area-inset-bottom); }
-  .detail-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; }
-  .detail-body { padding: 16px 20px 24px; }
-  .detail-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-  .detail-meta { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .pill { display: inline-block; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
-  .pill-green { background: var(--green-light); color: var(--green-dark); }
-  .pill-amber { background: #FFF3CD; color: #856404; }
-  .pill-gray { background: #F3F4F6; color: var(--text-muted); }
-  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; margin-top: 16px; }
-  .ing-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .ing-chip { font-size: 13px; padding: 5px 11px; background: var(--green-pale); border: 1px solid var(--border); border-radius: 20px; color: var(--text); }
-  .steps-list { display: flex; flex-direction: column; gap: 10px; }
-  .step-item { display: flex; gap: 12px; align-items: flex-start; }
-  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--green-dark); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .step-text { font-size: 14px; line-height: 1.55; padding-top: 2px; }
-  .btn-close { display: block; width: 100%; padding: 14px; background: var(--green-dark); color: white; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 20px; }
-
-  /* COURSES */
-  .progress-bar-wrap { background: var(--border); border-radius: 20px; height: 8px; margin-bottom: 6px; overflow: hidden; }
-  .progress-bar-fill { height: 100%; background: var(--green-mid); border-radius: 20px; transition: width 0.3s; }
-  .progress-label { font-size: 12px; color: var(--text-muted); text-align: right; }
-  .cat-section { margin-bottom: 16px; }
-  .cat-title-bar { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-dark); padding: 8px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 8px; display: flex; justify-content: space-between; }
-  .course-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F3F4F6; cursor: pointer; -webkit-user-select: none; }
-  .course-item:last-child { border-bottom: none; }
-  .course-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
-  .course-check.done { background: var(--green-mid); border-color: var(--green-mid); }
-  .course-check.done::after { content: '✓'; color: white; font-size: 13px; font-weight: 700; }
-  .course-label { flex: 1; }
-  .course-name { font-size: 15px; transition: color 0.2s; }
-  .course-name.done { text-decoration: line-through; color: var(--text-muted); }
-  .course-qty { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-
-  /* STATS */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .stat-box { background: var(--white); border-radius: var(--radius-sm); padding: 12px 10px; text-align: center; box-shadow: var(--shadow); }
-  .stat-n { font-size: 24px; font-weight: 700; color: var(--green-dark); }
-  .stat-l { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-
-  /* INFOS */
-  .info-card { background: var(--green-pale); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
-  .info-title { font-size: 14px; font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
-  .info-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-  .install-steps { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-  .install-step { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; }
-  .install-step strong { min-width: 20px; color: var(--green-dark); font-size: 15px; }
+:root{--g1:#1B4332;--g2:#2D6A4F;--g3:#40916C;--g4:#74C69D;--g5:#D8F3DC;--g6:#F0FAF3;--amber:#E9C46A;--amber-l:#FFF8E1;--coral:#E76F51;--choc:#3D1A0A;--choc-l:#FDF0E8;--text:#1A1A1A;--muted:#6B7280;--border:#D1E7DD;--bg:#F4F8F5;--white:#FFFFFF;--r:14px;--rs:8px;--shadow:0 2px 16px rgba(27,67,50,.10);--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+.nav{background:var(--g1);padding:env(safe-area-inset-top,0px) 0 0;flex-shrink:0}
+.nav-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px}
+.nav-title{font-size:18px;font-weight:700;color:white;letter-spacing:-.5px}
+.nav-sub{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
+.nav-tabs{display:flex}
+.nav-tab{flex:1;padding:9px 4px 11px;text-align:center;font-size:11px;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;font-family:var(--font)}
+.nav-tab.active{color:white;border-bottom-color:var(--amber)}
+.tab-icon{font-size:17px;display:block;margin-bottom:2px}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.content{padding:14px 14px 32px;display:none}
+.content.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--white);border-radius:var(--rs);padding:10px 8px;text-align:center;box-shadow:var(--shadow)}
+.stat-n{font-size:20px;font-weight:700;color:var(--g1);font-family:var(--mono)}
+.stat-l{font-size:10px;color:var(--muted);margin-top:1px}
+.ptoggle{display:flex;gap:6px;margin-bottom:12px}
+.ptog{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);background:var(--white);text-align:center;font-family:var(--font);transition:all .2s}
+.ptog.active{background:var(--g1);color:white;border-color:var(--g1)}
+.macro-bar{height:6px;border-radius:3px;overflow:hidden;display:flex;margin:6px 0 4px}
+.mp{background:#40916C}.mg{background:#E9C46A}.ml{background:#E76F51}
+.macro-leg{display:flex;gap:10px;font-size:10px;color:var(--muted)}
+.mdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
+.week-hint{font-size:12px;color:var(--muted);margin-bottom:10px}
+.week-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -14px;padding:0 14px 6px}
+.week-row{display:flex;gap:8px;width:max-content}
+.day-card{width:148px;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);flex-shrink:0}
+.day-head{background:var(--g1);color:white;font-size:11px;font-weight:700;padding:7px 10px;display:flex;justify-content:space-between;align-items:center}
+.day-kcal{font-size:10px;opacity:.75;font-family:var(--mono)}
+.meal-slot{padding:9px 10px;border-bottom:1px solid var(--g6);cursor:pointer;transition:background .15s}
+.meal-slot:last-child{border-bottom:none}
+.meal-slot:active{background:var(--g6)}
+.mbadge{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:20px;margin-bottom:3px}
+.mb-pdj{background:var(--g5);color:var(--g1)}.mb-mid{background:#EAF3DE;color:#27500A}.mb-col{background:var(--choc-l);color:var(--choc)}.mb-din{background:var(--amber-l);color:#856404}.mb-soir{background:var(--choc-l);color:var(--choc)}
+.meal-nm{font-size:11px;font-weight:600;color:var(--text);line-height:1.3}
+.meal-tm{font-size:10px;color:var(--muted);margin-top:2px}
+.portions-badge{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--amber-l);color:#856404;font-weight:600;margin-top:2px;display:inline-block}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end}
+.overlay.open{display:flex}
+.sheet{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px)}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.sheet-body{padding:14px 18px 20px}
+.sheet-title{font-size:19px;font-weight:700;margin-bottom:6px;line-height:1.2}
+.sheet-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pill{display:inline-block;font-size:11px;padding:4px 10px;border-radius:20px;font-weight:500}
+.pill-g{background:var(--g5);color:var(--g1)}.pill-a{background:var(--amber-l);color:#856404}.pill-m{background:#F3F4F6;color:var(--muted)}
+.macro-detail{background:var(--g6);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px}
+.macro-detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.md-box{text-align:center}
+.md-val{font-size:16px;font-weight:700;color:var(--g1);font-family:var(--mono)}
+.md-lbl{font-size:9px;color:var(--muted);margin-top:1px}
+.slabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:12px 0 7px}
+.ing-chips{display:flex;flex-wrap:wrap;gap:5px}
+.ing-chip{font-size:12px;padding:4px 10px;background:var(--g6);border:1px solid var(--border);border-radius:20px;color:var(--text)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:10px;align-items:flex-start}
+.snum{width:22px;height:22px;border-radius:50%;background:var(--g1);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.stxt{font-size:13px;line-height:1.55;padding-top:2px}
+.note-enfants{background:var(--amber-l);border-radius:var(--rs);padding:8px 10px;margin-top:10px;font-size:12px;color:#856404}
+.btn-close{display:block;width:100%;padding:13px;background:var(--g1);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;font-family:var(--font)}
+.prog-wrap{background:var(--border);border-radius:20px;height:8px;overflow:hidden;margin-bottom:5px}
+.prog-fill{height:100%;background:var(--g3);border-radius:20px;transition:width .3s}
+.prog-lbl{font-size:11px;color:var(--muted);text-align:right;margin-bottom:12px}
+.cat-block{background:var(--white);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.cat-hd{padding:9px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g2);background:var(--g6);display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
+.course-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--g6);cursor:pointer;-webkit-user-select:none}
+.course-item:last-child{border-bottom:none}
+.course-item:active{background:var(--g6)}
+.ccheck{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.ccheck.done{background:var(--g3);border-color:var(--g3)}
+.ccheck.done::after{content:'✓';color:white;font-size:12px;font-weight:700}
+.clabel{flex:1}
+.cname{font-size:14px;transition:color .2s}
+.cname.done{text-decoration:line-through;color:var(--muted)}
+.cqty{font-size:11px;color:var(--muted);margin-top:1px}
+.cportion{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;margin-top:2px;display:inline-block}
+.cp4{background:var(--amber-l);color:#856404}.cp2{background:var(--g5);color:var(--g1)}
+.wo-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.wo-col{background:var(--white);border-radius:var(--rs);padding:6px 3px;text-align:center;box-shadow:var(--shadow)}
+.wo-day{font-size:9px;font-weight:700;color:var(--muted);margin-bottom:2px}
+.wo-kcal{font-size:11px;font-weight:700;color:var(--g1);font-family:var(--mono)}
+.wo-bar{height:3px;border-radius:2px;background:var(--g4);margin:3px auto 0;opacity:.6}
+.resume-card{background:var(--white);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
+.rc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px}
+.rc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.rc-box{background:var(--g6);border-radius:var(--rs);padding:8px;text-align:center}
+.rc-val{font-size:17px;font-weight:700;color:var(--g1);font-family:var(--mono)}
+.rc-lbl{font-size:9px;color:var(--muted);margin-top:1px}
+.deficit-row{background:var(--g5);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--g1);line-height:1.6}
+.info-block{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.info-t{font-size:14px;font-weight:700;color:var(--g1);margin-bottom:7px}
+.info-txt{font-size:13px;color:var(--muted);line-height:1.65}
+.hab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}
+.hab-chip{background:var(--g6);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px}
+.hab-name{font-size:12px;font-weight:600;color:var(--g1);margin-bottom:2px}
+.hab-val{font-size:10px;color:var(--muted)}
 </style>
 </head>
 <body>
-
 <nav class="nav">
-  <div class="nav-title">
-    <div>
-      <h1>Mes Menus</h1>
-      <div class="nav-sub">3-4 personnes · repas rapides</div>
-    </div>
+  <div class="nav-top">
+    <div><div class="nav-title">Mes Menus</div><div class="nav-sub">Famille · déficit calorique · &lt; 30 min</div></div>
   </div>
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="switchTab('planning')">
-      <span class="tab-icon">📅</span>Planning
-    </div>
-    <div class="nav-tab" onclick="switchTab('courses')">
-      <span class="tab-icon">🛒</span>Courses
-    </div>
-    <div class="nav-tab" onclick="switchTab('infos')">
-      <span class="tab-icon">ℹ️</span>Infos
-    </div>
+    <div class="nav-tab active" onclick="switchTab('planning')"><span class="tab-icon">📅</span>Planning</div>
+    <div class="nav-tab" onclick="switchTab('courses')"><span class="tab-icon">🛒</span>Courses</div>
+    <div class="nav-tab" onclick="switchTab('resume')"><span class="tab-icon">📊</span>Macros</div>
+    <div class="nav-tab" onclick="switchTab('infos')"><span class="tab-icon">ℹ️</span>Infos</div>
   </div>
 </nav>
+<div class="scroll-area">
 
-<!-- PLANNING -->
 <div class="content active" id="tab-planning">
-  <div class="stats-grid">
-    <div class="stat-box"><div class="stat-n">14</div><div class="stat-l">repas</div></div>
-    <div class="stat-box"><div class="stat-n">7</div><div class="stat-l">jours</div></div>
-    <div class="stat-box"><div class="stat-n">&lt;30'</div><div class="stat-l">chaque plat</div></div>
+  <div class="ptoggle">
+    <button class="ptog active" onclick="setPerson('f')">Elle — 1700 kcal</button>
+    <button class="ptog" onclick="setPerson('m')">Lui — 1900 kcal</button>
   </div>
-  <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Appuie sur un repas pour voir la recette</p>
-  <div class="week-scroll">
-    <div class="week-row" id="week-row"></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n">14</div><div class="stat-l">repas</div></div>
+    <div class="stat"><div class="stat-n" id="s-kcal">—</div><div class="stat-l">kcal moy.</div></div>
+    <div class="stat"><div class="stat-n" id="s-deficit">—</div><div class="stat-l">déficit</div></div>
   </div>
+  <p class="week-hint">Appuie sur un repas pour voir la recette</p>
+  <div class="week-scroll"><div class="week-row" id="week-row"></div></div>
 </div>
 
-<!-- COURSES -->
 <div class="content" id="tab-courses">
-  <div class="card">
-    <div class="card-header">Progression</div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
-    <div class="progress-label"><span id="prog-label">0 / 0 articles cochés</span></div>
-  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  <div class="prog-lbl" id="prog-lbl">0 / 0 articles cochés</div>
   <div id="courses-list"></div>
 </div>
 
-<!-- INFOS -->
+<div class="content" id="tab-resume">
+  <div class="ptoggle">
+    <button class="ptog active" onclick="setPersonResume('f')">Elle — 1700 kcal</button>
+    <button class="ptog" onclick="setPersonResume('m')">Lui — 1900 kcal</button>
+  </div>
+  <div class="wo-grid" id="wo-grid"></div>
+  <div class="resume-card" id="resume-card"></div>
+</div>
+
 <div class="content" id="tab-infos">
-  <div class="info-card">
-    <div class="info-title">Installer l'appli sur ton téléphone</div>
-    <div class="info-text">Tu peux ajouter cette page à ton écran d'accueil pour l'utiliser comme une vraie application, sans connexion internet.</div>
-    <div class="install-steps">
-      <div class="install-step"><strong>📱</strong><span><strong>iPhone :</strong> ouvrir dans Safari → bouton Partager → "Sur l'écran d'accueil"</span></div>
-      <div class="install-step"><strong>🤖</strong><span><strong>Android :</strong> ouvrir dans Chrome → menu ⋮ → "Ajouter à l'écran d'accueil"</span></div>
+  <div class="info-block">
+    <div class="info-t">Objectifs nutritionnels</div>
+    <div class="info-txt">
+      <strong>Elle :</strong> 1700 kcal/j · P 128g · G 170g · L 57g<br>
+      <strong>Lui :</strong> 1900 kcal/j · P 143g · G 190g · L 63g<br>
+      <strong>Répartition :</strong> 30% protéines / 40% glucides / 30% lipides<br>
+      <strong>Déficit :</strong> ~150-200 kcal sous maintenance
     </div>
   </div>
-  <div class="info-card">
-    <div class="info-title">À propos du planning</div>
-    <div class="info-text">Planning conçu pour 3-4 personnes, tous les repas en moins de 30 minutes. Adapté aux habitudes alimentaires françaises, sans contrainte particulière.</div>
+  <div class="info-block">
+    <div class="info-t">Configuration famille</div>
+    <div class="info-txt">
+      <strong>Lun-Ven midi :</strong> 2 adultes (Elle + Lui)<br>
+      <strong>Lun-Ven soir :</strong> 4 personnes (+ 2 enfants &lt;10 ans)<br>
+      <strong>Sam-Dim :</strong> 4 personnes toute la journée<br>
+      Mêmes plats, portions adaptées pour les enfants
+    </div>
   </div>
-  <div class="info-card">
-    <div class="info-title">Réinitialiser les courses</div>
-    <div class="info-text">Toutes les cases sont décochées au chargement de la page. Pour repartir à zéro, recharge la page.</div>
+  <div class="info-block">
+    <div class="info-t">Aliments habituels intégrés</div>
+    <div class="hab-grid">
+      <div class="hab-chip"><div class="hab-name">Skyr</div><div class="hab-val">~54 kcal/100g · 9g prot.</div></div>
+      <div class="hab-chip"><div class="hab-name">Flocons d'avoine</div><div class="hab-val">~358 kcal/100g · fibres</div></div>
+      <div class="hab-chip"><div class="hab-name">Amandes</div><div class="hab-val">~580 kcal/100g · bons lipides</div></div>
+      <div class="hab-chip"><div class="hab-name">Oeufs</div><div class="hab-val">~143 kcal/100g · 13g prot.</div></div>
+      <div class="hab-chip"><div class="hab-name">Patate douce</div><div class="hab-val">~86 kcal/100g · IG modéré</div></div>
+      <div class="hab-chip"><div class="hab-name">Pois chiches</div><div class="hab-val">~138 kcal/100g · fibres</div></div>
+      <div class="hab-chip"><div class="hab-name">Beurre cacahuète</div><div class="hab-val">~590 kcal/100g · rassasiant</div></div>
+      <div class="hab-chip"><div class="hab-name">Chocolat noir 70%+</div><div class="hab-val">~530 kcal/100g · magnésium</div></div>
+      <div class="hab-chip"><div class="hab-name">Riz complet / basmati</div><div class="hab-val">IG bas à modéré · fibres</div></div>
+      <div class="hab-chip"><div class="hab-name">Pâtes complètes</div><div class="hab-val">IG bas · satiété durable</div></div>
+    </div>
   </div>
 </div>
 
-<!-- DETAIL SHEET -->
-<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
-  <div class="detail-sheet" id="detail-sheet">
-    <div class="detail-handle"></div>
-    <div class="detail-body" id="detail-body"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDetail(event)">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" id="sheet-body"></div>
   </div>
 </div>
 
 <script>
-const jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const TARGETS={f:1700,m:1900};
+let person='f',personResume='f',checked={};
+const MB={
+  'Petit-déjeuner':'mb-pdj','Déjeuner':'mb-mid',
+  'Collation':'mb-col','Dîner':'mb-din','Collation soir':'mb-soir'
+};
 
-const planning = [
-  {
-    midi:{name:'Omelette aux champignons',time:'15 min',ings:['Oeufs x6','Champignons 300g','Beurre','Ciboulette','Sel, poivre'],steps:['Battre les oeufs avec sel et poivre.','Faire revenir les champignons émincés 5 min dans le beurre.','Verser les oeufs sur les champignons, cuire à feu doux 5 min.','Plier et servir avec ciboulette.']},
-    soir:{name:'Sauté de poulet au curry',time:'25 min',ings:['Blanc de poulet 600g','Crème 20cl','Curry 2 c.à.c','Oignon x1','Riz 300g'],steps:['Cuire le riz selon les indications.','Faire revenir l\'oignon émincé 3 min.','Ajouter le poulet en dés, cuire 7 min.','Verser crème + curry, mijoter 10 min.','Servir sur le riz.']}
-  },
-  {
-    midi:{name:'Soupe de légumes maison',time:'20 min',ings:['Carottes x3','Courgette x1','Poireau x1','Bouillon 1L','Crème fraîche'],steps:['Éplucher et couper les légumes.','Faire revenir 3 min puis couvrir de bouillon.','Cuire 15 min, mixer, ajouter une cuil. de crème.','Assaisonner et servir.']},
-    soir:{name:'Pâtes carbonara',time:'20 min',ings:['Pâtes 400g','Lardons 200g','Oeufs x3','Parmesan râpé','Poivre noir'],steps:['Cuire les pâtes al dente, réserver un peu d\'eau.','Faire revenir les lardons à sec.','Mélanger oeufs + parmesan + poivre.','Hors du feu : mélanger pâtes + lardons + oeufs.']}
-  },
-  {
-    midi:{name:'Salade niçoise',time:'15 min',ings:['Thon x2 boîtes','Tomates x3','Oeufs durs x3','Olives noires','Haricots verts 200g'],steps:['Cuire les haricots verts 5 min, refroidir.','Couper les tomates, écaler les oeufs.','Tout disposer, arroser huile + vinaigre.']},
-    soir:{name:'Hachis parmentier',time:'30 min',ings:['Boeuf haché 500g','Pommes de terre 800g','Oignon x1','Lait 10cl','Gruyère râpé 80g'],steps:['Cuire et écraser les pommes de terre avec le lait.','Faire revenir oignon puis viande 10 min.','Superposer viande + purée dans un plat, couvrir de gruyère.','Gratiner 10 min à 200°C.']}
-  },
-  {
-    midi:{name:'Quiche lorraine express',time:'25 min',ings:['Pâte brisée x1','Lardons 150g','Oeufs x3','Crème 20cl','Gruyère 60g'],steps:['Préchauffer four 200°C.','Étaler la pâte dans un moule, piquer le fond.','Mélanger oeufs, crème, lardons, gruyère.','Verser sur la pâte, cuire 25 min.']},
-    soir:{name:'Saumon teriyaki & nouilles',time:'20 min',ings:['Filets de saumon x4','Sauce soja 3 c.à.s','Miel 1 c.à.s','Nouilles 300g','Gingembre'],steps:['Mariner le saumon 10 min (soja + miel + gingembre).','Cuire les nouilles.','Poêler le saumon 3 min/face.','Servir sur les nouilles avec le reste de marinade.']}
-  },
-  {
-    midi:{name:'Wrap poulet avocat',time:'10 min',ings:['Tortillas x4','Poulet cuit 300g','Avocats x2','Laitue','Sauce yaourt'],steps:['Émincer le poulet cuit.','Écraser l\'avocat avec sel + citron.','Garnir chaque tortilla de laitue, poulet, avocat.','Rouler et servir.']},
-    soir:{name:'Poêlée légumes & oeufs',time:'20 min',ings:['Courgettes x2','Poivron x1','Oeufs x6','Feta 100g','Herbes de Provence'],steps:['Couper légumes en dés, faire revenir 8 min à l\'huile.','Assaisonner avec herbes, sel, poivre.','Casser les oeufs dessus, couvrir 5 min.','Émietter la feta et servir.']}
-  },
-  {
-    midi:{name:'Burger maison',time:'25 min',ings:['Boeuf haché 600g','Pains burger x4','Tomate x2','Salade','Cheddar x4'],steps:['Former 4 steaks, assaisonner.','Cuire 3 min par face.','Toaster les pains.','Monter avec salade, tomate, fromage.']},
-    soir:{name:'Tajine poulet aux olives',time:'30 min',ings:['Cuisses de poulet x4','Olives 100g','Citron confit x1','Oignons x2','Cumin, coriandre'],steps:['Faire dorer oignons et poulet.','Ajouter épices, olives, citron confit.','Couvrir et cuire 20 min à feu doux.','Servir avec pain ou semoule.']}
-  },
-  {
-    midi:{name:'Risotto aux champignons',time:'30 min',ings:['Riz arborio 300g','Champignons 300g','Bouillon 1L','Parmesan 60g','Vin blanc 10cl'],steps:['Faire revenir les champignons, réserver.','Faire revenir le riz 2 min, déglacer au vin blanc.','Ajouter le bouillon louche par louche 20 min.','Incorporer champignons + parmesan, servir.']},
-    soir:{name:'Crêpes jambon-fromage',time:'20 min',ings:['Farine 250g','Oeufs x3','Lait 50cl','Jambon x4','Emmental 100g'],steps:['Préparer la pâte, laisser reposer 10 min.','Cuire les crêpes.','Garnir jambon + fromage.','Replier, réchauffer 2 min.']}}
+const planning=[
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes',kcal:340,p:22,g:38,l:11,portions:'2 adultes',ings:['Skyr nature 150g','Flocons avoine 50g','Amandes 15g','Yaourt fruits mixé 80g'],steps:['Verser le skyr dans un bol.','Ajouter flocons et amandes.','Terminer avec le yaourt fruits mixé.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet riz complet légumes',kcal:480,p:38,g:44,l:10,portions:'2 adultes',ings:['Blanc poulet 130g','Riz complet 60g cru','Courgette 150g','Huile olive 5g','Herbes de Provence'],steps:['Cuire le riz complet 25 min.','Poêler le poulet en dés 7 min.','Faire revenir la courgette 5 min.','Assembler en bowl.'],note:''},
+    {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:180,p:8,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 2x60g','Beurre de cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Omelette champignons salade verte',kcal:380,p:27,g:8,l:24,portions:'4 pers.',ings:['Oeufs 8 pièces','Champignons 200g','Beurre 10g','Salade verte 300g','Vinaigrette'],steps:['Battre les oeufs.','Faire revenir champignons 5 min.','Cuire l\'omelette à feu doux 5 min.','Servir avec salade.'],note:'Demi-omelette pour chaque enfant.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes++',kcal:420,p:26,g:48,l:13,portions:'2 adultes',ings:['Skyr nature 180g','Flocons avoine 65g','Amandes 20g','Yaourt fruits mixé 80g'],steps:['Verser le skyr.','Ajouter flocons et amandes.','Terminer avec yaourt.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet riz complet légumes',kcal:560,p:46,g:52,l:12,portions:'2 adultes',ings:['Blanc poulet 160g','Riz complet 75g cru','Courgette 150g','Huile olive 8g','Herbes'],steps:['Cuire le riz complet 25 min.','Poêler le poulet 7 min.','Faire revenir la courgette 5 min.','Assembler.'],note:''},
+    {moment:'Collation',nom:'Skyr amandes',kcal:200,p:14,g:10,l:11,portions:'2 adultes',ings:['Skyr nature 150g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Omelette champignons salade verte',kcal:460,p:33,g:10,l:29,portions:'4 pers.',ings:['Oeufs 10 pièces','Champignons 200g','Beurre 12g','Salade verte 300g','Vinaigrette'],steps:['Battre les oeufs.','Faire revenir champignons 5 min.','Cuire l\'omelette 5 min.','Servir avec salade.'],note:'Demi-omelette pour chaque enfant.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Flocons avoine chauds skyr',kcal:350,p:20,g:45,l:9,portions:'2 adultes',ings:['Flocons avoine 55g','Skyr 120g','Amandes effilées 10g','Cannelle'],steps:['Cuire les flocons 3 min avec de l\'eau.','Ajouter le skyr par-dessus.','Parsemer amandes et cannelle.'],note:''},
+    {moment:'Déjeuner',nom:'Salade pois chiches oeuf dur',kcal:460,p:28,g:38,l:18,portions:'2 adultes',ings:['Pois chiches 120g','Oeufs durs 2','Tomates cerises 100g','Concombre 80g','Huile olive + citron 8g'],steps:['Égoutter les pois chiches.','Écaler et couper les oeufs.','Assembler et assaisonner.'],note:''},
+    {moment:'Collation',nom:'Yaourt fruits mixé',kcal:130,p:5,g:22,l:3,portions:'2 adultes',ings:['Yaourt fruits mixé 150g'],steps:['Déguster tel quel.'],note:''},
+    {moment:'Dîner',nom:'Sauté poulet patate douce curry doux',kcal:470,p:38,g:46,l:11,portions:'4 pers.',ings:['Cuisses poulet 500g','Patate douce 400g','Pois chiches 160g','Oignon 1','Curry doux 1 c.à.c','Huile olive 10g'],steps:['Couper patate douce, cuire 15 min.','Faire revenir oignon + poulet 8 min.','Ajouter pois chiches + patate + curry.','Mijoter 5 min.'],note:'Curry doux. Réserver une portion sans épices pour les enfants si besoin.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Flocons avoine chauds skyr',kcal:430,p:25,g:55,l:11,portions:'2 adultes',ings:['Flocons avoine 70g','Skyr 150g','Amandes effilées 15g','Cannelle'],steps:['Cuire les flocons 3 min.','Ajouter le skyr.','Parsemer amandes et cannelle.'],note:''},
+    {moment:'Déjeuner',nom:'Salade pois chiches oeuf dur',kcal:540,p:33,g:46,l:21,portions:'2 adultes',ings:['Pois chiches 150g','Oeufs durs 3','Tomates cerises 100g','Concombre 80g','Huile olive + citron 10g'],steps:['Égoutter les pois chiches.','Écaler et couper les oeufs.','Assembler et assaisonner.'],note:''},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:190,p:14,g:10,l:10,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Sauté poulet patate douce curry doux',kcal:560,p:46,g:54,l:13,portions:'4 pers.',ings:['Cuisses poulet 500g','Patate douce 400g','Pois chiches 160g','Oignon 1','Curry doux 1 c.à.c','Huile olive 10g'],steps:['Couper patate douce, cuire 15 min.','Faire revenir oignon + poulet 8 min.','Ajouter pois chiches + patate + curry.','Mijoter 5 min.'],note:'Curry doux. Portion sans épices pour les enfants si besoin.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Oeufs brouillés & porridge cacahuète',kcal:360,p:22,g:22,l:20,portions:'2 adultes',ings:['Oeufs 3 pièces','Flocons avoine 30g','Lait végétal 100ml','Beurre cacahuète 12g'],steps:['Cuire le porridge flocons + lait 3 min.','Brouiller les oeufs à feu doux 3 min.','Servir avec beurre de cacahuète.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:490,p:36,g:48,l:13,portions:'2 adultes',ings:['Boeuf maigre 120g','Riz basmati 65g cru','Poivron 100g','Courgette 100g','Huile olive 7g','Cumin, paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler en bowl.'],note:''},
+    {moment:'Collation',nom:'Petit suisse nature',kcal:110,p:7,g:8,l:4,portions:'2 adultes',ings:['Petit suisse 2x60g'],steps:['Déguster tel quel.'],note:''},
+    {moment:'Dîner',nom:'Pâtes complètes bolognaise légère',kcal:480,p:34,g:54,l:14,portions:'4 pers.',ings:['Pâtes complètes 320g','Boeuf haché maigre 400g','Tomates concassées 400g','Oignon 1','Ail 2 gousses','Huile olive 10g'],steps:['Cuire les pâtes complètes al dente.','Faire revenir oignon + ail + boeuf 8 min.','Ajouter tomates, mijoter 10 min.','Servir sur les pâtes.'],note:'Plat familial idéal. Pas d\'épices fortes.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Oeufs brouillés & porridge cacahuète',kcal:430,p:27,g:28,l:24,portions:'2 adultes',ings:['Oeufs 4 pièces','Flocons avoine 40g','Lait végétal 120ml','Beurre cacahuète 15g'],steps:['Cuire le porridge 3 min.','Brouiller les oeufs 3 min.','Servir avec beurre de cacahuète.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:570,p:44,g:56,l:15,portions:'2 adultes',ings:['Boeuf maigre 150g','Riz basmati 80g cru','Poivron 100g','Courgette 120g','Huile olive 9g','Cumin, paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler en bowl.'],note:''},
+    {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:195,p:8,g:20,l:9,portions:'2 adultes',ings:['Yaourt fruits mixé 130g','Amandes 13g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Pâtes complètes bolognaise légère',kcal:570,p:41,g:62,l:16,portions:'4 pers.',ings:['Pâtes complètes 320g','Boeuf haché maigre 400g','Tomates concassées 400g','Oignon 1','Ail 2 gousses','Huile olive 10g'],steps:['Cuire les pâtes complètes al dente.','Faire revenir oignon + ail + boeuf 8 min.','Ajouter tomates, mijoter 10 min.','Servir.'],note:'Plat familial. Pas d\'épices fortes.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Skyr banane beurre cacahuète',kcal:350,p:20,g:42,l:11,portions:'2 adultes',ings:['Skyr 150g','Banane 80g','Beurre cacahuète 12g','Amandes 8g'],steps:['Écraser la banane dans le skyr.','Ajouter beurre de cacahuète et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade lentilles boeuf maigre',kcal:470,p:36,g:42,l:13,portions:'2 adultes',ings:['Boeuf maigre 110g','Lentilles vertes cuites 120g','Tomates 100g','Concombre 80g','Huile olive + vinaigre 7g'],steps:['Poêler le boeuf 4 min.','Assembler lentilles + légumes.','Ajouter boeuf tiède, assaisonner.'],note:''},
+    {moment:'Collation',nom:'Flocons avoine skyr',kcal:200,p:13,g:25,l:5,portions:'2 adultes',ings:['Flocons avoine 30g','Skyr 80g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Saumon riz complet épinards',kcal:510,p:40,g:38,l:22,portions:'4 pers.',ings:['Filets saumon 4 pièces','Riz complet 200g cru','Épinards frais 300g','Ail 2 gousses','Huile olive 10g','Citron'],steps:['Cuire le riz complet 25 min.','Poêler le saumon 4 min/face.','Faire tomber les épinards avec ail 3 min.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants. Portion saumon réduite.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Skyr banane beurre cacahuète',kcal:420,p:24,g:50,l:14,portions:'2 adultes',ings:['Skyr 180g','Banane 100g','Beurre cacahuète 16g','Amandes 12g'],steps:['Écraser la banane dans le skyr.','Ajouter beurre de cacahuète et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade lentilles boeuf maigre',kcal:560,p:44,g:50,l:15,portions:'2 adultes',ings:['Boeuf maigre 140g','Lentilles vertes cuites 150g','Tomates 100g','Concombre 80g','Huile olive + vinaigre 9g'],steps:['Poêler le boeuf 4 min.','Assembler lentilles + légumes.','Ajouter boeuf tiède, assaisonner.'],note:''},
+    {moment:'Collation',nom:'Flocons avoine skyr',kcal:240,p:16,g:30,l:6,portions:'2 adultes',ings:['Flocons avoine 40g','Skyr 100g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Saumon riz complet épinards',kcal:590,p:48,g:44,l:26,portions:'4 pers.',ings:['Filets saumon 4 pièces','Riz complet 200g cru','Épinards frais 300g','Ail 2 gousses','Huile olive 10g','Citron'],steps:['Cuire le riz complet 25 min.','Poêler le saumon 4 min/face.','Faire tomber les épinards 3 min.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Bol avoine yaourt amandes',kcal:340,p:18,g:40,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Yaourt fruits mixé 100g','Amandes 15g','Skyr 60g'],steps:['Verser flocons dans un bol.','Ajouter yaourt et skyr.','Parsemer amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates',kcal:490,p:36,g:50,l:14,portions:'2 adultes',ings:['Blanc poulet 130g','Pâtes complètes 80g cru','Tomates cerises 100g','Huile olive 8g','Basilic, ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet avec ail + basilic 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
+    {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:180,p:8,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 2x60g','Beurre cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:490,p:34,g:48,l:16,portions:'4 pers.',ings:['Boeuf haché maigre 400g','Patate douce 800g','Oignon 1','Lait végétal 10cl','Gruyère 60g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial. Les enfants adorent la patate douce.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Bol avoine yaourt amandes',kcal:410,p:22,g:50,l:14,portions:'2 adultes',ings:['Flocons avoine 65g','Yaourt fruits mixé 120g','Amandes 20g','Skyr 80g'],steps:['Verser flocons dans un bol.','Ajouter yaourt et skyr.','Parsemer amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates',kcal:570,p:44,g:58,l:16,portions:'2 adultes',ings:['Blanc poulet 160g','Pâtes complètes 100g cru','Tomates cerises 100g','Huile olive 10g','Basilic, ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
+    {moment:'Collation',nom:'Skyr amandes',kcal:185,p:13,g:8,l:10,portions:'2 adultes',ings:['Skyr 120g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:570,p:41,g:56,l:19,portions:'4 pers.',ings:['Boeuf haché maigre 400g','Patate douce 800g','Oignon 1','Lait végétal 10cl','Gruyère 60g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial. Patate douce appréciée des enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Pancakes avoine skyr famille',kcal:380,p:23,g:44,l:12,portions:'4 pers.',ings:['Flocons avoine mixés 120g','Oeufs 4 pièces','Skyr 160g','Beurre cacahuète 16g'],steps:['Mixer les flocons en farine.','Mélanger avec oeufs et skyr.','Cuire des pancakes 3 min/face.','Servir avec beurre de cacahuète.'],note:'Beurre cacahuète en option pour les enfants.'},
+    {moment:'Déjeuner',nom:'Bowl pois chiches patate douce tahini',kcal:480,p:22,g:58,l:14,portions:'4 pers.',ings:['Pois chiches rôtis 300g','Patate douce 500g','Salade verte 160g','Tahini 30g','Épices douces, citron'],steps:['Rôtir pois chiches + patate douce 20 min à 200°C.','Préparer sauce tahini + citron.','Assembler dans des bols.','Arroser de sauce.'],note:'Plat végétarien apprécié de toute la famille.'},
+    {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:140,p:6,g:18,l:5,portions:'4 pers.',ings:['Yaourt fruits mixé 4x60g','Amandes 20g'],steps:['Répartir en 4 portions avec amandes.'],note:''},
+    {moment:'Dîner',nom:'Poulet tajine légumes riz complet',kcal:520,p:42,g:44,l:18,portions:'4 pers.',ings:['Cuisses poulet 4 pièces','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin, curcuma'],steps:['Faire dorer le poulet 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, cuire 20 min à feu doux.','Servir avec riz complet.'],note:'Épices douces. Éviter le piment pour les enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Pancakes avoine skyr famille',kcal:460,p:29,g:53,l:15,portions:'4 pers.',ings:['Flocons avoine mixés 120g','Oeufs 4 pièces','Skyr 160g','Beurre cacahuète 20g'],steps:['Mixer les flocons.','Mélanger avec oeufs et skyr.','Cuire des pancakes 3 min/face.','Servir avec beurre de cacahuète.'],note:'Beurre cacahuète en option pour les enfants.'},
+    {moment:'Déjeuner',nom:'Bowl pois chiches patate douce tahini',kcal:570,p:27,g:68,l:17,portions:'4 pers.',ings:['Pois chiches rôtis 300g','Patate douce 500g','Salade verte 160g','Tahini 35g','Épices douces, citron'],steps:['Rôtir pois chiches + patate douce 20 min.','Préparer sauce tahini + citron.','Assembler en bols.','Arroser de sauce.'],note:''},
+    {moment:'Collation',nom:'Skyr amandes beurre cacahuète',kcal:225,p:15,g:10,l:14,portions:'2 adultes',ings:['Skyr 100g','Amandes 15g','Beurre cacahuète 10g'],steps:['Mélanger skyr + beurre cacahuète, ajouter amandes.'],note:''},
+    {moment:'Dîner',nom:'Poulet tajine légumes riz complet',kcal:610,p:51,g:52,l:21,portions:'4 pers.',ings:['Cuisses poulet 4 pièces','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin, curcuma'],steps:['Faire dorer le poulet 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, cuire 20 min.','Servir avec riz complet.'],note:'Épices douces. Éviter le piment pour les enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:370,p:21,g:44,l:11,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Amandes 60g','Flocons avoine 80g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:'Super petit-déj du dimanche en famille.'},
+    {moment:'Déjeuner',nom:'Omelette boeuf légumes salade',kcal:430,p:31,g:14,l:26,portions:'4 pers.',ings:['Oeufs 10 pièces','Boeuf maigre 300g','Poivron 200g','Tomates 160g','Huile olive 14g','Salade verte 160g'],steps:['Poêler le boeuf en lanières 5 min.','Faire revenir légumes 5 min.','Ajouter oeufs battus, cuire 5 min.','Servir avec salade.'],note:'Portions plus petites pour les enfants.'},
+    {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:245,p:10,g:28,l:11,portions:'4 pers.',ings:['Flocons avoine 160g','Beurre cacahuète 40g','Lait végétal 320ml'],steps:['Préparer 4 petits bols de porridge.','Ajouter beurre de cacahuète dans chacun.'],note:''},
+    {moment:'Dîner',nom:'Boeuf sauté riz basmati brocoli',kcal:510,p:38,g:44,l:19,portions:'4 pers.',ings:['Boeuf maigre 480g','Riz basmati 240g cru','Brocoli 480g','Ail 3 gousses','Sauce soja légère 20ml','Huile olive 14g'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec ail 6 min.','Faire sauter le brocoli 5 min.','Déglacer sauce soja, servir sur riz.'],note:'Sauce soja légère. Portions enfants réduites.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:450,p:26,g:53,l:14,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Amandes 60g','Flocons avoine 80g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Omelette boeuf légumes salade',kcal:520,p:39,g:16,l:33,portions:'4 pers.',ings:['Oeufs 12 pièces','Boeuf maigre 300g','Poivron 200g','Tomates 160g','Huile olive 18g','Salade verte 160g'],steps:['Poêler le boeuf en lanières 5 min.','Faire revenir légumes 5 min.','Ajouter oeufs battus, cuire 5 min.','Servir avec salade.'],note:'Portions plus petites pour les enfants.'},
+    {moment:'Collation',nom:'Porridge beurre cacahuète',kcal:285,p:12,g:33,l:13,portions:'2 adultes',ings:['Flocons avoine 50g','Beurre cacahuète 14g','Lait végétal 100ml'],steps:['Préparer le porridge, ajouter beurre de cacahuète.'],note:''},
+    {moment:'Dîner',nom:'Boeuf sauté riz basmati brocoli',kcal:600,p:46,g:52,l:23,portions:'4 pers.',ings:['Boeuf maigre 480g','Riz basmati 240g cru','Brocoli 480g','Ail 3 gousses','Sauce soja légère 20ml','Huile olive 14g'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec ail 6 min.','Faire sauter le brocoli 5 min.','Déglacer sauce soja, servir sur riz.'],note:'Sauce soja légère. Portions enfants réduites.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
 ];
 
-const courses = [
-  {cat:'Viandes & poissons', items:[
-    {n:'Blanc de poulet', q:'600g'},{n:'Cuisses de poulet', q:'4 pièces'},{n:'Boeuf haché', q:'1,1 kg'},{n:'Lardons', q:'350g'},{n:'Saumon', q:'4 filets'},{n:'Thon en boîte', q:'2 boîtes'},{n:'Jambon', q:'4 tranches'}
+const courses=[
+  {cat:'Viandes & poissons',items:[
+    {n:'Blanc de poulet',q:'~600g',p:'2 adultes'},{n:'Cuisses de poulet',q:'4 pièces',p:'4 pers.'},{n:'Boeuf maigre haché',q:'~800g',p:'4 pers.'},{n:'Boeuf maigre tranché',q:'~400g',p:'4 pers.'},{n:'Filets de saumon',q:'4 pièces',p:'4 pers.'},
   ]},
-  {cat:'Fruits & légumes', items:[
-    {n:'Champignons', q:'600g'},{n:'Oignons', q:'5 pièces'},{n:'Carottes', q:'3 pièces'},{n:'Courgettes', q:'3 pièces'},{n:'Poireau', q:'1 pièce'},{n:'Tomates', q:'5 pièces'},{n:'Haricots verts', q:'200g'},{n:'Pommes de terre', q:'800g'},{n:'Avocats', q:'2 pièces'},{n:'Poivron', q:'1 pièce'},{n:'Salade verte', q:'1 pièce'},{n:'Citron confit', q:'1 pièce'}
+  {cat:'Fruits & légumes',items:[
+    {n:'Patate douce',q:'~1,5 kg',p:'4 pers.'},{n:'Courgettes',q:'~600g',p:'4 pers.'},{n:'Champignons',q:'~200g',p:'4 pers.'},{n:'Poivrons',q:'~300g',p:'4 pers.'},{n:'Tomates / cerises',q:'~500g',p:'4 pers.'},{n:'Brocoli',q:'~480g',p:'4 pers.'},{n:'Épinards frais',q:'~300g',p:'4 pers.'},{n:'Carottes',q:'~200g',p:'4 pers.'},{n:'Concombre',q:'~160g',p:'2 adultes'},{n:'Salade verte',q:'2 pièces',p:'4 pers.'},{n:'Bananes',q:'2 pièces',p:'2 adultes'},{n:'Citrons',q:'3 pièces',p:'4 pers.'},{n:'Ail',q:'1 tête',p:'4 pers.'},{n:'Oignons',q:'4 pièces',p:'4 pers.'},
   ]},
-  {cat:'Produits laitiers & oeufs', items:[
-    {n:'Oeufs', q:'18 pièces'},{n:'Crème liquide', q:'40 cl'},{n:'Crème fraîche', q:'1 pot'},{n:'Parmesan râpé', q:'120g'},{n:'Gruyère râpé', q:'140g'},{n:'Feta', q:'100g'},{n:'Cheddar', q:'4 tranches'},{n:'Emmental râpé', q:'100g'},{n:'Beurre', q:'1 plaquette'},{n:'Lait', q:'60 cl'}
+  {cat:'Produits laitiers & oeufs',items:[
+    {n:'Oeufs',q:'~30 pièces',p:'4 pers.'},{n:'Skyr nature',q:'~1,5 kg',p:'2 adultes'},{n:'Yaourt fruits mixé (sans morceaux)',q:'~1 kg',p:'4 pers.'},{n:'Petit suisse nature',q:'12 pièces',p:'2 adultes'},{n:'Gruyère râpé',q:'~60g',p:'4 pers.'},{n:'Tahini',q:'~65g',p:'4 pers.'},{n:'Lait végétal',q:'~1L',p:'4 pers.'},
   ]},
-  {cat:'Épicerie', items:[
-    {n:'Riz', q:'300g'},{n:'Riz arborio', q:'300g'},{n:'Pâtes', q:'400g'},{n:'Nouilles chinoises', q:'300g'},{n:'Tortillas', q:'4 pièces'},{n:'Pains burger', q:'4 pièces'},{n:'Farine', q:'250g'},{n:'Pâte brisée', q:'1 rouleau'},{n:'Bouillon de légumes', q:'2 L'},{n:'Olives noires', q:'100g'}
+  {cat:'Épicerie & féculents',items:[
+    {n:'Flocons d\'avoine',q:'~600g',p:'4 pers.'},{n:'Riz complet',q:'~600g cru',p:'4 pers.'},{n:'Riz basmati',q:'~305g cru',p:'4 pers.'},{n:'Pâtes complètes',q:'~400g cru',p:'4 pers.'},{n:'Pois chiches (boîtes)',q:'4 boîtes',p:'4 pers.'},{n:'Lentilles vertes',q:'~270g',p:'2 adultes'},{n:'Tomates concassées',q:'2 boîtes 400g',p:'4 pers.'},
   ]},
-  {cat:'Condiments & épices', items:[
-    {n:'Curry en poudre', q:'1 boîte'},{n:'Herbes de Provence', q:'1 pot'},{n:'Cumin & coriandre', q:'1 pot'},{n:'Sauce soja', q:'1 bouteille'},{n:'Miel', q:'1 pot'},{n:'Gingembre frais', q:'1 morceau'},{n:'Vin blanc', q:'10 cl'},{n:'Huile d\'olive', q:'1 bouteille'}
-  ]}
+  {cat:'Oléagineux & condiments',items:[
+    {n:'Amandes',q:'~200g',p:'2 adultes'},{n:'Beurre de cacahuète',q:'~250g',p:'2 adultes'},{n:'Huile d\'olive',q:'1 bouteille',p:'4 pers.'},{n:'Sauce soja légère',q:'~50ml',p:'4 pers.'},{n:'Basilic frais',q:'1 pot',p:'2 adultes'},
+  ]},
+  {cat:'Épices & aromates',items:[
+    {n:'Curry doux',q:'1 boîte',p:'4 pers.'},{n:'Cumin',q:'1 boîte',p:'4 pers.'},{n:'Curcuma',q:'1 boîte',p:'4 pers.'},{n:'Paprika',q:'1 boîte',p:'2 adultes'},{n:'Cannelle',q:'1 boîte',p:'2 adultes'},{n:'Herbes de Provence',q:'1 pot',p:'4 pers.'},
+  ]},
+  {cat:'Plaisir — adultes uniquement',items:[
+    {n:'Chocolat noir 70%+',q:'~200g',p:'2 adultes'},
+  ]},
 ];
 
-let checked = {};
-
-function switchTab(t) {
-  document.querySelectorAll('.nav-tab').forEach((el,i) => el.classList.toggle('active', ['planning','courses','infos'][i] === t));
-  document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
-  document.getElementById('tab-' + t).classList.add('active');
+function switchTab(t){
+  document.querySelectorAll('.nav-tab').forEach((el,i)=>el.classList.toggle('active',['planning','courses','resume','infos'][i]===t));
+  document.querySelectorAll('.content').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='courses') renderCourses();
+  if(t==='resume') renderResume();
 }
+function setPerson(p){person=p;document.querySelectorAll('#tab-planning .ptog').forEach((el,i)=>el.classList.toggle('active',['f','m'][i]===p));renderPlanning();}
+function setPersonResume(p){personResume=p;document.querySelectorAll('#tab-resume .ptog').forEach((el,i)=>el.classList.toggle('active',['f','m'][i]===p));renderResume();}
 
-function renderPlanning() {
-  const row = document.getElementById('week-row');
-  row.innerHTML = jours.map((j, i) => {
-    const d = planning[i];
+function renderPlanning(){
+  const target=TARGETS[person];
+  const avgKcal=Math.round(planning.reduce((s,d)=>s+d[person].reduce((s2,m)=>s2+m.kcal,0),0)/7);
+  document.getElementById('s-kcal').textContent=avgKcal;
+  document.getElementById('s-deficit').textContent='-'+(target-avgKcal);
+  document.getElementById('week-row').innerHTML=JOURS.map((j,i)=>{
+    const meals=planning[i][person];
+    const dk=meals.reduce((s,m)=>s+m.kcal,0);
     return `<div class="day-card">
-      <div class="day-head">${j}</div>
-      <div class="meal-slot" onclick="showDetail(${i},'midi')">
-        <div><span class="meal-type-badge badge-midi">Midi</span></div>
-        <div class="meal-name-sm">${d.midi.name}</div>
-        <div class="meal-time-sm">${d.midi.time}</div>
-      </div>
-      <div class="meal-slot" onclick="showDetail(${i},'soir')">
-        <div><span class="meal-type-badge badge-soir">Soir</span></div>
-        <div class="meal-name-sm">${d.soir.name}</div>
-        <div class="meal-time-sm">${d.soir.time}</div>
-      </div>
+      <div class="day-head"><span>${j}</span><span class="day-kcal">${dk}</span></div>
+      ${meals.map((m,mi)=>`<div class="meal-slot" onclick="showDetail(${i},${mi})">
+        <div><span class="mbadge ${MB[m.moment]||'mb-pdj'}">${m.moment}</span></div>
+        <div class="meal-nm">${m.nom}</div>
+        <div class="meal-tm">${m.kcal} kcal</div>
+        ${m.portions.includes('4')?'<div class="portions-badge">👨‍👩‍👧‍👦 4 pers.</div>':''}
+      </div>`).join('')}
     </div>`;
   }).join('');
 }
 
-function showDetail(dayIdx, moment) {
-  const meal = planning[dayIdx][moment];
-  const jour = jours[dayIdx];
-  document.getElementById('detail-body').innerHTML = `
-    <div class="detail-title">${meal.name}</div>
-    <div class="detail-meta">
-      <span class="pill ${moment==='midi'?'pill-green':'pill-amber'}">${moment==='midi'?'Déjeuner':'Dîner'} · ${jour}</span>
-      <span class="pill pill-gray">${meal.time}</span>
-      <span class="pill pill-gray">3-4 pers.</span>
+function showDetail(di,mi){
+  const m=planning[di][person][mi];
+  const pp=Math.round(m.p*4/m.kcal*100),gp=Math.round(m.g*4/m.kcal*100),lp=Math.round(m.l*9/m.kcal*100);
+  document.getElementById('sheet-body').innerHTML=`
+    <div class="sheet-title">${m.nom}</div>
+    <div class="sheet-meta">
+      <span class="pill pill-g">${m.moment}</span>
+      <span class="pill pill-a">${JOURS[di]}</span>
+      <span class="pill pill-m">${m.portions}</span>
     </div>
-    <div class="section-label">Ingrédients</div>
-    <div class="ing-chips">${meal.ings.map(i=>`<span class="ing-chip">${i}</span>`).join('')}</div>
-    <div class="section-label">Préparation</div>
-    <div class="steps-list">${meal.steps.map((s,i)=>`<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('')}</div>
-    <button class="btn-close" onclick="closeDetail()">Fermer</button>
-  `;
-  document.getElementById('detail-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+    <div class="macro-detail">
+      <div class="macro-detail-grid">
+        <div class="md-box"><div class="md-val">${m.kcal}</div><div class="md-lbl">kcal</div></div>
+        <div class="md-box"><div class="md-val">${m.p}g</div><div class="md-lbl">protéines</div></div>
+        <div class="md-box"><div class="md-val">${m.g}g</div><div class="md-lbl">glucides</div></div>
+        <div class="md-box"><div class="md-val">${m.l}g</div><div class="md-lbl">lipides</div></div>
+      </div>
+      <div class="macro-bar"><div class="mp" style="width:${pp}%"></div><div class="mg" style="width:${gp}%"></div><div class="ml" style="width:${lp}%"></div></div>
+      <div class="macro-leg">
+        <span><span class="mdot" style="background:#40916C"></span>P ${pp}%</span>
+        <span><span class="mdot" style="background:#E9C46A"></span>G ${gp}%</span>
+        <span><span class="mdot" style="background:#E76F51"></span>L ${lp}%</span>
+      </div>
+    </div>
+    <div class="slabel">Ingrédients</div>
+    <div class="ing-chips">${m.ings.map(i=>`<span class="ing-chip">${i}</span>`).join('')}</div>
+    <div class="slabel">Préparation</div>
+    <div class="steps">${m.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><div class="stxt">${s}</div></div>`).join('')}</div>
+    ${m.note?`<div class="note-enfants">👶 ${m.note}</div>`:''}
+    <button class="btn-close" onclick="closeDetail()">Fermer</button>`;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
 }
 
-function closeDetail(e) {
-  if (e && document.getElementById('detail-sheet').contains(e.target)) return;
-  document.getElementById('detail-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+function closeDetail(e){
+  if(e&&document.getElementById('sheet').contains(e.target)) return;
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow='';
 }
 
-function renderCourses() {
-  let totalItems = 0, doneItems = 0;
-  let html = '';
-  courses.forEach(cat => {
-    const catDone = cat.items.filter(it => checked[it.n]).length;
-    totalItems += cat.items.length;
-    doneItems += catDone;
-    html += `<div class="cat-section card">
-      <div class="cat-title-bar"><span>${cat.cat}</span><span style="color:var(--text-muted);font-weight:400">${catDone}/${cat.items.length}</span></div>`;
-    cat.items.forEach(it => {
-      const done = !!checked[it.n];
-      html += `<div class="course-item" onclick="toggleItem('${it.n.replace(/'/g,"\\'")}')">
-        <div class="course-check${done?' done':''}"></div>
-        <div class="course-label">
-          <div class="course-name${done?' done':''}">${it.n}</div>
-          <div class="course-qty">${it.q}</div>
-        </div>
-      </div>`;
-    });
-    html += '</div>';
-  });
-  document.getElementById('courses-list').innerHTML = html;
-  const pct = totalItems ? Math.round(doneItems / totalItems * 100) : 0;
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-label').textContent = `${doneItems} / ${totalItems} articles cochés`;
+function renderCourses(){
+  const total=courses.reduce((s,c)=>s+c.items.length,0);
+  const done=Object.values(checked).filter(Boolean).length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-lbl').textContent=`${done} / ${total} articles cochés`;
+  document.getElementById('courses-list').innerHTML=courses.map(cat=>{
+    const cd=cat.items.filter(it=>checked[it.n]).length;
+    return `<div class="cat-block">
+      <div class="cat-hd"><span>${cat.cat}</span><span>${cd}/${cat.items.length}</span></div>
+      ${cat.items.map(it=>{
+        const d=!!checked[it.n],p4=it.p.includes('4');
+        return `<div class="course-item" onclick="toggleCourse('${it.n.replace(/'/g,"\\'")}')">
+          <div class="ccheck${d?' done':''}"></div>
+          <div class="clabel">
+            <div class="cname${d?' done':''}">${it.n}</div>
+            <div class="cqty">${it.q}</div>
+            <span class="cportion ${p4?'cp4':'cp2'}">${p4?'👨‍👩‍👧‍👦 4 pers.':'2 adultes'}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
 }
 
-function toggleItem(name) {
-  checked[name] = !checked[name];
-  renderCourses();
+function toggleCourse(n){checked[n]=!checked[n];renderCourses();}
+
+function renderResume(){
+  const p=personResume,target=TARGETS[p];
+  const wd=planning.map((d,i)=>({j:JOURS[i],k:d[p].reduce((s,m)=>s+m.kcal,0),p:d[p].reduce((s,m)=>s+m.p,0),g:d[p].reduce((s,m)=>s+m.g,0),l:d[p].reduce((s,m)=>s+m.l,0)}));
+  const mk=Math.max(...wd.map(d=>d.k));
+  document.getElementById('wo-grid').innerHTML=wd.map(d=>`<div class="wo-col"><div class="wo-day">${d.j.slice(0,3)}</div><div class="wo-kcal">${d.k}</div><div class="wo-bar" style="width:${Math.round(d.k/mk*100)}%;max-width:100%"></div></div>`).join('');
+  const ak=Math.round(wd.reduce((s,d)=>s+d.k,0)/7),ap=Math.round(wd.reduce((s,d)=>s+d.p,0)/7),ag=Math.round(wd.reduce((s,d)=>s+d.g,0)/7),al=Math.round(wd.reduce((s,d)=>s+d.l,0)/7);
+  const def=target-ak,pp=Math.round(ap*4/ak*100),gp=Math.round(ag*4/ak*100),lp=Math.round(al*9/ak*100);
+  document.getElementById('resume-card').innerHTML=`
+    <div class="rc-title">Moyennes sur 7 jours</div>
+    <div class="rc-grid">
+      <div class="rc-box"><div class="rc-val">${ak}</div><div class="rc-lbl">kcal/j</div></div>
+      <div class="rc-box"><div class="rc-val">${ap}g</div><div class="rc-lbl">protéines</div></div>
+      <div class="rc-box"><div class="rc-val">${ag}g</div><div class="rc-lbl">glucides</div></div>
+      <div class="rc-box"><div class="rc-val">${al}g</div><div class="rc-lbl">lipides</div></div>
+    </div>
+    <div class="macro-bar" style="height:8px;margin-bottom:6px"><div class="mp" style="width:${pp}%"></div><div class="mg" style="width:${gp}%"></div><div class="ml" style="width:${lp}%"></div></div>
+    <div class="macro-leg" style="margin-bottom:12px">
+      <span><span class="mdot" style="background:#40916C"></span>P ${pp}%</span>
+      <span><span class="mdot" style="background:#E9C46A"></span>G ${gp}%</span>
+      <span><span class="mdot" style="background:#E76F51"></span>L ${lp}%</span>
+    </div>
+    <div class="deficit-row">Objectif : <strong>${target} kcal</strong> · Déficit moyen : <strong>~${def} kcal/j</strong><br>Soit environ <strong>~${(def*7/7700).toFixed(1)} kg/semaine</strong> théorique</div>`;
 }
 
 renderPlanning();
 renderCourses();
+renderResume();
 </script>
 </body>
 </html>
