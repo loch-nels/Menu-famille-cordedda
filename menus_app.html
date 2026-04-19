@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mes Menus">
+<meta name="theme-color" content="#2D6A4F">
+<title>Mes Menus — Famille</title>
+<style>
+  :root {
+    --green-dark: #2D6A4F;
+    --green-mid: #40916C;
+    --green-light: #D8F3DC;
+    --green-pale: #F0FAF3;
+    --amber: #E9C46A;
+    --coral: #E76F51;
+    --text: #1B1B1B;
+    --text-muted: #6B7280;
+    --border: #D1E7DD;
+    --bg: #F8FAFB;
+    --white: #FFFFFF;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  /* NAV */
+  .nav { position: sticky; top: 0; z-index: 100; background: var(--green-dark); padding: env(safe-area-inset-top) 0 0; }
+  .nav-title { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
+  .nav-title h1 { font-size: 18px; font-weight: 700; color: white; letter-spacing: -0.3px; }
+  .nav-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .nav-tabs { display: flex; border-top: 1px solid rgba(255,255,255,0.15); }
+  .nav-tab { flex: 1; padding: 10px 4px 12px; text-align: center; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .nav-tab.active { color: white; border-bottom-color: var(--amber); }
+  .nav-tab .tab-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+
+  /* CONTENT */
+  .content { padding: 16px; padding-bottom: 32px; display: none; }
+  .content.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--white); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .card-header { font-size: 12px; font-weight: 600; color: var(--green-mid); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+
+  /* SEMAINE GRID */
+  .week-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px 4px; }
+  .week-row { display: flex; gap: 10px; width: max-content; }
+  .day-card { width: 140px; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); flex-shrink: 0; cursor: pointer; }
+  .day-head { background: var(--green-dark); color: white; font-size: 12px; font-weight: 700; padding: 8px 10px; text-align: center; }
+  .meal-slot { padding: 10px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+  .meal-slot:last-child { border-bottom: none; }
+  .meal-slot:active { background: var(--green-pale); }
+  .meal-type-badge { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 20px; margin-bottom: 4px; }
+  .badge-midi { background: var(--green-light); color: var(--green-dark); }
+  .badge-soir { background: #FFF3CD; color: #856404; }
+  .meal-name-sm { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .meal-time-sm { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+  /* DETAIL */
+  .detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; }
+  .detail-overlay.open { display: flex; align-items: flex-end; }
+  .detail-sheet { background: var(--white); border-radius: 20px 20px 0 0; width: 100%; max-height: 85vh; overflow-y: auto; padding: 0 0 env(safe-area-inset-bottom); }
+  .detail-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; }
+  .detail-body { padding: 16px 20px 24px; }
+  .detail-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .detail-meta { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .pill { display: inline-block; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500; }
+  .pill-green { background: var(--green-light); color: var(--green-dark); }
+  .pill-amber { background: #FFF3CD; color: #856404; }
+  .pill-gray { background: #F3F4F6; color: var(--text-muted); }
+  .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; margin-top: 16px; }
+  .ing-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ing-chip { font-size: 13px; padding: 5px 11px; background: var(--green-pale); border: 1px solid var(--border); border-radius: 20px; color: var(--text); }
+  .steps-list { display: flex; flex-direction: column; gap: 10px; }
+  .step-item { display: flex; gap: 12px; align-items: flex-start; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--green-dark); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-text { font-size: 14px; line-height: 1.55; padding-top: 2px; }
+  .btn-close { display: block; width: 100%; padding: 14px; background: var(--green-dark); color: white; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 20px; }
+
+  /* COURSES */
+  .progress-bar-wrap { background: var(--border); border-radius: 20px; height: 8px; margin-bottom: 6px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--green-mid); border-radius: 20px; transition: width 0.3s; }
+  .progress-label { font-size: 12px; color: var(--text-muted); text-align: right; }
+  .cat-section { margin-bottom: 16px; }
+  .cat-title-bar { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-dark); padding: 8px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .course-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F3F4F6; cursor: pointer; -webkit-user-select: none; }
+  .course-item:last-child { border-bottom: none; }
+  .course-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+  .course-check.done { background: var(--green-mid); border-color: var(--green-mid); }
+  .course-check.done::after { content: '✓'; color: white; font-size: 13px; font-weight: 700; }
+  .course-label { flex: 1; }
+  .course-name { font-size: 15px; transition: color 0.2s; }
+  .course-name.done { text-decoration: line-through; color: var(--text-muted); }
+  .course-qty { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-box { background: var(--white); border-radius: var(--radius-sm); padding: 12px 10px; text-align: center; box-shadow: var(--shadow); }
+  .stat-n { font-size: 24px; font-weight: 700; color: var(--green-dark); }
+  .stat-l { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* INFOS */
+  .info-card { background: var(--green-pale); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
+  .info-title { font-size: 14px; font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+  .info-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .install-steps { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .install-step { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; }
+  .install-step strong { min-width: 20px; color: var(--green-dark); font-size: 15px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-title">
+    <div>
+      <h1>Mes Menus</h1>
+      <div class="nav-sub">3-4 personnes · repas rapides</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="switchTab('planning')">
+      <span class="tab-icon">📅</span>Planning
+    </div>
+    <div class="nav-tab" onclick="switchTab('courses')">
+      <span class="tab-icon">🛒</span>Courses
+    </div>
+    <div class="nav-tab" onclick="switchTab('infos')">
+      <span class="tab-icon">ℹ️</span>Infos
+    </div>
+  </div>
+</nav>
+
+<!-- PLANNING -->
+<div class="content active" id="tab-planning">
+  <div class="stats-grid">
+    <div class="stat-box"><div class="stat-n">14</div><div class="stat-l">repas</div></div>
+    <div class="stat-box"><div class="stat-n">7</div><div class="stat-l">jours</div></div>
+    <div class="stat-box"><div class="stat-n">&lt;30'</div><div class="stat-l">chaque plat</div></div>
+  </div>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Appuie sur un repas pour voir la recette</p>
+  <div class="week-scroll">
+    <div class="week-row" id="week-row"></div>
+  </div>
+</div>
+
+<!-- COURSES -->
+<div class="content" id="tab-courses">
+  <div class="card">
+    <div class="card-header">Progression</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="progress-label"><span id="prog-label">0 / 0 articles cochés</span></div>
+  </div>
+  <div id="courses-list"></div>
+</div>
+
+<!-- INFOS -->
+<div class="content" id="tab-infos">
+  <div class="info-card">
+    <div class="info-title">Installer l'appli sur ton téléphone</div>
+    <div class="info-text">Tu peux ajouter cette page à ton écran d'accueil pour l'utiliser comme une vraie application, sans connexion internet.</div>
+    <div class="install-steps">
+      <div class="install-step"><strong>📱</strong><span><strong>iPhone :</strong> ouvrir dans Safari → bouton Partager → "Sur l'écran d'accueil"</span></div>
+      <div class="install-step"><strong>🤖</strong><span><strong>Android :</strong> ouvrir dans Chrome → menu ⋮ → "Ajouter à l'écran d'accueil"</span></div>
+    </div>
+  </div>
+  <div class="info-card">
+    <div class="info-title">À propos du planning</div>
+    <div class="info-text">Planning conçu pour 3-4 personnes, tous les repas en moins de 30 minutes. Adapté aux habitudes alimentaires françaises, sans contrainte particulière.</div>
+  </div>
+  <div class="info-card">
+    <div class="info-title">Réinitialiser les courses</div>
+    <div class="info-text">Toutes les cases sont décochées au chargement de la page. Pour repartir à zéro, recharge la page.</div>
+  </div>
+</div>
+
+<!-- DETAIL SHEET -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-sheet" id="detail-sheet">
+    <div class="detail-handle"></div>
+    <div class="detail-body" id="detail-body"></div>
+  </div>
+</div>
+
+<script>
+const jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+
+const planning = [
+  {
+    midi:{name:'Omelette aux champignons',time:'15 min',ings:['Oeufs x6','Champignons 300g','Beurre','Ciboulette','Sel, poivre'],steps:['Battre les oeufs avec sel et poivre.','Faire revenir les champignons émincés 5 min dans le beurre.','Verser les oeufs sur les champignons, cuire à feu doux 5 min.','Plier et servir avec ciboulette.']},
+    soir:{name:'Sauté de poulet au curry',time:'25 min',ings:['Blanc de poulet 600g','Crème 20cl','Curry 2 c.à.c','Oignon x1','Riz 300g'],steps:['Cuire le riz selon les indications.','Faire revenir l\'oignon émincé 3 min.','Ajouter le poulet en dés, cuire 7 min.','Verser crème + curry, mijoter 10 min.','Servir sur le riz.']}
+  },
+  {
+    midi:{name:'Soupe de légumes maison',time:'20 min',ings:['Carottes x3','Courgette x1','Poireau x1','Bouillon 1L','Crème fraîche'],steps:['Éplucher et couper les légumes.','Faire revenir 3 min puis couvrir de bouillon.','Cuire 15 min, mixer, ajouter une cuil. de crème.','Assaisonner et servir.']},
+    soir:{name:'Pâtes carbonara',time:'20 min',ings:['Pâtes 400g','Lardons 200g','Oeufs x3','Parmesan râpé','Poivre noir'],steps:['Cuire les pâtes al dente, réserver un peu d\'eau.','Faire revenir les lardons à sec.','Mélanger oeufs + parmesan + poivre.','Hors du feu : mélanger pâtes + lardons + oeufs.']}
+  },
+  {
+    midi:{name:'Salade niçoise',time:'15 min',ings:['Thon x2 boîtes','Tomates x3','Oeufs durs x3','Olives noires','Haricots verts 200g'],steps:['Cuire les haricots verts 5 min, refroidir.','Couper les tomates, écaler les oeufs.','Tout disposer, arroser huile + vinaigre.']},
+    soir:{name:'Hachis parmentier',time:'30 min',ings:['Boeuf haché 500g','Pommes de terre 800g','Oignon x1','Lait 10cl','Gruyère râpé 80g'],steps:['Cuire et écraser les pommes de terre avec le lait.','Faire revenir oignon puis viande 10 min.','Superposer viande + purée dans un plat, couvrir de gruyère.','Gratiner 10 min à 200°C.']}
+  },
+  {
+    midi:{name:'Quiche lorraine express',time:'25 min',ings:['Pâte brisée x1','Lardons 150g','Oeufs x3','Crème 20cl','Gruyère 60g'],steps:['Préchauffer four 200°C.','Étaler la pâte dans un moule, piquer le fond.','Mélanger oeufs, crème, lardons, gruyère.','Verser sur la pâte, cuire 25 min.']},
+    soir:{name:'Saumon teriyaki & nouilles',time:'20 min',ings:['Filets de saumon x4','Sauce soja 3 c.à.s','Miel 1 c.à.s','Nouilles 300g','Gingembre'],steps:['Mariner le saumon 10 min (soja + miel + gingembre).','Cuire les nouilles.','Poêler le saumon 3 min/face.','Servir sur les nouilles avec le reste de marinade.']}
+  },
+  {
+    midi:{name:'Wrap poulet avocat',time:'10 min',ings:['Tortillas x4','Poulet cuit 300g','Avocats x2','Laitue','Sauce yaourt'],steps:['Émincer le poulet cuit.','Écraser l\'avocat avec sel + citron.','Garnir chaque tortilla de laitue, poulet, avocat.','Rouler et servir.']},
+    soir:{name:'Poêlée légumes & oeufs',time:'20 min',ings:['Courgettes x2','Poivron x1','Oeufs x6','Feta 100g','Herbes de Provence'],steps:['Couper légumes en dés, faire revenir 8 min à l\'huile.','Assaisonner avec herbes, sel, poivre.','Casser les oeufs dessus, couvrir 5 min.','Émietter la feta et servir.']}
+  },
+  {
+    midi:{name:'Burger maison',time:'25 min',ings:['Boeuf haché 600g','Pains burger x4','Tomate x2','Salade','Cheddar x4'],steps:['Former 4 steaks, assaisonner.','Cuire 3 min par face.','Toaster les pains.','Monter avec salade, tomate, fromage.']},
+    soir:{name:'Tajine poulet aux olives',time:'30 min',ings:['Cuisses de poulet x4','Olives 100g','Citron confit x1','Oignons x2','Cumin, coriandre'],steps:['Faire dorer oignons et poulet.','Ajouter épices, olives, citron confit.','Couvrir et cuire 20 min à feu doux.','Servir avec pain ou semoule.']}
+  },
+  {
+    midi:{name:'Risotto aux champignons',time:'30 min',ings:['Riz arborio 300g','Champignons 300g','Bouillon 1L','Parmesan 60g','Vin blanc 10cl'],steps:['Faire revenir les champignons, réserver.','Faire revenir le riz 2 min, déglacer au vin blanc.','Ajouter le bouillon louche par louche 20 min.','Incorporer champignons + parmesan, servir.']},
+    soir:{name:'Crêpes jambon-fromage',time:'20 min',ings:['Farine 250g','Oeufs x3','Lait 50cl','Jambon x4','Emmental 100g'],steps:['Préparer la pâte, laisser reposer 10 min.','Cuire les crêpes.','Garnir jambon + fromage.','Replier, réchauffer 2 min.']}}
+];
+
+const courses = [
+  {cat:'Viandes & poissons', items:[
+    {n:'Blanc de poulet', q:'600g'},{n:'Cuisses de poulet', q:'4 pièces'},{n:'Boeuf haché', q:'1,1 kg'},{n:'Lardons', q:'350g'},{n:'Saumon', q:'4 filets'},{n:'Thon en boîte', q:'2 boîtes'},{n:'Jambon', q:'4 tranches'}
+  ]},
+  {cat:'Fruits & légumes', items:[
+    {n:'Champignons', q:'600g'},{n:'Oignons', q:'5 pièces'},{n:'Carottes', q:'3 pièces'},{n:'Courgettes', q:'3 pièces'},{n:'Poireau', q:'1 pièce'},{n:'Tomates', q:'5 pièces'},{n:'Haricots verts', q:'200g'},{n:'Pommes de terre', q:'800g'},{n:'Avocats', q:'2 pièces'},{n:'Poivron', q:'1 pièce'},{n:'Salade verte', q:'1 pièce'},{n:'Citron confit', q:'1 pièce'}
+  ]},
+  {cat:'Produits laitiers & oeufs', items:[
+    {n:'Oeufs', q:'18 pièces'},{n:'Crème liquide', q:'40 cl'},{n:'Crème fraîche', q:'1 pot'},{n:'Parmesan râpé', q:'120g'},{n:'Gruyère râpé', q:'140g'},{n:'Feta', q:'100g'},{n:'Cheddar', q:'4 tranches'},{n:'Emmental râpé', q:'100g'},{n:'Beurre', q:'1 plaquette'},{n:'Lait', q:'60 cl'}
+  ]},
+  {cat:'Épicerie', items:[
+    {n:'Riz', q:'300g'},{n:'Riz arborio', q:'300g'},{n:'Pâtes', q:'400g'},{n:'Nouilles chinoises', q:'300g'},{n:'Tortillas', q:'4 pièces'},{n:'Pains burger', q:'4 pièces'},{n:'Farine', q:'250g'},{n:'Pâte brisée', q:'1 rouleau'},{n:'Bouillon de légumes', q:'2 L'},{n:'Olives noires', q:'100g'}
+  ]},
+  {cat:'Condiments & épices', items:[
+    {n:'Curry en poudre', q:'1 boîte'},{n:'Herbes de Provence', q:'1 pot'},{n:'Cumin & coriandre', q:'1 pot'},{n:'Sauce soja', q:'1 bouteille'},{n:'Miel', q:'1 pot'},{n:'Gingembre frais', q:'1 morceau'},{n:'Vin blanc', q:'10 cl'},{n:'Huile d\'olive', q:'1 bouteille'}
+  ]}
+];
+
+let checked = {};
+
+function switchTab(t) {
+  document.querySelectorAll('.nav-tab').forEach((el,i) => el.classList.toggle('active', ['planning','courses','infos'][i] === t));
+  document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + t).classList.add('active');
+}
+
+function renderPlanning() {
+  const row = document.getElementById('week-row');
+  row.innerHTML = jours.map((j, i) => {
+    const d = planning[i];
+    return `<div class="day-card">
+      <div class="day-head">${j}</div>
+      <div class="meal-slot" onclick="showDetail(${i},'midi')">
+        <div><span class="meal-type-badge badge-midi">Midi</span></div>
+        <div class="meal-name-sm">${d.midi.name}</div>
+        <div class="meal-time-sm">${d.midi.time}</div>
+      </div>
+      <div class="meal-slot" onclick="showDetail(${i},'soir')">
+        <div><span class="meal-type-badge badge-soir">Soir</span></div>
+        <div class="meal-name-sm">${d.soir.name}</div>
+        <div class="meal-time-sm">${d.soir.time}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showDetail(dayIdx, moment) {
+  const meal = planning[dayIdx][moment];
+  const jour = jours[dayIdx];
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-title">${meal.name}</div>
+    <div class="detail-meta">
+      <span class="pill ${moment==='midi'?'pill-green':'pill-amber'}">${moment==='midi'?'Déjeuner':'Dîner'} · ${jour}</span>
+      <span class="pill pill-gray">${meal.time}</span>
+      <span class="pill pill-gray">3-4 pers.</span>
+    </div>
+    <div class="section-label">Ingrédients</div>
+    <div class="ing-chips">${meal.ings.map(i=>`<span class="ing-chip">${i}</span>`).join('')}</div>
+    <div class="section-label">Préparation</div>
+    <div class="steps-list">${meal.steps.map((s,i)=>`<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('')}</div>
+    <button class="btn-close" onclick="closeDetail()">Fermer</button>
+  `;
+  document.getElementById('detail-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail(e) {
+  if (e && document.getElementById('detail-sheet').contains(e.target)) return;
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderCourses() {
+  let totalItems = 0, doneItems = 0;
+  let html = '';
+  courses.forEach(cat => {
+    const catDone = cat.items.filter(it => checked[it.n]).length;
+    totalItems += cat.items.length;
+    doneItems += catDone;
+    html += `<div class="cat-section card">
+      <div class="cat-title-bar"><span>${cat.cat}</span><span style="color:var(--text-muted);font-weight:400">${catDone}/${cat.items.length}</span></div>`;
+    cat.items.forEach(it => {
+      const done = !!checked[it.n];
+      html += `<div class="course-item" onclick="toggleItem('${it.n.replace(/'/g,"\\'")}')">
+        <div class="course-check${done?' done':''}"></div>
+        <div class="course-label">
+          <div class="course-name${done?' done':''}">${it.n}</div>
+          <div class="course-qty">${it.q}</div>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('courses-list').innerHTML = html;
+  const pct = totalItems ? Math.round(doneItems / totalItems * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = `${doneItems} / ${totalItems} articles cochés`;
+}
+
+function toggleItem(name) {
+  checked[name] = !checked[name];
+  renderCourses();
+}
+
+renderPlanning();
+renderCourses();
+</script>
+</body>
+</html>
