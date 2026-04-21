@@ -180,7 +180,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
   <div class="stats">
     <div class="stat"><div class="stat-n" id="s-actifs">—</div><div class="stat-l">repas actifs</div></div>
     <div class="stat"><div class="stat-n" id="s-kcal">—</div><div class="stat-l">kcal moy.</div></div>
-    <div class="stat"><div class="stat-n" id="s-deficit">—</div><div class="stat-l">déficit</div></div>
+    <div class="stat"><div class="stat-n" id="s-deficit">—</div><div class="stat-l">déficit/jour</div></div>
   </div>
   <p class="week-hint">✓ Activer/désactiver · Appuie sur le nom pour la recette</p>
   <div class="week-scroll"><div class="week-row" id="week-row"></div></div>
@@ -221,7 +221,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
       <strong>Elle :</strong> 1520 kcal/j · P 114g · G 152g · L 51g<br>
       <strong>Lui :</strong> 1720 kcal/j · P 129g · G 172g · L 57g<br>
       <strong>Répartition :</strong> 30% protéines / 40% glucides / 30% lipides<br>
-      <strong>Déficit :</strong> ~150-200 kcal sous maintenance
+      <strong>Maintenance :</strong> Elle 1700 kcal · Lui 1900 kcal<br>
+      <strong>Déficit :</strong> ~180 kcal/j · ~1260 kcal/sem<br>
+      <strong>Perte estimée :</strong> ~0,16 kg/semaine · ~0,7 kg/mois
     </div>
   </div>
   <div class="info-block">
@@ -279,6 +281,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 <script>
 const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const TARGETS={f:1520,m:1720};
+const MAINTENANCE={f:1700,m:1900};
 const MB={'Petit-déjeuner':'mb-pdj','Déjeuner':'mb-mid','Collation':'mb-col','Dîner':'mb-din','Collation soir':'mb-soir'};
 
 let person='f', personResume='f';
@@ -572,7 +575,8 @@ function renderPlanning(){
   const avgKcal=activeDays>0?Math.round(totalKcal/activeDays):0;
   document.getElementById('s-actifs').textContent=activeCount;
   document.getElementById('s-kcal').textContent=avgKcal||'—';
-  document.getElementById('s-deficit').textContent=avgKcal?('-'+(target-avgKcal)):'—';
+  const maintenance=MAINTENANCE[person];
+  document.getElementById('s-deficit').textContent=avgKcal?('-'+(maintenance-avgKcal)+' kcal/j'):'—';
 
   document.getElementById('week-row').innerHTML=JOURS.map((j,di)=>{
     const meals=semaine[di][person];
@@ -757,7 +761,8 @@ function renderResume(){
   const ap=activeDays.length?Math.round(activeDays.reduce((s,d)=>s+d.pt,0)/activeDays.length):0;
   const ag=activeDays.length?Math.round(activeDays.reduce((s,d)=>s+d.g,0)/activeDays.length):0;
   const al=activeDays.length?Math.round(activeDays.reduce((s,d)=>s+d.l,0)/activeDays.length):0;
-  const def=target-ak;
+  const maintenance_r=MAINTENANCE[p];
+  const def=maintenance_r-ak;
   const pp=ak?Math.round(ap*4/ak*100):0;
   const gp=ak?Math.round(ag*4/ak*100):0;
   const lp=ak?Math.round(al*9/ak*100):0;
@@ -781,7 +786,7 @@ function renderResume(){
       <span><span class="mdot" style="background:#E76F51"></span>L ${lp}%</span>
     </div>
     <div class="deficit-row">
-      Objectif : <strong>${target} kcal</strong> · Déficit moyen : <strong>~${def} kcal/j</strong><br>
+      Objectif calories ingérées : <strong>${ak} kcal</strong> · Déficit vs maintenance : <strong>~${def} kcal/j</strong> · ~${def*7} kcal/sem<br>
       Soit environ <strong>~${(def*7/7700).toFixed(1)} kg/semaine</strong> théorique
     </div>`;
 }
