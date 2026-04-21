@@ -10,7 +10,7 @@
 <title>Mes Menus — Famille</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--g1:#1B4332;--g2:#2D6A4F;--g3:#40916C;--g4:#74C69D;--g5:#D8F3DC;--g6:#F0FAF3;--amber:#E9C46A;--amber-l:#FFF8E1;--coral:#E76F51;--choc:#3D1A0A;--choc-l:#FDF0E8;--text:#1A1A1A;--muted:#6B7280;--border:#D1E7DD;--bg:#F4F8F5;--white:#FFFFFF;--r:14px;--rs:8px;--shadow:0 2px 16px rgba(27,67,50,.10);--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
+:root{--g1:#1B4332;--g2:#2D6A4F;--g3:#40916C;--g4:#74C69D;--g5:#D8F3DC;--g6:#F0FAF3;--amber:#E9C46A;--amber-l:#FFF8E1;--coral:#E76F51;--choc:#3D1A0A;--choc-l:#FDF0E8;--red:#DC2626;--red-l:#FEF2F2;--text:#1A1A1A;--muted:#6B7280;--border:#D1E7DD;--bg:#F4F8F5;--white:#FFFFFF;--r:14px;--rs:8px;--shadow:0 2px 16px rgba(27,67,50,.10);--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;flex-direction:column}
@@ -25,31 +25,59 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .content{padding:14px 14px 32px;display:none}
 .content.active{display:block}
+
+/* WEEK SWITCHER */
+.week-switcher{display:flex;align-items:center;gap:8px;margin-bottom:12px;background:var(--white);border-radius:var(--rs);padding:8px 12px;box-shadow:var(--shadow)}
+.ws-btn{width:32px;height:32px;border:1.5px solid var(--border);border-radius:var(--rs);background:transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ws-btn:active{background:var(--g6)}
+.ws-label{flex:1;text-align:center;font-size:13px;font-weight:600;color:var(--g1)}
+.ws-sub{font-size:10px;color:var(--muted);font-weight:400}
+
+/* PERSON TOGGLE */
+.ptoggle{display:flex;gap:6px;margin-bottom:12px}
+.ptog{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);background:var(--white);text-align:center;font-family:var(--font);transition:all .2s}
+.ptog.active{background:var(--g1);color:white;border-color:var(--g1)}
+
+/* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .stat{background:var(--white);border-radius:var(--rs);padding:10px 8px;text-align:center;box-shadow:var(--shadow)}
 .stat-n{font-size:20px;font-weight:700;color:var(--g1);font-family:var(--mono)}
 .stat-l{font-size:10px;color:var(--muted);margin-top:1px}
-.ptoggle{display:flex;gap:6px;margin-bottom:12px}
-.ptog{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);background:var(--white);text-align:center;font-family:var(--font);transition:all .2s}
-.ptog.active{background:var(--g1);color:white;border-color:var(--g1)}
+
+/* WEEK GRID */
+.week-hint{font-size:12px;color:var(--muted);margin-bottom:10px}
+.week-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -14px;padding:0 14px 6px}
+.week-row{display:flex;gap:8px;width:max-content}
+.day-card{width:152px;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);flex-shrink:0;transition:opacity .2s}
+.day-card.disabled{opacity:.45}
+.day-head{background:var(--g1);color:white;font-size:11px;font-weight:700;padding:7px 10px;display:flex;justify-content:space-between;align-items:center}
+.day-head.disabled-head{background:#9CA3AF}
+.day-toggle{width:20px;height:20px;border-radius:4px;border:2px solid rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.day-toggle.on{background:rgba(255,255,255,.25);border-color:white}
+.day-toggle.on::after{content:'✓';color:white;font-size:10px;font-weight:700}
+.day-kcal{font-size:10px;opacity:.75;font-family:var(--mono)}
+.meal-slot{padding:9px 10px;border-bottom:1px solid var(--g6);transition:background .15s;position:relative}
+.meal-slot:last-child{border-bottom:none}
+.meal-slot.disabled-meal{opacity:.4;background:#F9FAFB}
+.meal-slot-inner{cursor:pointer}
+.meal-slot-inner:active{background:var(--g6)}
+.meal-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.meal-active-btn{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:white;transition:all .2s}
+.meal-active-btn.on{background:var(--g3);border-color:var(--g3)}
+.meal-active-btn.on::after{content:'✓';color:white;font-size:9px;font-weight:700}
+.mbadge{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:20px}
+.mb-pdj{background:var(--g5);color:var(--g1)}.mb-mid{background:#EAF3DE;color:#27500A}.mb-col{background:var(--choc-l);color:var(--choc)}.mb-din{background:var(--amber-l);color:#856404}.mb-soir{background:var(--choc-l);color:var(--choc)}
+.meal-nm{font-size:11px;font-weight:600;color:var(--text);line-height:1.3;cursor:pointer}
+.meal-tm{font-size:10px;color:var(--muted);margin-top:2px}
+.portions-badge{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--amber-l);color:#856404;font-weight:600;margin-top:2px;display:inline-block}
+
+/* MACRO BAR */
 .macro-bar{height:6px;border-radius:3px;overflow:hidden;display:flex;margin:6px 0 4px}
 .mp{background:#40916C}.mg{background:#E9C46A}.ml{background:#E76F51}
 .macro-leg{display:flex;gap:10px;font-size:10px;color:var(--muted)}
 .mdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
-.week-hint{font-size:12px;color:var(--muted);margin-bottom:10px}
-.week-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -14px;padding:0 14px 6px}
-.week-row{display:flex;gap:8px;width:max-content}
-.day-card{width:148px;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);flex-shrink:0}
-.day-head{background:var(--g1);color:white;font-size:11px;font-weight:700;padding:7px 10px;display:flex;justify-content:space-between;align-items:center}
-.day-kcal{font-size:10px;opacity:.75;font-family:var(--mono)}
-.meal-slot{padding:9px 10px;border-bottom:1px solid var(--g6);cursor:pointer;transition:background .15s}
-.meal-slot:last-child{border-bottom:none}
-.meal-slot:active{background:var(--g6)}
-.mbadge{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:20px;margin-bottom:3px}
-.mb-pdj{background:var(--g5);color:var(--g1)}.mb-mid{background:#EAF3DE;color:#27500A}.mb-col{background:var(--choc-l);color:var(--choc)}.mb-din{background:var(--amber-l);color:#856404}.mb-soir{background:var(--choc-l);color:var(--choc)}
-.meal-nm{font-size:11px;font-weight:600;color:var(--text);line-height:1.3}
-.meal-tm{font-size:10px;color:var(--muted);margin-top:2px}
-.portions-badge{font-size:9px;padding:1px 5px;border-radius:20px;background:var(--amber-l);color:#856404;font-weight:600;margin-top:2px;display:inline-block}
+
+/* DETAIL SHEET */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end}
 .overlay.open{display:flex}
 .sheet{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px)}
@@ -73,9 +101,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .stxt{font-size:13px;line-height:1.55;padding-top:2px}
 .note-enfants{background:var(--amber-l);border-radius:var(--rs);padding:8px 10px;margin-top:10px;font-size:12px;color:#856404}
 .btn-close{display:block;width:100%;padding:13px;background:var(--g1);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;font-family:var(--font)}
+
+/* COURSES */
+.courses-week-toggle{display:flex;gap:6px;margin-bottom:12px}
+.cwt{flex:1;padding:7px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);background:var(--white);text-align:center;font-family:var(--font)}
+.cwt.active{background:var(--g1);color:white;border-color:var(--g1)}
 .prog-wrap{background:var(--border);border-radius:20px;height:8px;overflow:hidden;margin-bottom:5px}
 .prog-fill{height:100%;background:var(--g3);border-radius:20px;transition:width .3s}
 .prog-lbl{font-size:11px;color:var(--muted);text-align:right;margin-bottom:12px}
+.courses-info{background:var(--amber-l);border-radius:var(--rs);padding:8px 12px;margin-bottom:12px;font-size:12px;color:#856404}
 .cat-block{background:var(--white);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
 .cat-hd{padding:9px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g2);background:var(--g6);display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
 .course-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--g6);cursor:pointer;-webkit-user-select:none}
@@ -90,8 +124,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .cqty{font-size:11px;color:var(--muted);margin-top:1px}
 .cportion{font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;margin-top:2px;display:inline-block}
 .cp4{background:var(--amber-l);color:#856404}.cp2{background:var(--g5);color:var(--g1)}
+.disabled-note{font-size:10px;color:var(--red);margin-top:1px}
+
+/* RESUME */
 .wo-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
 .wo-col{background:var(--white);border-radius:var(--rs);padding:6px 3px;text-align:center;box-shadow:var(--shadow)}
+.wo-col.off{opacity:.4}
 .wo-day{font-size:9px;font-weight:700;color:var(--muted);margin-bottom:2px}
 .wo-kcal{font-size:11px;font-weight:700;color:var(--g1);font-family:var(--mono)}
 .wo-bar{height:3px;border-radius:2px;background:var(--g4);margin:3px auto 0;opacity:.6}
@@ -102,6 +140,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .rc-val{font-size:17px;font-weight:700;color:var(--g1);font-family:var(--mono)}
 .rc-lbl{font-size:9px;color:var(--muted);margin-top:1px}
 .deficit-row{background:var(--g5);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--g1);line-height:1.6}
+
+/* INFOS */
 .info-block{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}
 .info-t{font-size:14px;font-weight:700;color:var(--g1);margin-bottom:7px}
 .info-txt{font-size:13px;color:var(--muted);line-height:1.65}
@@ -109,6 +149,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .hab-chip{background:var(--g6);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px}
 .hab-name{font-size:12px;font-weight:600;color:var(--g1);margin-bottom:2px}
 .hab-val{font-size:10px;color:var(--muted)}
+.pref-chip{display:inline-block;background:var(--red-l);border:1px solid #FECACA;border-radius:20px;padding:3px 10px;font-size:12px;color:var(--red);margin:3px 3px 0 0}
 </style>
 </head>
 <body>
@@ -125,35 +166,54 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 </nav>
 <div class="scroll-area">
 
+<!-- PLANNING -->
 <div class="content active" id="tab-planning">
+  <div class="week-switcher">
+    <button class="ws-btn" onclick="switchWeek(-1)">‹</button>
+    <div class="ws-label" id="ws-label">Semaine en cours<br><span class="ws-sub" id="ws-sub"></span></div>
+    <button class="ws-btn" onclick="switchWeek(1)">›</button>
+  </div>
   <div class="ptoggle">
     <button class="ptog active" onclick="setPerson('f')">Elle — 1700 kcal</button>
     <button class="ptog" onclick="setPerson('m')">Lui — 1900 kcal</button>
   </div>
   <div class="stats">
-    <div class="stat"><div class="stat-n">14</div><div class="stat-l">repas</div></div>
+    <div class="stat"><div class="stat-n" id="s-actifs">—</div><div class="stat-l">repas actifs</div></div>
     <div class="stat"><div class="stat-n" id="s-kcal">—</div><div class="stat-l">kcal moy.</div></div>
     <div class="stat"><div class="stat-n" id="s-deficit">—</div><div class="stat-l">déficit</div></div>
   </div>
-  <p class="week-hint">Appuie sur un repas pour voir la recette</p>
+  <p class="week-hint">✓ Activer/désactiver · Appuie sur le nom pour la recette</p>
   <div class="week-scroll"><div class="week-row" id="week-row"></div></div>
 </div>
 
+<!-- COURSES -->
 <div class="content" id="tab-courses">
+  <div class="courses-week-toggle">
+    <button class="cwt active" onclick="setCourseWeek(0)">Semaine en cours</button>
+    <button class="cwt" onclick="setCourseWeek(1)">Semaine suivante</button>
+  </div>
+  <div class="courses-info" id="courses-info"></div>
   <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   <div class="prog-lbl" id="prog-lbl">0 / 0 articles cochés</div>
   <div id="courses-list"></div>
 </div>
 
+<!-- RESUME -->
 <div class="content" id="tab-resume">
   <div class="ptoggle">
     <button class="ptog active" onclick="setPersonResume('f')">Elle — 1700 kcal</button>
     <button class="ptog" onclick="setPersonResume('m')">Lui — 1900 kcal</button>
   </div>
+  <div class="week-switcher" style="margin-bottom:12px">
+    <button class="ws-btn" onclick="switchWeekResume(-1)">‹</button>
+    <div class="ws-label" id="ws-label-resume">Semaine en cours</div>
+    <button class="ws-btn" onclick="switchWeekResume(1)">›</button>
+  </div>
   <div class="wo-grid" id="wo-grid"></div>
   <div class="resume-card" id="resume-card"></div>
 </div>
 
+<!-- INFOS -->
 <div class="content" id="tab-infos">
   <div class="info-block">
     <div class="info-t">Objectifs nutritionnels</div>
@@ -165,12 +225,29 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     </div>
   </div>
   <div class="info-block">
+    <div class="info-t">Préférences alimentaires</div>
+    <div class="info-txt">
+      <strong>Elle n'aime pas :</strong><br>
+      <span class="pref-chip">🚫 Concombre</span><span class="pref-chip">🚫 Bleu</span><br><br>
+      <strong>Lui n'aime pas :</strong><br>
+      <span class="pref-chip">🚫 Fromage de chèvre</span><span class="pref-chip">🚫 Fromage de brebis</span><span class="pref-chip">🚫 Bleu</span>
+    </div>
+  </div>
+  <div class="info-block">
     <div class="info-t">Configuration famille</div>
     <div class="info-txt">
       <strong>Lun-Ven midi :</strong> 2 adultes (Elle + Lui)<br>
       <strong>Lun-Ven soir :</strong> 4 personnes (+ 2 enfants &lt;10 ans)<br>
       <strong>Sam-Dim :</strong> 4 personnes toute la journée<br>
       Mêmes plats, portions adaptées pour les enfants
+    </div>
+  </div>
+  <div class="info-block">
+    <div class="info-t">Comment utiliser l'appli</div>
+    <div class="info-txt">
+      <strong>Désactiver un repas :</strong> coche la petite case ✓ sur chaque ligne de repas — les ingrédients sont retirés automatiquement des courses.<br><br>
+      <strong>Désactiver un jour entier :</strong> coche la case dans l'en-tête du jour.<br><br>
+      <strong>2 semaines :</strong> navigue avec les flèches ‹ › pour passer d'une semaine à l'autre.
     </div>
   </div>
   <div class="info-block">
@@ -202,95 +279,119 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 <script>
 const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const TARGETS={f:1700,m:1900};
-let person='f',personResume='f',checked={};
-const MB={
-  'Petit-déjeuner':'mb-pdj','Déjeuner':'mb-mid',
-  'Collation':'mb-col','Dîner':'mb-din','Collation soir':'mb-soir'
-};
+const MB={'Petit-déjeuner':'mb-pdj','Déjeuner':'mb-mid','Collation':'mb-col','Dîner':'mb-din','Collation soir':'mb-soir'};
 
-const planning=[
+let person='f', personResume='f';
+let currentWeek=0; // 0=semaine en cours, 1=semaine suivante
+let currentWeekResume=0;
+let courseWeek=0;
+let checked={0:{},1:{}}; // par semaine
+
+// État actif/inactif des repas : activeMeals[semaine][jour][mealIdx] = true/false
+let activeMeals={0:{},1:{}};
+
+// Initialiser tous les repas comme actifs
+function initActiveMeals(){
+  [0,1].forEach(w=>{
+    JOURS.forEach((_,di)=>{
+      activeMeals[w][di]={};
+      [0,1,2,3,4].forEach(mi=>{ activeMeals[w][di][mi]=true; });
+    });
+  });
+}
+initActiveMeals();
+
+// ── DONNÉES SEMAINE 1 ──────────────────────────────────────────
+const semaine1=[
+  // LUNDI
   {f:[
     {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes',kcal:340,p:22,g:38,l:11,portions:'2 adultes',ings:['Skyr nature 150g','Flocons avoine 50g','Amandes 15g','Yaourt fruits mixé 80g'],steps:['Verser le skyr dans un bol.','Ajouter flocons et amandes.','Terminer avec le yaourt fruits mixé.'],note:''},
-    {moment:'Déjeuner',nom:'Poulet riz complet légumes',kcal:480,p:38,g:44,l:10,portions:'2 adultes',ings:['Blanc poulet 130g','Riz complet 60g cru','Courgette 150g','Huile olive 5g','Herbes de Provence'],steps:['Cuire le riz complet 25 min.','Poêler le poulet en dés 7 min.','Faire revenir la courgette 5 min.','Assembler en bowl.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet riz complet courgettes',kcal:480,p:38,g:44,l:10,portions:'2 adultes',ings:['Blanc poulet 130g','Riz complet 60g cru','Courgette 150g','Huile olive 5g','Herbes de Provence'],steps:['Cuire le riz complet 25 min.','Poêler le poulet en dés 7 min.','Faire revenir la courgette 5 min.','Assembler en bowl.'],note:''},
     {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:180,p:8,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 2x60g','Beurre de cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Omelette champignons salade verte',kcal:380,p:27,g:8,l:24,portions:'4 pers.',ings:['Oeufs 8 pièces','Champignons 200g','Beurre 10g','Salade verte 300g','Vinaigrette'],steps:['Battre les oeufs.','Faire revenir champignons 5 min.','Cuire l\'omelette à feu doux 5 min.','Servir avec salade.'],note:'Demi-omelette pour chaque enfant.'},
+    {moment:'Dîner',nom:'Omelette champignons salade verte',kcal:380,p:27,g:8,l:24,portions:'4 pers.',ings:['Oeufs 8 pièces','Champignons 200g','Beurre 10g','Salade verte 300g','Vinaigrette'],steps:['Battre les oeufs avec sel et poivre.','Faire revenir champignons 5 min dans le beurre.','Cuire l\'omelette à feu doux 5 min.','Servir avec salade.'],note:'Demi-omelette pour chaque enfant.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes++',kcal:420,p:26,g:48,l:13,portions:'2 adultes',ings:['Skyr nature 180g','Flocons avoine 65g','Amandes 20g','Yaourt fruits mixé 80g'],steps:['Verser le skyr.','Ajouter flocons et amandes.','Terminer avec yaourt.'],note:''},
-    {moment:'Déjeuner',nom:'Poulet riz complet légumes',kcal:560,p:46,g:52,l:12,portions:'2 adultes',ings:['Blanc poulet 160g','Riz complet 75g cru','Courgette 150g','Huile olive 8g','Herbes'],steps:['Cuire le riz complet 25 min.','Poêler le poulet 7 min.','Faire revenir la courgette 5 min.','Assembler.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet riz complet courgettes',kcal:560,p:46,g:52,l:12,portions:'2 adultes',ings:['Blanc poulet 160g','Riz complet 75g cru','Courgette 150g','Huile olive 8g','Herbes'],steps:['Cuire le riz complet 25 min.','Poêler le poulet 7 min.','Faire revenir la courgette 5 min.','Assembler.'],note:''},
     {moment:'Collation',nom:'Skyr amandes',kcal:200,p:14,g:10,l:11,portions:'2 adultes',ings:['Skyr nature 150g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Omelette champignons salade verte',kcal:460,p:33,g:10,l:29,portions:'4 pers.',ings:['Oeufs 10 pièces','Champignons 200g','Beurre 12g','Salade verte 300g','Vinaigrette'],steps:['Battre les oeufs.','Faire revenir champignons 5 min.','Cuire l\'omelette 5 min.','Servir avec salade.'],note:'Demi-omelette pour chaque enfant.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
+  // MARDI
   {f:[
     {moment:'Petit-déjeuner',nom:'Flocons avoine chauds skyr',kcal:350,p:20,g:45,l:9,portions:'2 adultes',ings:['Flocons avoine 55g','Skyr 120g','Amandes effilées 10g','Cannelle'],steps:['Cuire les flocons 3 min avec de l\'eau.','Ajouter le skyr par-dessus.','Parsemer amandes et cannelle.'],note:''},
-    {moment:'Déjeuner',nom:'Salade pois chiches oeuf dur',kcal:460,p:28,g:38,l:18,portions:'2 adultes',ings:['Pois chiches 120g','Oeufs durs 2','Tomates cerises 100g','Concombre 80g','Huile olive + citron 8g'],steps:['Égoutter les pois chiches.','Écaler et couper les oeufs.','Assembler et assaisonner.'],note:''},
+    {moment:'Déjeuner',nom:'Salade pois chiches oeuf dur tomates',kcal:460,p:28,g:38,l:18,portions:'2 adultes',ings:['Pois chiches 120g','Oeufs durs 2','Tomates cerises 100g','Huile olive + citron 8g','Herbes'],steps:['Égoutter les pois chiches.','Écaler et couper les oeufs.','Assembler tomates + pois chiches + oeufs.','Assaisonner huile d\'olive + citron.'],note:'Pas de concombre dans cette salade.'},
     {moment:'Collation',nom:'Yaourt fruits mixé',kcal:130,p:5,g:22,l:3,portions:'2 adultes',ings:['Yaourt fruits mixé 150g'],steps:['Déguster tel quel.'],note:''},
-    {moment:'Dîner',nom:'Sauté poulet patate douce curry doux',kcal:470,p:38,g:46,l:11,portions:'4 pers.',ings:['Cuisses poulet 500g','Patate douce 400g','Pois chiches 160g','Oignon 1','Curry doux 1 c.à.c','Huile olive 10g'],steps:['Couper patate douce, cuire 15 min.','Faire revenir oignon + poulet 8 min.','Ajouter pois chiches + patate + curry.','Mijoter 5 min.'],note:'Curry doux. Réserver une portion sans épices pour les enfants si besoin.'},
+    {moment:'Dîner',nom:'Sauté poulet patate douce curry doux',kcal:470,p:38,g:46,l:11,portions:'4 pers.',ings:['Cuisses poulet 500g','Patate douce 400g','Pois chiches 160g','Oignon 1','Curry doux 1 c.à.c','Huile olive 10g'],steps:['Couper patate douce, cuire 15 min.','Faire revenir oignon + poulet 8 min.','Ajouter pois chiches + patate + curry.','Mijoter 5 min.'],note:'Curry doux. Réserver une portion sans épices pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Flocons avoine chauds skyr',kcal:430,p:25,g:55,l:11,portions:'2 adultes',ings:['Flocons avoine 70g','Skyr 150g','Amandes effilées 15g','Cannelle'],steps:['Cuire les flocons 3 min.','Ajouter le skyr.','Parsemer amandes et cannelle.'],note:''},
-    {moment:'Déjeuner',nom:'Salade pois chiches oeuf dur',kcal:540,p:33,g:46,l:21,portions:'2 adultes',ings:['Pois chiches 150g','Oeufs durs 3','Tomates cerises 100g','Concombre 80g','Huile olive + citron 10g'],steps:['Égoutter les pois chiches.','Écaler et couper les oeufs.','Assembler et assaisonner.'],note:''},
+    {moment:'Déjeuner',nom:'Salade pois chiches oeuf dur tomates',kcal:540,p:33,g:46,l:21,portions:'2 adultes',ings:['Pois chiches 150g','Oeufs durs 3','Tomates cerises 100g','Huile olive + citron 10g','Herbes'],steps:['Égoutter les pois chiches.','Écaler et couper les oeufs.','Assembler et assaisonner.'],note:''},
     {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:190,p:14,g:10,l:10,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
-    {moment:'Dîner',nom:'Sauté poulet patate douce curry doux',kcal:560,p:46,g:54,l:13,portions:'4 pers.',ings:['Cuisses poulet 500g','Patate douce 400g','Pois chiches 160g','Oignon 1','Curry doux 1 c.à.c','Huile olive 10g'],steps:['Couper patate douce, cuire 15 min.','Faire revenir oignon + poulet 8 min.','Ajouter pois chiches + patate + curry.','Mijoter 5 min.'],note:'Curry doux. Portion sans épices pour les enfants si besoin.'},
+    {moment:'Dîner',nom:'Sauté poulet patate douce curry doux',kcal:560,p:46,g:54,l:13,portions:'4 pers.',ings:['Cuisses poulet 500g','Patate douce 400g','Pois chiches 160g','Oignon 1','Curry doux 1 c.à.c','Huile olive 10g'],steps:['Couper patate douce, cuire 15 min.','Faire revenir oignon + poulet 8 min.','Ajouter pois chiches + patate + curry.','Mijoter 5 min.'],note:'Curry doux. Portion sans épices pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
+  // MERCREDI
   {f:[
-    {moment:'Petit-déjeuner',nom:'Oeufs brouillés & porridge cacahuète',kcal:360,p:22,g:22,l:20,portions:'2 adultes',ings:['Oeufs 3 pièces','Flocons avoine 30g','Lait végétal 100ml','Beurre cacahuète 12g'],steps:['Cuire le porridge flocons + lait 3 min.','Brouiller les oeufs à feu doux 3 min.','Servir avec beurre de cacahuète.'],note:''},
-    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:490,p:36,g:48,l:13,portions:'2 adultes',ings:['Boeuf maigre 120g','Riz basmati 65g cru','Poivron 100g','Courgette 100g','Huile olive 7g','Cumin, paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler en bowl.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Oeufs brouillés porridge cacahuète',kcal:360,p:22,g:22,l:20,portions:'2 adultes',ings:['Oeufs 3 pièces','Flocons avoine 30g','Lait végétal 100ml','Beurre cacahuète 12g'],steps:['Cuire le porridge flocons + lait 3 min.','Brouiller les oeufs à feu doux 3 min.','Servir avec beurre de cacahuète.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:490,p:36,g:48,l:13,portions:'2 adultes',ings:['Boeuf maigre 120g','Riz basmati 65g cru','Poivron 100g','Courgette 100g','Huile olive 7g','Cumin paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler en bowl.'],note:''},
     {moment:'Collation',nom:'Petit suisse nature',kcal:110,p:7,g:8,l:4,portions:'2 adultes',ings:['Petit suisse 2x60g'],steps:['Déguster tel quel.'],note:''},
-    {moment:'Dîner',nom:'Pâtes complètes bolognaise légère',kcal:480,p:34,g:54,l:14,portions:'4 pers.',ings:['Pâtes complètes 320g','Boeuf haché maigre 400g','Tomates concassées 400g','Oignon 1','Ail 2 gousses','Huile olive 10g'],steps:['Cuire les pâtes complètes al dente.','Faire revenir oignon + ail + boeuf 8 min.','Ajouter tomates, mijoter 10 min.','Servir sur les pâtes.'],note:'Plat familial idéal. Pas d\'épices fortes.'},
+    {moment:'Dîner',nom:'Pâtes complètes bolognaise légère',kcal:480,p:34,g:54,l:14,portions:'4 pers.',ings:['Pâtes complètes 320g','Boeuf haché maigre 400g','Tomates concassées 400g','Oignon 1','Ail 2 gousses','Huile olive 10g'],steps:['Cuire les pâtes complètes al dente.','Faire revenir oignon + ail + boeuf 8 min.','Ajouter tomates, mijoter 10 min.','Servir sur les pâtes.'],note:'Plat familial. Pas d\'épices fortes.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Oeufs brouillés & porridge cacahuète',kcal:430,p:27,g:28,l:24,portions:'2 adultes',ings:['Oeufs 4 pièces','Flocons avoine 40g','Lait végétal 120ml','Beurre cacahuète 15g'],steps:['Cuire le porridge 3 min.','Brouiller les oeufs 3 min.','Servir avec beurre de cacahuète.'],note:''},
-    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:570,p:44,g:56,l:15,portions:'2 adultes',ings:['Boeuf maigre 150g','Riz basmati 80g cru','Poivron 100g','Courgette 120g','Huile olive 9g','Cumin, paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler en bowl.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Oeufs brouillés porridge cacahuète',kcal:430,p:27,g:28,l:24,portions:'2 adultes',ings:['Oeufs 4 pièces','Flocons avoine 40g','Lait végétal 120ml','Beurre cacahuète 15g'],steps:['Cuire le porridge 3 min.','Brouiller les oeufs 3 min.','Servir avec beurre de cacahuète.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:570,p:44,g:56,l:15,portions:'2 adultes',ings:['Boeuf maigre 150g','Riz basmati 80g cru','Poivron 100g','Courgette 120g','Huile olive 9g','Cumin paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler.'],note:''},
     {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:195,p:8,g:20,l:9,portions:'2 adultes',ings:['Yaourt fruits mixé 130g','Amandes 13g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Pâtes complètes bolognaise légère',kcal:570,p:41,g:62,l:16,portions:'4 pers.',ings:['Pâtes complètes 320g','Boeuf haché maigre 400g','Tomates concassées 400g','Oignon 1','Ail 2 gousses','Huile olive 10g'],steps:['Cuire les pâtes complètes al dente.','Faire revenir oignon + ail + boeuf 8 min.','Ajouter tomates, mijoter 10 min.','Servir.'],note:'Plat familial. Pas d\'épices fortes.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
+  // JEUDI
   {f:[
     {moment:'Petit-déjeuner',nom:'Skyr banane beurre cacahuète',kcal:350,p:20,g:42,l:11,portions:'2 adultes',ings:['Skyr 150g','Banane 80g','Beurre cacahuète 12g','Amandes 8g'],steps:['Écraser la banane dans le skyr.','Ajouter beurre de cacahuète et amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Salade lentilles boeuf maigre',kcal:470,p:36,g:42,l:13,portions:'2 adultes',ings:['Boeuf maigre 110g','Lentilles vertes cuites 120g','Tomates 100g','Concombre 80g','Huile olive + vinaigre 7g'],steps:['Poêler le boeuf 4 min.','Assembler lentilles + légumes.','Ajouter boeuf tiède, assaisonner.'],note:''},
+    {moment:'Déjeuner',nom:'Salade lentilles boeuf maigre tomates',kcal:470,p:36,g:42,l:13,portions:'2 adultes',ings:['Boeuf maigre 110g','Lentilles vertes cuites 120g','Tomates 100g','Huile olive + vinaigre 7g','Herbes'],steps:['Poêler le boeuf 4 min.','Assembler lentilles + tomates.','Ajouter boeuf tiède, assaisonner.'],note:'Sans concombre pour Elle.'},
     {moment:'Collation',nom:'Flocons avoine skyr',kcal:200,p:13,g:25,l:5,portions:'2 adultes',ings:['Flocons avoine 30g','Skyr 80g'],steps:['Mélanger ou déguster séparément.'],note:''},
-    {moment:'Dîner',nom:'Saumon riz complet épinards',kcal:510,p:40,g:38,l:22,portions:'4 pers.',ings:['Filets saumon 4 pièces','Riz complet 200g cru','Épinards frais 300g','Ail 2 gousses','Huile olive 10g','Citron'],steps:['Cuire le riz complet 25 min.','Poêler le saumon 4 min/face.','Faire tomber les épinards avec ail 3 min.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants. Portion saumon réduite.'},
+    {moment:'Dîner',nom:'Saumon riz complet épinards',kcal:510,p:40,g:38,l:22,portions:'4 pers.',ings:['Filets saumon 4 pièces','Riz complet 200g cru','Épinards frais 300g','Ail 2 gousses','Huile olive 10g','Citron'],steps:['Cuire le riz complet 25 min.','Poêler le saumon 4 min/face.','Faire tomber les épinards avec ail 3 min.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Skyr banane beurre cacahuète',kcal:420,p:24,g:50,l:14,portions:'2 adultes',ings:['Skyr 180g','Banane 100g','Beurre cacahuète 16g','Amandes 12g'],steps:['Écraser la banane dans le skyr.','Ajouter beurre de cacahuète et amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Salade lentilles boeuf maigre',kcal:560,p:44,g:50,l:15,portions:'2 adultes',ings:['Boeuf maigre 140g','Lentilles vertes cuites 150g','Tomates 100g','Concombre 80g','Huile olive + vinaigre 9g'],steps:['Poêler le boeuf 4 min.','Assembler lentilles + légumes.','Ajouter boeuf tiède, assaisonner.'],note:''},
+    {moment:'Déjeuner',nom:'Salade lentilles boeuf maigre tomates',kcal:560,p:44,g:50,l:15,portions:'2 adultes',ings:['Boeuf maigre 140g','Lentilles vertes cuites 150g','Tomates 100g','Huile olive + vinaigre 9g','Herbes'],steps:['Poêler le boeuf 4 min.','Assembler lentilles + tomates.','Ajouter boeuf tiède, assaisonner.'],note:''},
     {moment:'Collation',nom:'Flocons avoine skyr',kcal:240,p:16,g:30,l:6,portions:'2 adultes',ings:['Flocons avoine 40g','Skyr 100g'],steps:['Mélanger ou déguster séparément.'],note:''},
     {moment:'Dîner',nom:'Saumon riz complet épinards',kcal:590,p:48,g:44,l:26,portions:'4 pers.',ings:['Filets saumon 4 pièces','Riz complet 200g cru','Épinards frais 300g','Ail 2 gousses','Huile olive 10g','Citron'],steps:['Cuire le riz complet 25 min.','Poêler le saumon 4 min/face.','Faire tomber les épinards 3 min.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
+  // VENDREDI
   {f:[
     {moment:'Petit-déjeuner',nom:'Bol avoine yaourt amandes',kcal:340,p:18,g:40,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Yaourt fruits mixé 100g','Amandes 15g','Skyr 60g'],steps:['Verser flocons dans un bol.','Ajouter yaourt et skyr.','Parsemer amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates',kcal:490,p:36,g:50,l:14,portions:'2 adultes',ings:['Blanc poulet 130g','Pâtes complètes 80g cru','Tomates cerises 100g','Huile olive 8g','Basilic, ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet avec ail + basilic 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates basilic',kcal:490,p:36,g:50,l:14,portions:'2 adultes',ings:['Blanc poulet 130g','Pâtes complètes 80g cru','Tomates cerises 100g','Huile olive 8g','Basilic ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet avec ail + basilic 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
     {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:180,p:8,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 2x60g','Beurre cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:490,p:34,g:48,l:16,portions:'4 pers.',ings:['Boeuf haché maigre 400g','Patate douce 800g','Oignon 1','Lait végétal 10cl','Gruyère 60g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial. Les enfants adorent la patate douce.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Bol avoine yaourt amandes',kcal:410,p:22,g:50,l:14,portions:'2 adultes',ings:['Flocons avoine 65g','Yaourt fruits mixé 120g','Amandes 20g','Skyr 80g'],steps:['Verser flocons dans un bol.','Ajouter yaourt et skyr.','Parsemer amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates',kcal:570,p:44,g:58,l:16,portions:'2 adultes',ings:['Blanc poulet 160g','Pâtes complètes 100g cru','Tomates cerises 100g','Huile olive 10g','Basilic, ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates basilic',kcal:570,p:44,g:58,l:16,portions:'2 adultes',ings:['Blanc poulet 160g','Pâtes complètes 100g cru','Tomates cerises 100g','Huile olive 10g','Basilic ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
     {moment:'Collation',nom:'Skyr amandes',kcal:185,p:13,g:8,l:10,portions:'2 adultes',ings:['Skyr 120g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:570,p:41,g:56,l:19,portions:'4 pers.',ings:['Boeuf haché maigre 400g','Patate douce 800g','Oignon 1','Lait végétal 10cl','Gruyère 60g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial. Patate douce appréciée des enfants.'},
+    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:570,p:41,g:56,l:19,portions:'4 pers.',ings:['Boeuf haché maigre 400g','Patate douce 800g','Oignon 1','Lait végétal 10cl','Gruyère 60g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Patate douce appréciée des enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
+  // SAMEDI
   {f:[
     {moment:'Petit-déjeuner',nom:'Pancakes avoine skyr famille',kcal:380,p:23,g:44,l:12,portions:'4 pers.',ings:['Flocons avoine mixés 120g','Oeufs 4 pièces','Skyr 160g','Beurre cacahuète 16g'],steps:['Mixer les flocons en farine.','Mélanger avec oeufs et skyr.','Cuire des pancakes 3 min/face.','Servir avec beurre de cacahuète.'],note:'Beurre cacahuète en option pour les enfants.'},
-    {moment:'Déjeuner',nom:'Bowl pois chiches patate douce tahini',kcal:480,p:22,g:58,l:14,portions:'4 pers.',ings:['Pois chiches rôtis 300g','Patate douce 500g','Salade verte 160g','Tahini 30g','Épices douces, citron'],steps:['Rôtir pois chiches + patate douce 20 min à 200°C.','Préparer sauce tahini + citron.','Assembler dans des bols.','Arroser de sauce.'],note:'Plat végétarien apprécié de toute la famille.'},
+    {moment:'Déjeuner',nom:'Bowl pois chiches patate douce tahini',kcal:480,p:22,g:58,l:14,portions:'4 pers.',ings:['Pois chiches rôtis 300g','Patate douce 500g','Salade verte 160g','Tahini 30g','Épices douces citron'],steps:['Rôtir pois chiches + patate douce 20 min.','Préparer sauce tahini + citron.','Assembler dans des bols.','Arroser de sauce.'],note:'Plat végétarien pour toute la famille.'},
     {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:140,p:6,g:18,l:5,portions:'4 pers.',ings:['Yaourt fruits mixé 4x60g','Amandes 20g'],steps:['Répartir en 4 portions avec amandes.'],note:''},
-    {moment:'Dîner',nom:'Poulet tajine légumes riz complet',kcal:520,p:42,g:44,l:18,portions:'4 pers.',ings:['Cuisses poulet 4 pièces','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin, curcuma'],steps:['Faire dorer le poulet 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, cuire 20 min à feu doux.','Servir avec riz complet.'],note:'Épices douces. Éviter le piment pour les enfants.'},
+    {moment:'Dîner',nom:'Poulet tajine légumes riz complet',kcal:520,p:42,g:44,l:18,portions:'4 pers.',ings:['Cuisses poulet 4 pièces','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin curcuma'],steps:['Faire dorer le poulet 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, cuire 20 min à feu doux.','Servir avec riz complet.'],note:'Épices douces. Éviter le piment pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Pancakes avoine skyr famille',kcal:460,p:29,g:53,l:15,portions:'4 pers.',ings:['Flocons avoine mixés 120g','Oeufs 4 pièces','Skyr 160g','Beurre cacahuète 20g'],steps:['Mixer les flocons.','Mélanger avec oeufs et skyr.','Cuire des pancakes 3 min/face.','Servir avec beurre de cacahuète.'],note:'Beurre cacahuète en option pour les enfants.'},
-    {moment:'Déjeuner',nom:'Bowl pois chiches patate douce tahini',kcal:570,p:27,g:68,l:17,portions:'4 pers.',ings:['Pois chiches rôtis 300g','Patate douce 500g','Salade verte 160g','Tahini 35g','Épices douces, citron'],steps:['Rôtir pois chiches + patate douce 20 min.','Préparer sauce tahini + citron.','Assembler en bols.','Arroser de sauce.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Pancakes avoine skyr famille',kcal:460,p:29,g:53,l:15,portions:'4 pers.',ings:['Flocons avoine mixés 120g','Oeufs 4 pièces','Skyr 160g','Beurre cacahuète 20g'],steps:['Mixer les flocons.','Mélanger avec oeufs et skyr.','Cuire des pancakes 3 min/face.','Servir avec beurre de cacahuète.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl pois chiches patate douce tahini',kcal:570,p:27,g:68,l:17,portions:'4 pers.',ings:['Pois chiches rôtis 300g','Patate douce 500g','Salade verte 160g','Tahini 35g','Épices douces citron'],steps:['Rôtir pois chiches + patate douce 20 min.','Préparer sauce tahini + citron.','Assembler en bols.','Arroser de sauce.'],note:''},
     {moment:'Collation',nom:'Skyr amandes beurre cacahuète',kcal:225,p:15,g:10,l:14,portions:'2 adultes',ings:['Skyr 100g','Amandes 15g','Beurre cacahuète 10g'],steps:['Mélanger skyr + beurre cacahuète, ajouter amandes.'],note:''},
-    {moment:'Dîner',nom:'Poulet tajine légumes riz complet',kcal:610,p:51,g:52,l:21,portions:'4 pers.',ings:['Cuisses poulet 4 pièces','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin, curcuma'],steps:['Faire dorer le poulet 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, cuire 20 min.','Servir avec riz complet.'],note:'Épices douces. Éviter le piment pour les enfants.'},
+    {moment:'Dîner',nom:'Poulet tajine légumes riz complet',kcal:610,p:51,g:52,l:21,portions:'4 pers.',ings:['Cuisses poulet 4 pièces','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin curcuma'],steps:['Faire dorer le poulet 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, cuire 20 min.','Servir avec riz complet.'],note:'Épices douces. Éviter le piment pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
+  // DIMANCHE
   {f:[
-    {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:370,p:21,g:44,l:11,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Amandes 60g','Flocons avoine 80g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:'Super petit-déj du dimanche en famille.'},
+    {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:370,p:21,g:44,l:11,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Amandes 60g','Flocons avoine 80g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
     {moment:'Déjeuner',nom:'Omelette boeuf légumes salade',kcal:430,p:31,g:14,l:26,portions:'4 pers.',ings:['Oeufs 10 pièces','Boeuf maigre 300g','Poivron 200g','Tomates 160g','Huile olive 14g','Salade verte 160g'],steps:['Poêler le boeuf en lanières 5 min.','Faire revenir légumes 5 min.','Ajouter oeufs battus, cuire 5 min.','Servir avec salade.'],note:'Portions plus petites pour les enfants.'},
-    {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:245,p:10,g:28,l:11,portions:'4 pers.',ings:['Flocons avoine 160g','Beurre cacahuète 40g','Lait végétal 320ml'],steps:['Préparer 4 petits bols de porridge.','Ajouter beurre de cacahuète dans chacun.'],note:''},
+    {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:245,p:10,g:28,l:11,portions:'4 pers.',ings:['Flocons avoine 160g','Beurre cacahuète 40g','Lait végétal 320ml'],steps:['Préparer 4 bols de porridge.','Ajouter beurre de cacahuète dans chacun.'],note:''},
     {moment:'Dîner',nom:'Boeuf sauté riz basmati brocoli',kcal:510,p:38,g:44,l:19,portions:'4 pers.',ings:['Boeuf maigre 480g','Riz basmati 240g cru','Brocoli 480g','Ail 3 gousses','Sauce soja légère 20ml','Huile olive 14g'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec ail 6 min.','Faire sauter le brocoli 5 min.','Déglacer sauce soja, servir sur riz.'],note:'Sauce soja légère. Portions enfants réduites.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
@@ -302,30 +403,145 @@ const planning=[
   ]},
 ];
 
-const courses=[
-  {cat:'Viandes & poissons',items:[
-    {n:'Blanc de poulet',q:'~600g',p:'2 adultes'},{n:'Cuisses de poulet',q:'4 pièces',p:'4 pers.'},{n:'Boeuf maigre haché',q:'~800g',p:'4 pers.'},{n:'Boeuf maigre tranché',q:'~400g',p:'4 pers.'},{n:'Filets de saumon',q:'4 pièces',p:'4 pers.'},
+// ── DONNÉES SEMAINE 2 (variante) ────────────────────────────────
+const semaine2=[
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Skyr flocons myrtilles amandes',kcal:345,p:21,g:40,l:11,portions:'2 adultes',ings:['Skyr 150g','Flocons avoine 50g','Amandes 15g','Yaourt fruits mixé 80g'],steps:['Verser le skyr dans un bol.','Ajouter flocons et amandes.','Terminer avec le yaourt.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet patate douce pois chiches',kcal:490,p:39,g:46,l:11,portions:'2 adultes',ings:['Blanc poulet 130g','Patate douce 150g','Pois chiches 80g','Huile olive 5g','Cumin herbes'],steps:['Rôtir patate douce + pois chiches 20 min.','Poêler le poulet avec cumin 7 min.','Assembler dans un bol.'],note:''},
+    {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:170,p:7,g:20,l:7,portions:'2 adultes',ings:['Yaourt fruits mixé 120g','Amandes 12g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Cabillaud riz complet légumes vapeur',kcal:400,p:38,g:36,l:12,portions:'4 pers.',ings:['Filets cabillaud 4 pièces','Riz complet 200g cru','Carottes 200g','Haricots verts 200g','Huile olive 10g','Citron'],steps:['Cuire riz complet 25 min.','Cuire légumes vapeur 10 min.','Poêler le cabillaud 4 min/face.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Skyr flocons amandes++',kcal:425,p:26,g:50,l:13,portions:'2 adultes',ings:['Skyr 180g','Flocons avoine 65g','Amandes 20g','Yaourt fruits mixé 80g'],steps:['Verser le skyr.','Ajouter flocons et amandes.','Terminer avec yaourt.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet patate douce pois chiches',kcal:570,p:47,g:54,l:13,portions:'2 adultes',ings:['Blanc poulet 160g','Patate douce 180g','Pois chiches 100g','Huile olive 8g','Cumin herbes'],steps:['Rôtir patate douce + pois chiches 20 min.','Poêler le poulet 7 min.','Assembler.'],note:''},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:195,p:14,g:10,l:10,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Cabillaud riz complet légumes vapeur',kcal:480,p:46,g:42,l:14,portions:'4 pers.',ings:['Filets cabillaud 4 pièces','Riz complet 200g cru','Carottes 200g','Haricots verts 200g','Huile olive 10g','Citron'],steps:['Cuire riz complet 25 min.','Cuire légumes vapeur 10 min.','Poêler le cabillaud 4 min/face.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
-  {cat:'Fruits & légumes',items:[
-    {n:'Patate douce',q:'~1,5 kg',p:'4 pers.'},{n:'Courgettes',q:'~600g',p:'4 pers.'},{n:'Champignons',q:'~200g',p:'4 pers.'},{n:'Poivrons',q:'~300g',p:'4 pers.'},{n:'Tomates / cerises',q:'~500g',p:'4 pers.'},{n:'Brocoli',q:'~480g',p:'4 pers.'},{n:'Épinards frais',q:'~300g',p:'4 pers.'},{n:'Carottes',q:'~200g',p:'4 pers.'},{n:'Concombre',q:'~160g',p:'2 adultes'},{n:'Salade verte',q:'2 pièces',p:'4 pers.'},{n:'Bananes',q:'2 pièces',p:'2 adultes'},{n:'Citrons',q:'3 pièces',p:'4 pers.'},{n:'Ail',q:'1 tête',p:'4 pers.'},{n:'Oignons',q:'4 pièces',p:'4 pers.'},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Porridge avoine skyr cannelle',kcal:355,p:21,g:46,l:9,portions:'2 adultes',ings:['Flocons avoine 55g','Skyr 120g','Amandes 10g','Cannelle','Lait végétal 80ml'],steps:['Cuire flocons + lait végétal 3 min.','Ajouter skyr et amandes.','Saupoudrer de cannelle.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl lentilles boeuf tomates',kcal:465,p:37,g:40,l:14,portions:'2 adultes',ings:['Boeuf maigre 110g','Lentilles vertes 120g','Tomates cerises 100g','Huile olive + citron 8g','Herbes'],steps:['Cuire les lentilles 20 min.','Poêler le boeuf 4 min.','Assembler, assaisonner.'],note:'Sans concombre pour Elle.'},
+    {moment:'Collation',nom:'Petit suisse nature',kcal:110,p:7,g:8,l:4,portions:'2 adultes',ings:['Petit suisse 2x60g'],steps:['Déguster tel quel.'],note:''},
+    {moment:'Dîner',nom:'Riz complet sauté légumes oeufs',kcal:450,p:26,g:48,l:16,portions:'4 pers.',ings:['Riz complet 200g cru','Oeufs 6 pièces','Courgettes 200g','Carottes 150g','Sauce soja légère 15ml','Huile olive 10g'],steps:['Cuire le riz complet.','Faire sauter légumes en dés 5 min.','Ajouter les oeufs battus, brouiller.','Mélanger riz + légumes + oeufs.'],note:'Sauce soja légère. Plat apprécié des enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Porridge avoine skyr cannelle',kcal:435,p:26,g:57,l:11,portions:'2 adultes',ings:['Flocons avoine 70g','Skyr 150g','Amandes 15g','Cannelle','Lait végétal 100ml'],steps:['Cuire flocons + lait végétal 3 min.','Ajouter skyr et amandes.','Saupoudrer de cannelle.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl lentilles boeuf tomates',kcal:545,p:44,g:48,l:16,portions:'2 adultes',ings:['Boeuf maigre 140g','Lentilles vertes 150g','Tomates cerises 100g','Huile olive + citron 10g','Herbes'],steps:['Cuire les lentilles 20 min.','Poêler le boeuf 4 min.','Assembler, assaisonner.'],note:''},
+    {moment:'Collation',nom:'Skyr amandes',kcal:200,p:14,g:10,l:10,portions:'2 adultes',ings:['Skyr 150g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Riz complet sauté légumes oeufs',kcal:530,p:32,g:56,l:19,portions:'4 pers.',ings:['Riz complet 200g cru','Oeufs 8 pièces','Courgettes 200g','Carottes 150g','Sauce soja légère 15ml','Huile olive 10g'],steps:['Cuire le riz complet.','Faire sauter légumes 5 min.','Ajouter les oeufs battus, brouiller.','Mélanger riz + légumes + oeufs.'],note:'Sauce soja légère. Plat apprécié des enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
-  {cat:'Produits laitiers & oeufs',items:[
-    {n:'Oeufs',q:'~30 pièces',p:'4 pers.'},{n:'Skyr nature',q:'~1,5 kg',p:'2 adultes'},{n:'Yaourt fruits mixé (sans morceaux)',q:'~1 kg',p:'4 pers.'},{n:'Petit suisse nature',q:'12 pièces',p:'2 adultes'},{n:'Gruyère râpé',q:'~60g',p:'4 pers.'},{n:'Tahini',q:'~65g',p:'4 pers.'},{n:'Lait végétal',q:'~1L',p:'4 pers.'},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Oeufs cocotte skyr beurre cacahuète',kcal:365,p:23,g:20,l:21,portions:'2 adultes',ings:['Oeufs 3 pièces','Skyr 100g','Beurre cacahuète 12g','Flocons avoine 20g'],steps:['Cuire les oeufs à votre goût.','Déguster avec skyr et beurre de cacahuète.','Accompagner d\'un peu de flocons.'],note:''},
+    {moment:'Déjeuner',nom:'Wrap poulet avocat tomates',kcal:480,p:34,g:42,l:16,portions:'2 adultes',ings:['Blanc poulet cuit 130g','Tortillas complètes 2','Avocats 1','Tomates 80g','Salade verte','Huile olive citron'],steps:['Émincer le poulet cuit.','Écraser l\'avocat avec sel + citron.','Garnir chaque tortilla de laitue, poulet, avocat, tomates.','Rouler et servir.'],note:'Sans concombre pour Elle.'},
+    {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:180,p:8,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 2x60g','Beurre cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Pâtes complètes poulet épinards',kcal:500,p:38,g:52,l:15,portions:'4 pers.',ings:['Pâtes complètes 320g','Blanc poulet 400g','Épinards frais 200g','Ail 3 gousses','Huile olive 12g','Parmesan 40g'],steps:['Cuire les pâtes complètes.','Poêler le poulet en dés avec ail 7 min.','Faire tomber les épinards 3 min.','Mélanger pâtes + poulet + épinards, parsemer parmesan.'],note:'Plat familial apprécié de tous.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Oeufs cocotte skyr beurre cacahuète',kcal:440,p:29,g:24,l:25,portions:'2 adultes',ings:['Oeufs 4 pièces','Skyr 130g','Beurre cacahuète 15g','Flocons avoine 25g'],steps:['Cuire les oeufs à votre goût.','Déguster avec skyr et beurre de cacahuète.','Accompagner de flocons.'],note:''},
+    {moment:'Déjeuner',nom:'Wrap poulet avocat tomates',kcal:565,p:42,g:50,l:18,portions:'2 adultes',ings:['Blanc poulet cuit 160g','Tortillas complètes 2','Avocats 1','Tomates 80g','Salade verte','Huile olive citron'],steps:['Émincer le poulet cuit.','Écraser l\'avocat avec sel + citron.','Garnir chaque tortilla.','Rouler et servir.'],note:''},
+    {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:190,p:8,g:20,l:9,portions:'2 adultes',ings:['Yaourt fruits mixé 130g','Amandes 13g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Pâtes complètes poulet épinards',kcal:590,p:46,g:60,l:17,portions:'4 pers.',ings:['Pâtes complètes 320g','Blanc poulet 400g','Épinards frais 200g','Ail 3 gousses','Huile olive 12g','Parmesan 40g'],steps:['Cuire les pâtes complètes.','Poêler le poulet en dés avec ail 7 min.','Faire tomber les épinards 3 min.','Mélanger et parsemer parmesan.'],note:'Plat familial apprécié.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
-  {cat:'Épicerie & féculents',items:[
-    {n:'Flocons d\'avoine',q:'~600g',p:'4 pers.'},{n:'Riz complet',q:'~600g cru',p:'4 pers.'},{n:'Riz basmati',q:'~305g cru',p:'4 pers.'},{n:'Pâtes complètes',q:'~400g cru',p:'4 pers.'},{n:'Pois chiches (boîtes)',q:'4 boîtes',p:'4 pers.'},{n:'Lentilles vertes',q:'~270g',p:'2 adultes'},{n:'Tomates concassées',q:'2 boîtes 400g',p:'4 pers.'},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr banane flocons',kcal:350,p:20,g:44,l:10,portions:'2 adultes',ings:['Skyr 150g','Banane 80g','Flocons avoine 40g','Amandes 10g'],steps:['Trancher la banane sur le skyr.','Ajouter les flocons et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade pois chiches saumon fumé',kcal:475,p:34,g:36,l:18,portions:'2 adultes',ings:['Saumon fumé 80g','Pois chiches 120g','Tomates cerises 100g','Salade verte 80g','Huile olive + citron 8g'],steps:['Assembler salade + pois chiches + tomates.','Disposer le saumon fumé par-dessus.','Assaisonner huile d\'olive + citron.'],note:'Sans concombre pour Elle.'},
+    {moment:'Collation',nom:'Flocons avoine skyr',kcal:200,p:13,g:25,l:5,portions:'2 adultes',ings:['Flocons avoine 30g','Skyr 80g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Boeuf haché patate douce poivrons',kcal:490,p:36,g:44,l:18,portions:'4 pers.',ings:['Boeuf haché maigre 400g','Patate douce 600g','Poivrons 200g','Oignon 1','Tomates concassées 200g','Huile olive 10g'],steps:['Rôtir patate douce 20 min.','Faire revenir oignon + boeuf + poivrons 10 min.','Ajouter tomates, mijoter 5 min.','Servir avec patate douce.'],note:'Plat familial sans épices fortes.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr banane flocons',kcal:425,p:25,g:53,l:12,portions:'2 adultes',ings:['Skyr 180g','Banane 100g','Flocons avoine 50g','Amandes 14g'],steps:['Trancher la banane sur le skyr.','Ajouter flocons et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade pois chiches saumon fumé',kcal:560,p:41,g:44,l:21,portions:'2 adultes',ings:['Saumon fumé 100g','Pois chiches 150g','Tomates cerises 100g','Salade verte 80g','Huile olive + citron 10g'],steps:['Assembler salade + pois chiches + tomates.','Disposer le saumon fumé.','Assaisonner.'],note:''},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:195,p:14,g:10,l:10,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Boeuf haché patate douce poivrons',kcal:575,p:43,g:52,l:21,portions:'4 pers.',ings:['Boeuf haché maigre 400g','Patate douce 600g','Poivrons 200g','Oignon 1','Tomates concassées 200g','Huile olive 10g'],steps:['Rôtir patate douce 20 min.','Faire revenir oignon + boeuf + poivrons 10 min.','Ajouter tomates, mijoter 5 min.','Servir.'],note:'Plat familial sans épices fortes.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
-  {cat:'Oléagineux & condiments',items:[
-    {n:'Amandes',q:'~200g',p:'2 adultes'},{n:'Beurre de cacahuète',q:'~250g',p:'2 adultes'},{n:'Huile d\'olive',q:'1 bouteille',p:'4 pers.'},{n:'Sauce soja légère',q:'~50ml',p:'4 pers.'},{n:'Basilic frais',q:'1 pot',p:'2 adultes'},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Flocons chauds beurre cacahuète miel',kcal:360,p:18,g:46,l:12,portions:'2 adultes',ings:['Flocons avoine 55g','Lait végétal 100ml','Beurre cacahuète 12g','Amandes 10g','Skyr 60g'],steps:['Cuire les flocons avec lait végétal 3 min.','Ajouter beurre de cacahuète et amandes.','Servir avec skyr à côté.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet riz basmati tomates provençales',kcal:485,p:37,g:50,l:13,portions:'2 adultes',ings:['Blanc poulet 130g','Riz basmati 65g cru','Tomates 200g','Ail 2 gousses','Huile olive 8g','Herbes de Provence'],steps:['Cuire le riz basmati 12 min.','Poêler le poulet avec ail + herbes 7 min.','Faire revenir tomates 5 min.','Assembler.'],note:''},
+    {moment:'Collation',nom:'Petit suisse nature',kcal:110,p:7,g:8,l:4,portions:'2 adultes',ings:['Petit suisse 2x60g'],steps:['Déguster tel quel.'],note:''},
+    {moment:'Dîner',nom:'Sauté de dinde riz complet légumes',kcal:470,p:40,g:42,l:14,portions:'4 pers.',ings:['Escalopes dinde 500g','Riz complet 200g cru','Courgettes 200g','Poivron 150g','Huile olive 10g','Paprika doux'],steps:['Cuire le riz complet 25 min.','Couper la dinde et légumes en dés.','Faire sauter 10 min avec paprika.','Servir sur le riz.'],note:'Plat doux pour toute la famille.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Flocons chauds beurre cacahuète',kcal:435,p:23,g:56,l:14,portions:'2 adultes',ings:['Flocons avoine 70g','Lait végétal 120ml','Beurre cacahuète 15g','Amandes 14g','Skyr 80g'],steps:['Cuire les flocons avec lait végétal 3 min.','Ajouter beurre de cacahuète et amandes.','Servir avec skyr à côté.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet riz basmati tomates provençales',kcal:565,p:45,g:58,l:15,portions:'2 adultes',ings:['Blanc poulet 160g','Riz basmati 80g cru','Tomates 200g','Ail 2 gousses','Huile olive 10g','Herbes de Provence'],steps:['Cuire le riz basmati 12 min.','Poêler le poulet avec ail + herbes 7 min.','Faire revenir tomates 5 min.','Assembler.'],note:''},
+    {moment:'Collation',nom:'Skyr amandes',kcal:200,p:14,g:10,l:10,portions:'2 adultes',ings:['Skyr 150g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Sauté de dinde riz complet légumes',kcal:555,p:48,g:50,l:17,portions:'4 pers.',ings:['Escalopes dinde 500g','Riz complet 200g cru','Courgettes 200g','Poivron 150g','Huile olive 10g','Paprika doux'],steps:['Cuire le riz complet 25 min.','Couper dinde et légumes en dés.','Faire sauter 10 min avec paprika.','Servir sur le riz.'],note:'Plat doux pour toute la famille.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:155,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
-  {cat:'Épices & aromates',items:[
-    {n:'Curry doux',q:'1 boîte',p:'4 pers.'},{n:'Cumin',q:'1 boîte',p:'4 pers.'},{n:'Curcuma',q:'1 boîte',p:'4 pers.'},{n:'Paprika',q:'1 boîte',p:'2 adultes'},{n:'Cannelle',q:'1 boîte',p:'2 adultes'},{n:'Herbes de Provence',q:'1 pot',p:'4 pers.'},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Pancakes skyr oeufs famille',kcal:385,p:24,g:42,l:13,portions:'4 pers.',ings:['Flocons avoine mixés 120g','Oeufs 4 pièces','Skyr 160g','Beurre cacahuète 16g'],steps:['Mixer flocons en farine.','Mélanger avec oeufs et skyr.','Cuire des pancakes 3 min/face.','Servir avec beurre de cacahuète.'],note:'Beurre cacahuète en option pour les enfants.'},
+    {moment:'Déjeuner',nom:'Risotto riz complet champignons',kcal:490,p:20,g:60,l:16,portions:'4 pers.',ings:['Riz complet 250g cru','Champignons 300g','Oignon 1','Bouillon légumes 80cl','Parmesan 40g','Huile olive 10g'],steps:['Faire revenir oignon + champignons.','Ajouter le riz, nacrer 2 min.','Verser bouillon louche par louche 25 min.','Incorporer parmesan.'],note:'Plat végétarien. Les enfants adorent.'},
+    {moment:'Collation',nom:'Yaourt fruits mixé',kcal:130,p:5,g:22,l:3,portions:'4 pers.',ings:['Yaourt fruits mixé 4x60g'],steps:['Répartir en 4 portions.'],note:''},
+    {moment:'Dîner',nom:'Poulet rôti patate douce haricots verts',kcal:510,p:43,g:40,l:19,portions:'4 pers.',ings:['Poulet rôti 4 morceaux','Patate douce 600g','Haricots verts 300g','Huile olive 12g','Herbes de Provence','Ail 2 gousses'],steps:['Rôtir le poulet + patate douce 25 min à 200°C.','Cuire les haricots verts vapeur 8 min.','Assaisonner ail + herbes.','Servir ensemble.'],note:'Plat familial classique.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Pancakes skyr oeufs famille',kcal:465,p:30,g:51,l:16,portions:'4 pers.',ings:['Flocons avoine mixés 120g','Oeufs 4 pièces','Skyr 160g','Beurre cacahuète 20g'],steps:['Mixer flocons en farine.','Mélanger avec oeufs et skyr.','Cuire des pancakes 3 min/face.','Servir avec beurre de cacahuète.'],note:''},
+    {moment:'Déjeuner',nom:'Risotto riz complet champignons',kcal:580,p:24,g:72,l:19,portions:'4 pers.',ings:['Riz complet 250g cru','Champignons 300g','Oignon 1','Bouillon légumes 80cl','Parmesan 50g','Huile olive 12g'],steps:['Faire revenir oignon + champignons.','Ajouter le riz, nacrer 2 min.','Verser bouillon louche par louche 25 min.','Incorporer parmesan.'],note:'Les enfants adorent.'},
+    {moment:'Collation',nom:'Skyr amandes beurre cacahuète',kcal:225,p:15,g:10,l:14,portions:'2 adultes',ings:['Skyr 100g','Amandes 15g','Beurre cacahuète 10g'],steps:['Mélanger skyr + beurre cacahuète, ajouter amandes.'],note:''},
+    {moment:'Dîner',nom:'Poulet rôti patate douce haricots verts',kcal:600,p:52,g:48,l:22,portions:'4 pers.',ings:['Poulet rôti 4 morceaux','Patate douce 600g','Haricots verts 300g','Huile olive 12g','Herbes de Provence','Ail 2 gousses'],steps:['Rôtir le poulet + patate douce 25 min.','Cuire haricots verts vapeur 8 min.','Assaisonner ail + herbes.','Servir ensemble.'],note:'Plat familial classique.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
-  {cat:'Plaisir — adultes uniquement',items:[
-    {n:'Chocolat noir 70%+',q:'~200g',p:'2 adultes'},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Grand bol skyr avoine famille',kcal:375,p:22,g:46,l:11,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Flocons avoine 80g','Amandes 60g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade niçoise sans concombre',kcal:440,p:30,g:20,l:26,portions:'4 pers.',ings:['Thon en boîte 2 boîtes','Oeufs durs 4 pièces','Tomates 300g','Haricots verts 200g','Olives noires 60g','Huile olive + citron'],steps:['Cuire haricots verts 5 min, refroidir.','Couper les tomates, écaler les oeufs.','Tout disposer sur la salade.','Arroser huile + citron.'],note:'Sans concombre. Plat frais apprécié de toute la famille.'},
+    {moment:'Collation',nom:'Flocons avoine skyr',kcal:200,p:13,g:25,l:5,portions:'2 adultes',ings:['Flocons avoine 30g','Skyr 80g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Tajine boeuf légumes riz complet',kcal:530,p:38,g:48,l:19,portions:'4 pers.',ings:['Boeuf mijoté 400g','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin curcuma cannelle'],steps:['Faire dorer le boeuf 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, mijoter 20 min.','Servir avec riz complet.'],note:'Épices douces. Plat du dimanche.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Grand bol skyr avoine famille',kcal:455,p:27,g:55,l:14,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Flocons avoine 80g','Amandes 60g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade niçoise sans concombre',kcal:525,p:36,g:24,l:31,portions:'4 pers.',ings:['Thon en boîte 2 boîtes','Oeufs durs 5 pièces','Tomates 300g','Haricots verts 200g','Olives noires 60g','Huile olive + citron'],steps:['Cuire haricots verts 5 min, refroidir.','Couper tomates, écaler les oeufs.','Tout disposer sur la salade.','Arroser huile + citron.'],note:'Sans concombre.'},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:195,p:14,g:10,l:10,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Tajine boeuf légumes riz complet',kcal:620,p:46,g:56,l:22,portions:'4 pers.',ings:['Boeuf mijoté 400g','Carottes 200g','Courgettes 200g','Pois chiches 150g','Riz complet 200g cru','Cumin curcuma cannelle'],steps:['Faire dorer le boeuf 5 min.','Ajouter légumes, pois chiches, épices.','Couvrir, mijoter 20 min.','Servir avec riz complet.'],note:'Épices douces.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:110,p:2,g:8,l:7,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
 ];
 
+const semaines=[semaine1, semaine2];
+const semaineLabels=['Semaine en cours','Semaine suivante'];
+
+// ── UTILITAIRES ───────────────────────────────────────────────
+function getWeekDates(offset){
+  const now=new Date();
+  const day=now.getDay();
+  const monday=new Date(now);
+  monday.setDate(now.getDate()-(day===0?6:day-1)+(offset*7));
+  const sunday=new Date(monday);
+  sunday.setDate(monday.getDate()+6);
+  const fmt=d=>`${d.getDate()}/${d.getMonth()+1}`;
+  return `${fmt(monday)} – ${fmt(sunday)}`;
+}
+
+function isMealActive(w,di,mi){
+  if(!activeMeals[w]) return true;
+  if(!activeMeals[w][di]) return true;
+  return activeMeals[w][di][mi]!==false;
+}
+
+function isDayActive(w,di){
+  if(!activeMeals[w]||!activeMeals[w][di]) return true;
+  return Object.values(activeMeals[w][di]).some(v=>v);
+}
+
+function toggleMeal(w,di,mi){
+  if(!activeMeals[w]) activeMeals[w]={};
+  if(!activeMeals[w][di]) activeMeals[w][di]={0:true,1:true,2:true,3:true,4:true};
+  activeMeals[w][di][mi]=!activeMeals[w][di][mi];
+  renderPlanning();
+  renderCourses();
+}
+
+function toggleDay(w,di){
+  if(!activeMeals[w]) activeMeals[w]={};
+  if(!activeMeals[w][di]) activeMeals[w][di]={0:true,1:true,2:true,3:true,4:true};
+  const allActive=Object.values(activeMeals[w][di]).every(v=>v);
+  [0,1,2,3,4].forEach(mi=>{ activeMeals[w][di][mi]=!allActive; });
+  renderPlanning();
+  renderCourses();
+}
+
+// ── TABS ─────────────────────────────────────────────────────
 function switchTab(t){
   document.querySelectorAll('.nav-tab').forEach((el,i)=>el.classList.toggle('active',['planning','courses','resume','infos'][i]===t));
   document.querySelectorAll('.content').forEach(el=>el.classList.remove('active'));
@@ -333,37 +549,67 @@ function switchTab(t){
   if(t==='courses') renderCourses();
   if(t==='resume') renderResume();
 }
+
 function setPerson(p){person=p;document.querySelectorAll('#tab-planning .ptog').forEach((el,i)=>el.classList.toggle('active',['f','m'][i]===p));renderPlanning();}
 function setPersonResume(p){personResume=p;document.querySelectorAll('#tab-resume .ptog').forEach((el,i)=>el.classList.toggle('active',['f','m'][i]===p));renderResume();}
+function switchWeek(d){currentWeek=Math.max(0,Math.min(1,currentWeek+d));renderPlanning();}
+function switchWeekResume(d){currentWeekResume=Math.max(0,Math.min(1,currentWeekResume+d));renderResume();}
+function setCourseWeek(w){courseWeek=w;document.querySelectorAll('.cwt').forEach((el,i)=>el.classList.toggle('active',i===w));renderCourses();}
 
+// ── PLANNING ─────────────────────────────────────────────────
 function renderPlanning(){
+  const w=currentWeek;
+  const semaine=semaines[w];
+  document.getElementById('ws-label').innerHTML=semaineLabels[w]+'<br><span class="ws-sub">'+getWeekDates(w)+'</span>';
   const target=TARGETS[person];
-  const avgKcal=Math.round(planning.reduce((s,d)=>s+d[person].reduce((s2,m)=>s2+m.kcal,0),0)/7);
-  document.getElementById('s-kcal').textContent=avgKcal;
-  document.getElementById('s-deficit').textContent='-'+(target-avgKcal);
-  document.getElementById('week-row').innerHTML=JOURS.map((j,i)=>{
-    const meals=planning[i][person];
-    const dk=meals.reduce((s,m)=>s+m.kcal,0);
-    return `<div class="day-card">
-      <div class="day-head"><span>${j}</span><span class="day-kcal">${dk}</span></div>
-      ${meals.map((m,mi)=>`<div class="meal-slot" onclick="showDetail(${i},${mi})">
-        <div><span class="mbadge ${MB[m.moment]||'mb-pdj'}">${m.moment}</span></div>
-        <div class="meal-nm">${m.nom}</div>
-        <div class="meal-tm">${m.kcal} kcal</div>
-        ${m.portions.includes('4')?'<div class="portions-badge">👨‍👩‍👧‍👦 4 pers.</div>':''}
-      </div>`).join('')}
+  let totalKcal=0,activeCount=0;
+  semaine.forEach((d,di)=>{
+    d[person].forEach((m,mi)=>{
+      if(isMealActive(w,di,mi)){totalKcal+=m.kcal;activeCount++;}
+    });
+  });
+  const activeDays=semaine.filter((_,di)=>isDayActive(w,di)).length;
+  const avgKcal=activeDays>0?Math.round(totalKcal/activeDays):0;
+  document.getElementById('s-actifs').textContent=activeCount;
+  document.getElementById('s-kcal').textContent=avgKcal||'—';
+  document.getElementById('s-deficit').textContent=avgKcal?('-'+(target-avgKcal)):'—';
+
+  document.getElementById('week-row').innerHTML=JOURS.map((j,di)=>{
+    const meals=semaine[di][person];
+    const dayOn=isDayActive(w,di);
+    const dayKcal=meals.reduce((s,m,mi)=>isMealActive(w,di,mi)?s+m.kcal:s,0);
+    const allOn=Object.values(activeMeals[w]&&activeMeals[w][di]||{0:true,1:true,2:true,3:true,4:true}).every(v=>v);
+    return `<div class="day-card${dayOn?'':' disabled'}">
+      <div class="day-head${dayOn?'':' disabled-head'}">
+        <div class="day-toggle${allOn?' on':''}" onclick="toggleDay(${w},${di})"></div>
+        <span>${j}</span>
+        <span class="day-kcal">${dayKcal}</span>
+      </div>
+      ${meals.map((m,mi)=>{
+        const on=isMealActive(w,di,mi);
+        return `<div class="meal-slot${on?'':' disabled-meal'}">
+          <div class="meal-toggle-row">
+            <div class="meal-active-btn${on?' on':''}" onclick="toggleMeal(${w},${di},${mi})"></div>
+            <span class="mbadge ${MB[m.moment]||'mb-pdj'}">${m.moment}</span>
+          </div>
+          <div class="meal-nm" onclick="showDetail(${w},${di},${mi})">${m.nom}</div>
+          <div class="meal-tm">${m.kcal} kcal</div>
+          ${m.portions.includes('4')?'<div class="portions-badge">👨‍👩‍👧‍👦 4 pers.</div>':''}
+        </div>`;
+      }).join('')}
     </div>`;
   }).join('');
 }
 
-function showDetail(di,mi){
-  const m=planning[di][person][mi];
+// ── DETAIL ───────────────────────────────────────────────────
+function showDetail(w,di,mi){
+  const m=semaines[w][di][person][mi];
   const pp=Math.round(m.p*4/m.kcal*100),gp=Math.round(m.g*4/m.kcal*100),lp=Math.round(m.l*9/m.kcal*100);
   document.getElementById('sheet-body').innerHTML=`
     <div class="sheet-title">${m.nom}</div>
     <div class="sheet-meta">
       <span class="pill pill-g">${m.moment}</span>
-      <span class="pill pill-a">${JOURS[di]}</span>
+      <span class="pill pill-a">${JOURS[di]} · S${w+1}</span>
       <span class="pill pill-m">${m.portions}</span>
     </div>
     <div class="macro-detail">
@@ -396,23 +642,77 @@ function closeDetail(e){
   document.body.style.overflow='';
 }
 
+// ── COURSES ──────────────────────────────────────────────────
 function renderCourses(){
-  const total=courses.reduce((s,c)=>s+c.items.length,0);
-  const done=Object.values(checked).filter(Boolean).length;
+  const w=courseWeek;
+  const semaine=semaines[w];
+  const disabledCount=JOURS.reduce((s,_,di)=>{
+    return s+semaine[di]['f'].filter((_,mi)=>!isMealActive(w,di,mi)).length;
+  },0);
+
+  document.getElementById('courses-info').innerHTML=
+    `📅 ${semaineLabels[w]} (${getWeekDates(w)})`+
+    (disabledCount>0?` · <strong>${disabledCount} repas désactivés</strong> retirés des courses`:'· Tous les repas actifs');
+
+  // Collecter ingrédients uniquement des repas actifs
+  const ingMap={};
+  JOURS.forEach((_,di)=>{
+    ['f','m'].forEach(p=>{
+      semaine[di][p].forEach((m,mi)=>{
+        if(!isMealActive(w,di,mi)) return;
+        const p4=m.portions.includes('4');
+        m.ings.forEach(ing=>{
+          const key=ing.split('\n')[0].trim();
+          if(key.length<3) return;
+          if(!ingMap[key]) ingMap[key]={portions4:false,count:0};
+          ingMap[key].count++;
+          if(p4) ingMap[key].portions4=true;
+        });
+      });
+    });
+  });
+
+  // Grouper par catégorie
+  const cats={
+    'Viandes & poissons':[],'Fruits & légumes':[],'Produits laitiers & oeufs':[],
+    'Épicerie & féculents':[],'Oléagineux & condiments':[],'Épices & aromates':[],'Plaisir — adultes':[]
+  };
+  const catKw={
+    'Viandes & poissons':['poulet','boeuf','saumon','cabillaud','thon','dinde','jambon','viande'],
+    'Fruits & légumes':['courgette','carotte','poivron','épinard','brocoli','tomate','salade','oignon','ail','champignon','patate','avocat','banane','citron','haricot','poireau'],
+    'Produits laitiers & oeufs':['oeuf','skyr','yaourt','petit suisse','parmesan','gruyère','tahini','lait'],
+    'Épicerie & féculents':['riz','pâtes','flocon','pois chiche','lentille','tortilla','bouillon','farine','tomates concassées'],
+    'Oléagineux & condiments':['amande','beurre de cacahuète','huile','sauce soja','basilic'],
+    'Épices & aromates':['curry','cumin','curcuma','paprika','cannelle','herbe','épice'],
+    'Plaisir — adultes':['chocolat'],
+  };
+
+  Object.entries(ingMap).forEach(([ing,meta])=>{
+    const low=ing.toLowerCase();
+    let placed=false;
+    for(const [cat,kws] of Object.entries(catKw)){
+      if(kws.some(k=>low.includes(k))){cats[cat].push({n:ing,meta});placed=true;break;}
+    }
+    if(!placed) cats['Épicerie & féculents'].push({n:ing,meta});
+  });
+
+  const total=Object.values(cats).reduce((s,arr)=>s+arr.length,0);
+  const done=Object.values(checked[w]||{}).filter(Boolean).length;
   const pct=total?Math.round(done/total*100):0;
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('prog-lbl').textContent=`${done} / ${total} articles cochés`;
-  document.getElementById('courses-list').innerHTML=courses.map(cat=>{
-    const cd=cat.items.filter(it=>checked[it.n]).length;
+
+  document.getElementById('courses-list').innerHTML=Object.entries(cats).filter(([,arr])=>arr.length>0).map(([cat,arr])=>{
+    const cd=arr.filter(it=>(checked[w]||{})[it.n]).length;
     return `<div class="cat-block">
-      <div class="cat-hd"><span>${cat.cat}</span><span>${cd}/${cat.items.length}</span></div>
-      ${cat.items.map(it=>{
-        const d=!!checked[it.n],p4=it.p.includes('4');
-        return `<div class="course-item" onclick="toggleCourse('${it.n.replace(/'/g,"\\'")}')">
+      <div class="cat-hd"><span>${cat}</span><span>${cd}/${arr.length}</span></div>
+      ${arr.map(it=>{
+        const d=!!((checked[w]||{})[it.n]);
+        const p4=it.meta.portions4;
+        return `<div class="course-item" onclick="toggleCourse(${w},'${it.n.replace(/'/g,"\\'")}')">
           <div class="ccheck${d?' done':''}"></div>
           <div class="clabel">
             <div class="cname${d?' done':''}">${it.n}</div>
-            <div class="cqty">${it.q}</div>
             <span class="cportion ${p4?'cp4':'cp2'}">${p4?'👨‍👩‍👧‍👦 4 pers.':'2 adultes'}</span>
           </div>
         </div>`;
@@ -421,30 +721,69 @@ function renderCourses(){
   }).join('');
 }
 
-function toggleCourse(n){checked[n]=!checked[n];renderCourses();}
+function toggleCourse(w,n){
+  if(!checked[w]) checked[w]={};
+  checked[w][n]=!checked[w][n];
+  renderCourses();
+}
 
+// ── RESUME ────────────────────────────────────────────────────
 function renderResume(){
-  const p=personResume,target=TARGETS[p];
-  const wd=planning.map((d,i)=>({j:JOURS[i],k:d[p].reduce((s,m)=>s+m.kcal,0),p:d[p].reduce((s,m)=>s+m.p,0),g:d[p].reduce((s,m)=>s+m.g,0),l:d[p].reduce((s,m)=>s+m.l,0)}));
-  const mk=Math.max(...wd.map(d=>d.k));
-  document.getElementById('wo-grid').innerHTML=wd.map(d=>`<div class="wo-col"><div class="wo-day">${d.j.slice(0,3)}</div><div class="wo-kcal">${d.k}</div><div class="wo-bar" style="width:${Math.round(d.k/mk*100)}%;max-width:100%"></div></div>`).join('');
-  const ak=Math.round(wd.reduce((s,d)=>s+d.k,0)/7),ap=Math.round(wd.reduce((s,d)=>s+d.p,0)/7),ag=Math.round(wd.reduce((s,d)=>s+d.g,0)/7),al=Math.round(wd.reduce((s,d)=>s+d.l,0)/7);
-  const def=target-ak,pp=Math.round(ap*4/ak*100),gp=Math.round(ag*4/ak*100),lp=Math.round(al*9/ak*100);
+  const w=currentWeekResume;
+  const p=personResume;
+  const semaine=semaines[w];
+  const target=TARGETS[p];
+  document.getElementById('ws-label-resume').textContent=semaineLabels[w];
+
+  const wd=semaine.map((d,di)=>({
+    j:JOURS[di],
+    k:d[p].reduce((s,m,mi)=>isMealActive(w,di,mi)?s+m.kcal:s,0),
+    pt:d[p].reduce((s,m,mi)=>isMealActive(w,di,mi)?s+m.p:s,0),
+    g:d[p].reduce((s,m,mi)=>isMealActive(w,di,mi)?s+m.g:s,0),
+    l:d[p].reduce((s,m,mi)=>isMealActive(w,di,mi)?s+m.l:s,0),
+    active:isDayActive(w,di)
+  }));
+
+  const mk=Math.max(...wd.map(d=>d.k),1);
+  document.getElementById('wo-grid').innerHTML=wd.map(d=>`
+    <div class="wo-col${d.active?'':' off'}">
+      <div class="wo-day">${d.j.slice(0,3)}</div>
+      <div class="wo-kcal">${d.k}</div>
+      <div class="wo-bar" style="width:${Math.round(d.k/mk*100)}%;max-width:100%"></div>
+    </div>`).join('');
+
+  const activeDays=wd.filter(d=>d.active&&d.k>0);
+  const ak=activeDays.length?Math.round(activeDays.reduce((s,d)=>s+d.k,0)/activeDays.length):0;
+  const ap=activeDays.length?Math.round(activeDays.reduce((s,d)=>s+d.pt,0)/activeDays.length):0;
+  const ag=activeDays.length?Math.round(activeDays.reduce((s,d)=>s+d.g,0)/activeDays.length):0;
+  const al=activeDays.length?Math.round(activeDays.reduce((s,d)=>s+d.l,0)/activeDays.length):0;
+  const def=target-ak;
+  const pp=ak?Math.round(ap*4/ak*100):0;
+  const gp=ak?Math.round(ag*4/ak*100):0;
+  const lp=ak?Math.round(al*9/ak*100):0;
+
   document.getElementById('resume-card').innerHTML=`
-    <div class="rc-title">Moyennes sur 7 jours</div>
+    <div class="rc-title">Moyennes — jours actifs (${activeDays.length}/7)</div>
     <div class="rc-grid">
       <div class="rc-box"><div class="rc-val">${ak}</div><div class="rc-lbl">kcal/j</div></div>
       <div class="rc-box"><div class="rc-val">${ap}g</div><div class="rc-lbl">protéines</div></div>
       <div class="rc-box"><div class="rc-val">${ag}g</div><div class="rc-lbl">glucides</div></div>
       <div class="rc-box"><div class="rc-val">${al}g</div><div class="rc-lbl">lipides</div></div>
     </div>
-    <div class="macro-bar" style="height:8px;margin-bottom:6px"><div class="mp" style="width:${pp}%"></div><div class="mg" style="width:${gp}%"></div><div class="ml" style="width:${lp}%"></div></div>
+    <div class="macro-bar" style="height:8px;margin-bottom:6px">
+      <div class="mp" style="width:${pp}%"></div>
+      <div class="mg" style="width:${gp}%"></div>
+      <div class="ml" style="width:${lp}%"></div>
+    </div>
     <div class="macro-leg" style="margin-bottom:12px">
       <span><span class="mdot" style="background:#40916C"></span>P ${pp}%</span>
       <span><span class="mdot" style="background:#E9C46A"></span>G ${gp}%</span>
       <span><span class="mdot" style="background:#E76F51"></span>L ${lp}%</span>
     </div>
-    <div class="deficit-row">Objectif : <strong>${target} kcal</strong> · Déficit moyen : <strong>~${def} kcal/j</strong><br>Soit environ <strong>~${(def*7/7700).toFixed(1)} kg/semaine</strong> théorique</div>`;
+    <div class="deficit-row">
+      Objectif : <strong>${target} kcal</strong> · Déficit moyen : <strong>~${def} kcal/j</strong><br>
+      Soit environ <strong>~${(def*7/7700).toFixed(1)} kg/semaine</strong> théorique
+    </div>`;
 }
 
 renderPlanning();
