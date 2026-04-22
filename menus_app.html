@@ -150,6 +150,58 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .hab-name{font-size:12px;font-weight:600;color:var(--g1);margin-bottom:2px}
 .hab-val{font-size:10px;color:var(--muted)}
 .pref-chip{display:inline-block;background:var(--red-l);border:1px solid #FECACA;border-radius:20px;padding:3px 10px;font-size:12px;color:var(--red);margin:3px 3px 0 0}
+
+.persons-selector{display:flex;align-items:center;gap:4px;margin-top:4px}
+.ps-btn{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:11px;font-weight:700;color:var(--g2);display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
+.ps-btn:active{background:var(--g5)}
+.ps-val{font-size:11px;font-weight:700;color:var(--g1);min-width:14px;text-align:center}
+.ps-lbl{font-size:9px;color:var(--muted)}
+.cout-tab{display:none}.cout-tab.active{display:block}
+.cout-week-toggle{display:flex;gap:6px;margin-bottom:12px}
+.cwtt{flex:1;padding:7px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);background:var(--white);text-align:center;font-family:var(--font)}
+.cwtt.active{background:var(--g1);color:white;border-color:var(--g1)}
+.cout-summary{background:var(--white);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.cout-total{font-size:28px;font-weight:700;color:var(--g1);font-family:var(--mono)}
+.cout-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.cout-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.cout-box{background:var(--g6);border-radius:var(--rs);padding:10px;text-align:center}
+.cout-val{font-size:16px;font-weight:700;color:var(--g1);font-family:var(--mono)}
+.cout-lbl{font-size:10px;color:var(--muted);margin-top:2px}
+.prix-block{background:var(--white);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.prix-hd{padding:9px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--g2);background:var(--g6);display:flex;justify-content:space-between;border-bottom:1px solid var(--border)}
+.prix-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--g6)}
+.prix-item:last-child{border-bottom:none}
+.prix-nom{flex:1;font-size:13px;color:var(--text)}
+.prix-pers{font-size:11px;color:var(--muted);min-width:50px;text-align:center}
+.prix-input-wrap{display:flex;align-items:center;gap:4px}
+.prix-input{width:58px;padding:4px 6px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:var(--mono);color:var(--g1);background:var(--white);text-align:right}
+.prix-unit{font-size:11px;color:var(--muted)}
+.prix-total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--g5);border-radius:0 0 var(--r) var(--r)}
+.prix-total-lbl{font-size:12px;font-weight:600;color:var(--g1)}
+.prix-total-val{font-size:16px;font-weight:700;color:var(--g1);font-family:var(--mono)}
+
+.annexe-section{margin-bottom:14px}
+.annexe-cat-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--g1);color:white;border-radius:var(--r) var(--r) 0 0;font-size:12px;font-weight:700}
+.annexe-items{background:var(--white);border-radius:0 0 var(--r) var(--r);box-shadow:var(--shadow);overflow:hidden}
+.annexe-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--g6);-webkit-user-select:none}
+.annexe-item:last-child{border-bottom:none}
+.annexe-item:active{background:var(--g6)}
+.annexe-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;cursor:pointer}
+.annexe-check.done{background:var(--amber);border-color:var(--amber)}
+.annexe-check.done::after{content:'✓';color:white;font-size:12px;font-weight:700}
+.annexe-label{flex:1;font-size:14px;color:var(--text);cursor:pointer}
+.annexe-label.done{text-decoration:line-through;color:var(--muted)}
+.annexe-del{width:24px;height:24px;border-radius:50%;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.annexe-del:active{background:var(--red-l);color:var(--red)}
+.annexe-add-row{display:flex;gap:8px;margin-bottom:10px}
+.annexe-add-row input{flex:1}
+.annexe-add-row select{flex:0 0 130px}
+.annexe-add-btn{padding:0 14px;border:0.5px solid var(--border);border-radius:var(--rs);background:var(--g1);color:white;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap}
+.annexe-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.annexe-reset-btn{font-size:12px;color:var(--muted);background:transparent;border:0.5px solid var(--border);border-radius:var(--rs);padding:5px 10px;cursor:pointer}
+.annexe-count{font-size:12px;color:var(--muted)}
+.annexe-prog-wrap{background:var(--border);border-radius:20px;height:6px;overflow:hidden;margin-bottom:12px}
+.annexe-prog-fill{height:100%;background:var(--amber);border-radius:20px;transition:width .3s}
 </style>
 </head>
 <body>
@@ -161,6 +213,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <div class="nav-tab active" onclick="switchTab('planning')"><span class="tab-icon">📅</span>Planning</div>
     <div class="nav-tab" onclick="switchTab('courses')"><span class="tab-icon">🛒</span>Courses</div>
     <div class="nav-tab" onclick="switchTab('resume')"><span class="tab-icon">📊</span>Macros</div>
+    <div class="nav-tab" onclick="switchTab('couts')"><span class="tab-icon">💰</span>Coûts</div>
+    <div class="nav-tab" onclick="switchTab('annexe')"><span class="tab-icon">📝</span>Divers</div>
     <div class="nav-tab" onclick="switchTab('infos')"><span class="tab-icon">ℹ️</span>Infos</div>
   </div>
 </nav>
@@ -214,6 +268,28 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 </div>
 
 <!-- INFOS -->
+
+<div class="content" id="tab-annexe">
+  <div class="annexe-add-row">
+    <input type="text" id="annexe-input" placeholder="Ajouter un article..." onkeydown="if(event.key==='Enter')addAnnexeItem()" />
+    <select id="annexe-cat-select">
+      <option value="Hygiène & beauté">Hygiène</option>
+      <option value="Entretien maison">Entretien</option>
+      <option value="Papeterie & divers">Divers</option>
+      <option value="Bébé & enfants">Enfants</option>
+      <option value="Pharmacie">Pharmacie</option>
+      <option value="Animaux">Animaux</option>
+    </select>
+    <button class="annexe-add-btn" onclick="addAnnexeItem()">+</button>
+  </div>
+  <div class="annexe-toolbar">
+    <span class="annexe-count" id="annexe-count">0 articles</span>
+    <button class="annexe-reset-btn" onclick="resetAnnexeChecked()">Décocher tout</button>
+  </div>
+  <div class="annexe-prog-wrap"><div class="annexe-prog-fill" id="annexe-prog"></div></div>
+  <div id="annexe-list"></div>
+</div>
+
 <div class="content" id="tab-infos">
   <div class="info-block">
     <div class="info-t">Objectifs nutritionnels</div>
@@ -269,6 +345,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
   </div>
 </div>
 
+
+<div class="content" id="tab-couts">
+  <div class="cout-week-toggle">
+    <button class="cwtt active" onclick="setCoutWeek(0)">Semaine en cours</button>
+    <button class="cwtt" onclick="setCoutWeek(1)">Semaine suivante</button>
+  </div>
+  <div class="cout-summary" id="cout-summary"></div>
+  <div id="cout-list"></div>
+</div>
+
 </div>
 
 <div class="overlay" id="overlay" onclick="closeDetail(event)">
@@ -303,6 +389,59 @@ function initActiveMeals(){
   });
 }
 initActiveMeals();
+
+let coutWeek = 0;
+
+// Prix estimés en euros (modifiables par l'utilisateur, stockés localement)
+const prixDefaut = {
+  'Skyr nature':2.20,'Flocons avoine':0.80,'Amandes':1.50,'Yaourt fruits mixé':0.90,
+  'Blanc poulet':3.50,'Riz complet':0.60,'Courgette':0.50,'Huile olive':0.80,
+  'Petit suisse':0.60,'Beurre de cacahuète':1.20,'Chocolat noir 70%+':0.90,
+  'Chocolat noir amandes':0.80,'Oeufs':2.50,'Champignons':1.20,'Salade verte':0.80,
+  'Cuisses poulet':3.80,'Patate douce':1.00,'Pois chiches':0.70,'Oignon':0.30,
+  'Boeuf maigre':4.50,'Riz basmati':0.70,'Poivron':0.80,'Tomates cerises':1.50,
+  'Pâtes complètes':1.10,'Boeuf haché maigre':4.00,'Tomates concassées':0.90,
+  'Filets saumon':5.50,'Épinards frais':1.80,'Banane':0.40,'Lentilles vertes':0.80,
+  'Skyr':2.20,'Avocats':1.50,'Tortillas complètes':1.20,'Gruyère':1.00,
+  'Lait végétal':1.50,'Boeuf mijoté':5.00,'Carottes':0.40,'Haricots verts':1.20,
+  'Tahini':1.50,'Parmesan':1.20,'Bouillon légumes':0.60,'Filets cabillaud':4.20,
+  'Saumon fumé':3.80,'Escalopes dinde':3.50,'Poulet rôti':5.00,'Thon en boîte':1.80,
+  'Olives noires':0.90,'Citron':0.30,'Ail':0.40,'Herbes de Provence':0.50,
+  'Curry doux':0.60,'Cumin':0.50,'Curcuma':0.50,'Cannelle':0.50,'Basilic':0.80,
+};
+let prixUser = {...prixDefaut};
+
+// Nombre de personnes par repas: mealPersons[semaine][jour][mealIdx] = N
+let mealPersons = {0:{},1:{}};
+
+function initMealPersons(){
+  [0,1].forEach(w=>{
+    JOURS.forEach((_,di)=>{
+      mealPersons[w][di]={};
+      [0,1,2,3,4].forEach(mi=>{
+        // Défaut : midi semaine=2, soir semaine=4, week-end=4
+        const estWeekend = di>=5;
+        const estSoir = mi===3;
+        const estCollation = mi===2||mi===4;
+        mealPersons[w][di][mi] = estCollation ? 2 : (estWeekend||estSoir) ? 4 : 2;
+      });
+    });
+  });
+}
+initMealPersons();
+
+function getMealPersons(w,di,mi){
+  return (mealPersons[w]&&mealPersons[w][di]&&mealPersons[w][di][mi])||2;
+}
+
+function setMealPersons(w,di,mi,val){
+  if(!mealPersons[w]) mealPersons[w]={};
+  if(!mealPersons[w][di]) mealPersons[w][di]={};
+  mealPersons[w][di][mi]=Math.max(1,Math.min(4,val));
+  renderPlanning();
+  renderCourses();
+}
+
 
 // ── DONNÉES SEMAINE 1 ──────────────────────────────────────────
 const semaine1=[
@@ -546,11 +685,13 @@ function toggleDay(w,di){
 
 // ── TABS ─────────────────────────────────────────────────────
 function switchTab(t){
-  document.querySelectorAll('.nav-tab').forEach((el,i)=>el.classList.toggle('active',['planning','courses','resume','infos'][i]===t));
+  document.querySelectorAll('.nav-tab').forEach((el,i)=>el.classList.toggle('active',['planning','courses','resume','couts','annexe','infos'][i]===t));
   document.querySelectorAll('.content').forEach(el=>el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
   if(t==='courses') renderCourses();
   if(t==='resume') renderResume();
+  if(t==='couts') renderCouts();
+  if(t==='annexe') renderAnnexe();
 }
 
 function setPerson(p){person=p;document.querySelectorAll('#tab-planning .ptog').forEach((el,i)=>el.classList.toggle('active',['f','m'][i]===p));renderPlanning();}
@@ -598,7 +739,12 @@ function renderPlanning(){
           </div>
           <div class="meal-nm" onclick="showDetail(${w},${di},${mi})">${m.nom}</div>
           <div class="meal-tm">${m.kcal} kcal</div>
-          ${m.portions.includes('4')?'<div class="portions-badge">👨‍👩‍👧‍👦 4 pers.</div>':''}
+          <div class="persons-selector">
+            <button class="ps-btn" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealPersons(${w},${di},${mi})-1)">−</button>
+            <span class="ps-val">${getMealPersons(w,di,mi)}</span>
+            <button class="ps-btn" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealPersons(${w},${di},${mi})+1)">+</button>
+            <span class="ps-lbl">pers.</span>
+          </div>
         </div>`;
       }).join('')}
     </div>`;
@@ -789,6 +935,241 @@ function renderResume(){
       Objectif calories ingérées : <strong>${ak} kcal</strong> · Déficit vs maintenance : <strong>~${def} kcal/j</strong> · ~${def*7} kcal/sem<br>
       Soit environ <strong>~${(def*7/7700).toFixed(1)} kg/semaine</strong> théorique
     </div>`;
+}
+
+
+function setCoutWeek(w){
+  coutWeek=w;
+  document.querySelectorAll('.cwtt').forEach((el,i)=>el.classList.toggle('active',i===w));
+  renderCouts();
+}
+
+function extractIngName(ing){
+  // Extraire le nom de base de l'ingrédient (sans quantité)
+  return ing.replace(/\d+[\d,.]*(g|kg|ml|L|cl|pièces?|boîtes?|cru|min|c\.à\.c)?/gi,'')
+    .replace(/x\d+/gi,'').replace(/\s+/g,' ').trim();
+}
+
+function getPrix(nomIng){
+  const clean = extractIngName(nomIng).toLowerCase();
+  for(const [k,v] of Object.entries(prixUser)){
+    if(clean.includes(k.toLowerCase())||k.toLowerCase().includes(clean)) return v;
+  }
+  return 1.50; // défaut
+}
+
+function renderCouts(){
+  const w = coutWeek;
+  const semaine = semaines[w];
+  
+  // Collecter tous les ingrédients actifs avec leur nombre de personnes
+  const ingMap = {};
+  JOURS.forEach((_,di)=>{
+    ['f','m'].forEach(p=>{
+      semaine[di][p].forEach((m,mi)=>{
+        if(!isMealActive(w,di,mi)) return;
+        const nbPersons = getMealPersons(w,di,mi);
+        m.ings.forEach(ing=>{
+          const key = ing.split('\n')[0].trim();
+          if(key.length<3) return;
+          if(!ingMap[key]) ingMap[key]={maxPersons:0,count:0};
+          ingMap[key].maxPersons = Math.max(ingMap[key].maxPersons, nbPersons);
+          ingMap[key].count++;
+        });
+      });
+    });
+  });
+
+  // Calculer les coûts
+  let totalBase = 0;
+  const lignes = [];
+  Object.entries(ingMap).forEach(([ing, meta])=>{
+    const prixBase = getPrix(ing);
+    // Ajuster selon nombre de personnes (base=2, on scale)
+    const facteur = meta.maxPersons / 2;
+    const prixAjuste = Math.round(prixBase * facteur * 100) / 100;
+    totalBase += prixAjuste;
+    lignes.push({ing, prix:prixAjuste, prixBase, persons:meta.maxPersons});
+  });
+
+  const total = Math.round(totalBase * 100) / 100;
+  const totalHebdo = total;
+  const totalMois = Math.round(total * 4.3 * 100) / 100;
+  const parPers = Math.round(total / 3 * 100) / 100; // ~3 personnes en moyenne
+
+  document.getElementById('cout-summary').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div>
+        <div class="cout-total">${total.toFixed(2)} €</div>
+        <div class="cout-sub">Estimation courses — ${semaineLabels[w]}</div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);text-align:right;line-height:1.6">
+        Prix modifiables<br>ci-dessous
+      </div>
+    </div>
+    <div class="cout-grid">
+      <div class="cout-box"><div class="cout-val">${totalHebdo.toFixed(2)} €</div><div class="cout-lbl">cette semaine</div></div>
+      <div class="cout-box"><div class="cout-val">${totalMois.toFixed(2)} €</div><div class="cout-lbl">estimation/mois</div></div>
+      <div class="cout-box"><div class="cout-val">${parPers.toFixed(2)} €</div><div class="cout-lbl">par personne/sem</div></div>
+      <div class="cout-box"><div class="cout-val">${(total/7).toFixed(2)} €</div><div class="cout-lbl">par jour</div></div>
+    </div>`;
+
+  // Grouper par catégorie
+  const cats = {
+    'Viandes & poissons':[],'Fruits & légumes':[],'Produits laitiers & oeufs':[],
+    'Épicerie & féculents':[],'Oléagineux & condiments':[],'Épices & aromates':[],'Plaisir':[]
+  };
+  const catKw = {
+    'Viandes & poissons':['poulet','boeuf','saumon','cabillaud','thon','dinde','jambon'],
+    'Fruits & légumes':['courgette','carotte','poivron','épinard','brocoli','tomate','salade','oignon','ail','champignon','patate','avocat','banane','citron','haricot','poireau'],
+    'Produits laitiers & oeufs':['oeuf','skyr','yaourt','petit suisse','parmesan','gruyère','tahini','lait'],
+    'Épicerie & féculents':['riz','pâtes','flocon','pois chiche','lentille','tortilla','bouillon','farine','tomates concassées'],
+    'Oléagineux & condiments':['amande','beurre de cacahuète','huile','sauce soja','basilic'],
+    'Épices & aromates':['curry','cumin','curcuma','paprika','cannelle','herbe'],
+    'Plaisir':['chocolat'],
+  };
+
+  lignes.forEach(l=>{
+    const low = l.ing.toLowerCase();
+    let placed = false;
+    for(const [cat,kws] of Object.entries(catKw)){
+      if(kws.some(k=>low.includes(k))){cats[cat].push(l);placed=true;break;}
+    }
+    if(!placed) cats['Épicerie & féculents'].push(l);
+  });
+
+  let html = '';
+  Object.entries(cats).filter(([,arr])=>arr.length>0).forEach(([cat,arr])=>{
+    const catTotal = arr.reduce((s,l)=>s+l.prix,0);
+    html += `<div class="prix-block">
+      <div class="prix-hd"><span>${cat}</span><span style="font-family:var(--mono)">${catTotal.toFixed(2)} €</span></div>`;
+    arr.forEach((l,idx)=>{
+      const safeKey = l.ing.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      html += `<div class="prix-item">
+        <div class="prix-nom">${l.ing}</div>
+        <div class="prix-pers">${l.persons} pers.</div>
+        <div class="prix-input-wrap">
+          <input class="prix-input" type="number" min="0.10" max="50" step="0.10"
+            value="${l.prixBase.toFixed(2)}"
+            onchange="updatePrix('${safeKey}', parseFloat(this.value))"
+            onclick="event.stopPropagation()" />
+          <span class="prix-unit">€</span>
+        </div>
+      </div>`;
+    });
+    html += `<div class="prix-total-row">
+      <span class="prix-total-lbl">Sous-total ${cat}</span>
+      <span class="prix-total-val">${catTotal.toFixed(2)} €</span>
+    </div></div>`;
+  });
+
+  document.getElementById('cout-list').innerHTML = html;
+}
+
+function updatePrix(ingName, newPrix){
+  if(isNaN(newPrix)||newPrix<=0) return;
+  // Chercher la clé correspondante dans prixUser
+  const clean = extractIngName(ingName).toLowerCase();
+  let found = false;
+  for(const k of Object.keys(prixUser)){
+    if(clean.includes(k.toLowerCase())||k.toLowerCase().includes(clean)){
+      prixUser[k] = newPrix;
+      found = true;
+      break;
+    }
+  }
+  if(!found) prixUser[ingName] = newPrix;
+  renderCouts();
+}
+
+
+// ── LISTE ANNEXE ─────────────────────────────────────────────
+const annexeDefaut = [
+  {id:1,nom:'Papier toilette',cat:'Hygiène & beauté',done:false},
+  {id:2,nom:'Essuie-tout',cat:'Entretien maison',done:false},
+  {id:3,nom:'Liquide vaisselle',cat:'Entretien maison',done:false},
+  {id:4,nom:'Lessive',cat:'Entretien maison',done:false},
+  {id:5,nom:'Savon mains',cat:'Hygiène & beauté',done:false},
+  {id:6,nom:'Gel douche',cat:'Hygiène & beauté',done:false},
+  {id:7,nom:'Shampooing',cat:'Hygiène & beauté',done:false},
+  {id:8,nom:'Dentifrice',cat:'Hygiène & beauté',done:false},
+  {id:9,nom:'Sacs poubelle',cat:'Entretien maison',done:false},
+  {id:10,nom:'Éponges',cat:'Entretien maison',done:false},
+  {id:11,nom:'Produit WC',cat:'Entretien maison',done:false},
+  {id:12,nom:'Lingettes bébé',cat:'Bébé & enfants',done:false},
+  {id:13,nom:'Couches',cat:'Bébé & enfants',done:false},
+];
+
+let annexeItems = JSON.parse(localStorage.getItem('annexeItems')||'null') || JSON.parse(JSON.stringify(annexeDefaut));
+let annexeNextId = Math.max(...annexeItems.map(i=>i.id), 20) + 1;
+
+function saveAnnexe(){
+  try{ localStorage.setItem('annexeItems', JSON.stringify(annexeItems)); }catch(e){}
+}
+
+function addAnnexeItem(){
+  const input = document.getElementById('annexe-input');
+  const cat = document.getElementById('annexe-cat-select').value;
+  const nom = input.value.trim();
+  if(!nom) return;
+  annexeItems.push({id:annexeNextId++, nom, cat, done:false});
+  input.value='';
+  saveAnnexe();
+  renderAnnexe();
+}
+
+function toggleAnnexeItem(id){
+  const it = annexeItems.find(i=>i.id===id);
+  if(it){ it.done=!it.done; saveAnnexe(); renderAnnexe(); }
+}
+
+function delAnnexeItem(id){
+  annexeItems = annexeItems.filter(i=>i.id!==id);
+  saveAnnexe();
+  renderAnnexe();
+}
+
+function resetAnnexeChecked(){
+  annexeItems.forEach(i=>i.done=false);
+  saveAnnexe();
+  renderAnnexe();
+}
+
+function renderAnnexe(){
+  const total = annexeItems.length;
+  const done = annexeItems.filter(i=>i.done).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('annexe-count').textContent = `${total} articles · ${done} cochés`;
+  document.getElementById('annexe-prog').style.width = pct+'%';
+
+  // Grouper par catégorie
+  const cats = {};
+  annexeItems.forEach(it=>{
+    if(!cats[it.cat]) cats[it.cat]=[];
+    cats[it.cat].push(it);
+  });
+
+  const order = ['Hygiène & beauté','Entretien maison','Bébé & enfants','Pharmacie','Papeterie & divers','Animaux'];
+  const sorted = [
+    ...order.filter(c=>cats[c]).map(c=>[c,cats[c]]),
+    ...Object.entries(cats).filter(([c])=>!order.includes(c))
+  ];
+
+  document.getElementById('annexe-list').innerHTML = sorted.map(([cat,items])=>`
+    <div class="annexe-section">
+      <div class="annexe-cat-hd">
+        <span>${cat}</span>
+        <span style="opacity:.7;font-weight:400">${items.filter(i=>i.done).length}/${items.length}</span>
+      </div>
+      <div class="annexe-items">
+        ${items.map(it=>`
+          <div class="annexe-item">
+            <div class="annexe-check${it.done?' done':''}" onclick="toggleAnnexeItem(${it.id})"></div>
+            <span class="annexe-label${it.done?' done':''}" onclick="toggleAnnexeItem(${it.id})">${it.nom}</span>
+            <button class="annexe-del" onclick="delAnnexeItem(${it.id})">×</button>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
 renderPlanning();
