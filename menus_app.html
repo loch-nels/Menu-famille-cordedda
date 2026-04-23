@@ -793,6 +793,35 @@ function closeDetail(e){
 }
 
 // ── COURSES ──────────────────────────────────────────────────
+// ── Parsing ingrédient : extraire nom de base + quantité + unité ──
+function parseIng(ing){
+  const raw = ing.split('\n')[0].trim();
+  // Extraire quantité et unité
+  const qMatch = raw.match(/(\d+[\d,.]*)\s*(g|kg|ml|l|cl|pièces?|boîtes?|sachets?|tranches?|gousses?|pots?|bouteilles?|plaquettes?)?/i);
+  let qty = 0, unit = '';
+  if(qMatch){
+    qty = parseFloat(qMatch[1].replace(',','.')) || 0;
+    unit = (qMatch[2]||'').toLowerCase().replace(/s$/,'');
+  }
+  // Normaliser unités
+  if(unit==='kg') { qty*=1000; unit='g'; }
+  if(unit==='l')  { qty*=100;  unit='cl'; }
+  // Nom de base = texte sans chiffres et unités
+  const nom = raw
+    .replace(/(\d+[\d,.]*\s*(g|kg|ml|l|cl|pièces?|boîtes?|sachets?|tranches?|gousses?|pots?|bouteilles?|plaquettes?|cru|min|c\.à\.c)?)/gi,'')
+    .replace(/x\d+/gi,'').replace(/\s+/g,' ').trim()
+    .replace(/^[•\-]\s*/,'');
+  return {nom, qty, unit, raw};
+}
+
+function normalizeIngKey(nom){
+  return nom.toLowerCase()
+    // Supprimer qualificatifs de cuisson/état
+    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince)\b/g,'')
+    .replace(/s$/,'')
+    .replace(/\s+/g,' ').trim();
+}
+
 function renderCourses(){
   const w=courseWeek;
   const semaine=semaines[w];
@@ -804,20 +833,37 @@ function renderCourses(){
     `📅 ${semaineLabels[w]} (${getWeekDates(w)})`+
     (disabledCount>0?` · <strong>${disabledCount} repas désactivés</strong> retirés des courses`:'· Tous les repas actifs');
 
-  // Collecter ingrédients uniquement des repas actifs
+  // Collecter et REGROUPER les ingrédients par nom de base
   const ingMap={};
+  // On utilise seulement 'f' pour éviter les doublons Elle/Lui (mêmes ingrédients)
   JOURS.forEach((_,di)=>{
-    ['f','m'].forEach(p=>{
-      semaine[di][p].forEach((m,mi)=>{
-        if(!isMealActive(w,di,mi)) return;
-        const p4=m.portions.includes('4');
-        m.ings.forEach(ing=>{
-          const key=ing.split('\n')[0].trim();
-          if(key.length<3) return;
-          if(!ingMap[key]) ingMap[key]={portions4:false,count:0};
-          ingMap[key].count++;
-          if(p4) ingMap[key].portions4=true;
-        });
+    semaine[di]['f'].forEach((m,mi)=>{
+      if(!isMealActive(w,di,mi)) return;
+      const p4=m.portions.includes('4');
+      const nbP = getMealPersons(w,di,mi);
+      m.ings.forEach(ing=>{
+        const parsed = parseIng(ing);
+        if(parsed.nom.length<2) return;
+        const key = normalizeIngKey(parsed.nom);
+        if(!ingMap[key]){
+          ingMap[key]={
+            nom: parsed.nom, // nom affiché
+            totalQty: 0,
+            unit: parsed.unit,
+            portions4: false,
+            maxPersons: nbP,
+            rawList: []
+          };
+        }
+        // Cumuler les quantités
+        if(parsed.qty>0){
+          // Ajuster selon nombre de personnes réel vs base recette
+          const factP = nbP / (p4?4:2);
+          ingMap[key].totalQty += parsed.qty * factP;
+        }
+        if(p4) ingMap[key].portions4=true;
+        ingMap[key].maxPersons = Math.max(ingMap[key].maxPersons, nbP);
+        ingMap[key].rawList.push(parsed.raw);
       });
     });
   });
@@ -837,13 +883,13 @@ function renderCourses(){
     'Plaisir — adultes':['chocolat'],
   };
 
-  Object.entries(ingMap).forEach(([ing,meta])=>{
-    const low=ing.toLowerCase();
+  Object.entries(ingMap).forEach(([key,data])=>{
+    const low=data.nom.toLowerCase();
     let placed=false;
     for(const [cat,kws] of Object.entries(catKw)){
-      if(kws.some(k=>low.includes(k))){cats[cat].push({n:ing,meta});placed=true;break;}
+      if(kws.some(k=>low.includes(k))){cats[cat].push({key,data});placed=true;break;}
     }
-    if(!placed) cats['Épicerie & féculents'].push({n:ing,meta});
+    if(!placed) cats['Épicerie & féculents'].push({key,data});
   });
 
   const total=Object.values(cats).reduce((s,arr)=>s+arr.length,0);
@@ -853,16 +899,19 @@ function renderCourses(){
   document.getElementById('prog-lbl').textContent=`${done} / ${total} articles cochés`;
 
   document.getElementById('courses-list').innerHTML=Object.entries(cats).filter(([,arr])=>arr.length>0).map(([cat,arr])=>{
-    const cd=arr.filter(it=>(checked[w]||{})[it.n]).length;
+    const cd=arr.filter(it=>(checked[w]||{})[it.key]).length;
     return `<div class="cat-block">
       <div class="cat-hd"><span>${cat}</span><span>${cd}/${arr.length}</span></div>
       ${arr.map(it=>{
-        const d=!!((checked[w]||{})[it.n]);
-        const p4=it.meta.portions4;
-        return `<div class="course-item" onclick="toggleCourse(${w},'${it.n.replace(/'/g,"\\'")}')">
+        const d=!!((checked[w]||{})[it.key]);
+        const p4=it.data.portions4;
+        const qtyStr = it.data.totalQty>0
+          ? `${Math.ceil(it.data.totalQty)}${it.data.unit||''}`
+          : '';
+        return `<div class="course-item" onclick="toggleCourse(${w},'${it.key.replace(/'/g,"\\'")}')">
           <div class="ccheck${d?' done':''}"></div>
           <div class="clabel">
-            <div class="cname${d?' done':''}">${it.n}</div>
+            <div class="cname${d?' done':''}">${it.data.nom}${qtyStr?' <span style=\"font-weight:500;color:var(--g2)\">— '+qtyStr+'</span>':''}</div>
             <span class="cportion ${p4?'cp4':'cp2'}">${p4?'👨‍👩‍👧‍👦 4 pers.':'2 adultes'}</span>
           </div>
         </div>`;
@@ -871,9 +920,9 @@ function renderCourses(){
   }).join('');
 }
 
-function toggleCourse(w,n){
+function toggleCourse(w,key){
   if(!checked[w]) checked[w]={};
-  checked[w][n]=!checked[w][n];
+  checked[w][key]=!checked[w][key];
   renderCourses();
 }
 
@@ -962,34 +1011,39 @@ function renderCouts(){
   const w = coutWeek;
   const semaine = semaines[w];
   
-  // Collecter tous les ingrédients actifs avec leur nombre de personnes
+  // Collecter et REGROUPER les ingrédients actifs (même logique que courses)
   const ingMap = {};
   JOURS.forEach((_,di)=>{
-    ['f','m'].forEach(p=>{
-      semaine[di][p].forEach((m,mi)=>{
-        if(!isMealActive(w,di,mi)) return;
-        const nbPersons = getMealPersons(w,di,mi);
-        m.ings.forEach(ing=>{
-          const key = ing.split('\n')[0].trim();
-          if(key.length<3) return;
-          if(!ingMap[key]) ingMap[key]={maxPersons:0,count:0};
-          ingMap[key].maxPersons = Math.max(ingMap[key].maxPersons, nbPersons);
-          ingMap[key].count++;
-        });
+    semaine[di]['f'].forEach((m,mi)=>{
+      if(!isMealActive(w,di,mi)) return;
+      const nbPersons = getMealPersons(w,di,mi);
+      const p4 = m.portions.includes('4');
+      m.ings.forEach(ing=>{
+        const parsed = parseIng(ing);
+        if(parsed.nom.length<2) return;
+        const key = normalizeIngKey(parsed.nom);
+        if(!ingMap[key]){
+          ingMap[key]={nom:parsed.nom, totalQty:0, unit:parsed.unit, maxPersons:nbPersons};
+        }
+        if(parsed.qty>0){
+          const factP = nbPersons/(p4?4:2);
+          ingMap[key].totalQty += parsed.qty * factP;
+        }
+        ingMap[key].maxPersons = Math.max(ingMap[key].maxPersons, nbPersons);
       });
     });
   });
 
-  // Calculer les coûts
+  // Calculer les coûts regroupés
   let totalBase = 0;
   const lignes = [];
-  Object.entries(ingMap).forEach(([ing, meta])=>{
-    const prixBase = getPrix(ing);
-    // Ajuster selon nombre de personnes (base=2, on scale)
-    const facteur = meta.maxPersons / 2;
+  Object.entries(ingMap).forEach(([key, data])=>{
+    const prixBase = getPrix(data.nom);
+    const facteur = data.maxPersons / 2;
     const prixAjuste = Math.round(prixBase * facteur * 100) / 100;
     totalBase += prixAjuste;
-    lignes.push({ing, prix:prixAjuste, prixBase, persons:meta.maxPersons});
+    const qtyStr = data.totalQty>0?`${Math.ceil(data.totalQty)}${data.unit||''}`:'';
+    lignes.push({ing:data.nom, qtyStr, prix:prixAjuste, prixBase, persons:data.maxPersons, key});
   });
 
   const total = Math.round(totalBase * 100) / 100;
@@ -1046,7 +1100,7 @@ function renderCouts(){
     arr.forEach((l,idx)=>{
       const safeKey = l.ing.replace(/'/g,"\\'").replace(/"/g,'&quot;');
       html += `<div class="prix-item">
-        <div class="prix-nom">${l.ing}</div>
+        <div class="prix-nom">${l.ing}${l.qtyStr?' <span style="font-size:11px;color:var(--g3);font-weight:500">'+l.qtyStr+'</span>':''}</div>
         <div class="prix-pers">${l.persons} pers.</div>
         <div class="prix-input-wrap">
           <input class="prix-input" type="number" min="0.10" max="50" step="0.10"
