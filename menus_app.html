@@ -202,6 +202,32 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .annexe-count{font-size:12px;color:var(--muted)}
 .annexe-prog-wrap{background:var(--border);border-radius:20px;height:6px;overflow:hidden;margin-bottom:12px}
 .annexe-prog-fill{height:100%;background:var(--amber);border-radius:20px;transition:width .3s}
+
+.budget-bar-wrap{margin-bottom:14px;background:var(--white);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow)}
+.budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.budget-label{font-size:13px;font-weight:600;color:var(--text)}
+.budget-amount{font-size:16px;font-weight:700;font-family:var(--mono)}
+.budget-amount.ok{color:var(--g2)}.budget-amount.warn{color:var(--amber)}.budget-amount.over{color:var(--red)}
+.budget-bar{height:8px;border-radius:4px;background:var(--border);overflow:hidden}
+.budget-fill{height:100%;border-radius:4px;transition:width .3s,background .3s}
+.budget-fill.ok{background:var(--g3)}.budget-fill.warn{background:var(--amber)}.budget-fill.over{background:var(--red)}
+.budget-sub{font-size:11px;color:var(--muted);margin-top:5px}
+
+.recettes-sheet{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:flex-end}
+.recettes-sheet.open{display:flex}
+.recettes-panel{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:70vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px)}
+.recettes-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.recettes-body{padding:14px 18px 20px}
+.recettes-ing-title{font-size:17px;font-weight:700;margin-bottom:4px}
+.recettes-ing-qty{font-size:13px;color:var(--g2);font-weight:500;margin-bottom:14px}
+.recette-line{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--g6)}
+.recette-line:last-child{border-bottom:none}
+.recette-jour{font-size:11px;font-weight:600;color:var(--g2);min-width:70px;padding-top:2px}
+.recette-nom{font-size:13px;color:var(--text);line-height:1.4}
+.recette-moment{font-size:10px;color:var(--muted);margin-top:2px}
+.btn-close-recettes{display:block;width:100%;padding:12px;background:var(--g1);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:var(--font)}
+.ing-info-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:10px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px}
+.ing-info-btn:active{background:var(--g5)}
 </style>
 </head>
 <body>
@@ -246,6 +272,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <button class="cwt active" onclick="setCourseWeek(0)">Semaine en cours</button>
     <button class="cwt" onclick="setCourseWeek(1)">Semaine suivante</button>
   </div>
+  <div class="budget-bar-wrap" id="budget-bar-wrap"></div>
   <div class="courses-info" id="courses-info"></div>
   <div class="prog-wrap"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   <div class="prog-lbl" id="prog-lbl">0 / 0 articles cochés</div>
@@ -357,6 +384,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 
 </div>
 
+
+<div class="recettes-sheet" id="recettes-sheet" onclick="closeRecettesSheet(event)">
+  <div class="recettes-panel" id="recettes-panel">
+    <div class="recettes-handle"></div>
+    <div class="recettes-body" id="recettes-body"></div>
+  </div>
+</div>
+
 <div class="overlay" id="overlay" onclick="closeDetail(event)">
   <div class="sheet" id="sheet">
     <div class="sheet-handle"></div>
@@ -394,22 +429,36 @@ let coutWeek = 0;
 
 // Prix estimés en euros (modifiables par l'utilisateur, stockés localement)
 const prixDefaut = {
-  'Skyr nature':2.20,'Flocons avoine':0.80,'Amandes':1.50,'Yaourt fruits mixé':0.90,
-  'Blanc poulet':3.50,'Riz complet':0.60,'Courgette':0.50,'Huile olive':0.80,
-  'Petit suisse':0.60,'Beurre de cacahuète':1.20,'Chocolat noir 70%+':0.90,
-  'Chocolat noir amandes':0.80,'Oeufs':2.50,'Champignons':1.20,'Salade verte':0.80,
-  'Cuisses poulet':3.80,'Patate douce':1.00,'Pois chiches':0.70,'Oignon':0.30,
-  'Boeuf maigre':4.50,'Riz basmati':0.70,'Poivron':0.80,'Tomates cerises':1.50,
-  'Pâtes complètes':1.10,'Boeuf haché maigre':4.00,'Tomates concassées':0.90,
-  'Filets saumon':5.50,'Épinards frais':1.80,'Banane':0.40,'Lentilles vertes':0.80,
-  'Skyr':2.20,'Avocats':1.50,'Tortillas complètes':1.20,'Gruyère':1.00,
-  'Lait végétal':1.50,'Boeuf mijoté':5.00,'Carottes':0.40,'Haricots verts':1.20,
-  'Tahini':1.50,'Parmesan':1.20,'Bouillon légumes':0.60,'Filets cabillaud':4.20,
-  'Saumon fumé':3.80,'Escalopes dinde':3.50,'Poulet rôti':5.00,'Thon en boîte':1.80,
-  'Olives noires':0.90,'Citron':0.30,'Ail':0.40,'Herbes de Provence':0.50,
-  'Curry doux':0.60,'Cumin':0.50,'Curcuma':0.50,'Cannelle':0.50,'Basilic':0.80,
+  // Produits laitiers & oeufs — prix Leclerc/Intermarché
+  'Skyr nature':1.80,'Skyr':1.80,'Yaourt fruits mixé':0.75,'Petit suisse':0.55,
+  'Oeufs':2.20,'Gruyère':0.90,'Parmesan':1.00,'Lait végétal':1.20,'Tahini':1.20,
+  // Viandes — prix Leclerc/Intermarché
+  'Blanc poulet':2.80,'Cuisses poulet':2.50,'Poulet rôti':4.50,
+  'Boeuf maigre':3.50,'Boeuf haché maigre':3.20,'Boeuf mijoté':4.00,
+  'Escalopes dinde':2.80,
+  // Poisson — midi uniquement, 2 fois/semaine max
+  'Filets saumon':3.80,'Filets cabillaud':3.20,'Saumon fumé':3.00,'Thon en boîte':1.50,
+  // Légumineuses & féculents
+  'Pois chiches':0.65,'Lentilles vertes':0.70,'Riz complet':0.55,'Riz basmati':0.60,
+  'Pâtes complètes':0.95,'Flocons avoine':0.70,'Farine':0.60,'Tortillas complètes':1.00,
+  'Tomates concassées':0.75,'Bouillon légumes':0.50,
+  // Fruits & légumes
+  'Courgette':0.45,'Carotte':0.35,'Poivron':0.70,'Tomates cerises':1.20,
+  'Patate douce':0.80,'Épinards frais':1.50,'Champignons':1.00,'Salade verte':0.70,
+  'Avocats':1.20,'Banane':0.35,'Citron':0.25,'Oignon':0.25,'Ail':0.35,
+  'Haricots verts':0.90,'Brocoli':0.90,'Carottes':0.35,
+  // Oléagineux & condiments
+  'Amandes':1.20,'Beurre de cacahuète':1.00,'Huile olive':0.70,'Sauce soja':0.50,
+  'Olives noires':0.80,'Basilic':0.70,
+  // Épices
+  'Herbes de Provence':0.40,'Curry doux':0.45,'Cumin':0.40,'Curcuma':0.40,
+  'Cannelle':0.40,'Paprika':0.40,
+  // Divers
+  'Chocolat noir 70%+':0.80,'Chocolat noir amandes':0.70,
 };
 let prixUser = {...prixDefaut};
+// Charger les prix modifiés par l'utilisateur
+try{ const saved=localStorage.getItem('prixUser'); if(saved) prixUser={...prixDefaut,...JSON.parse(saved)}; }catch(e){}
 
 // Nombre de personnes par repas: mealPersons[semaine][jour][mealIdx] = N
 let mealPersons = {0:{},1:{}};
@@ -534,13 +583,13 @@ const semaine1=[
     {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:352,p:20,g:42,l:11,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Amandes 60g','Flocons avoine 80g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
     {moment:'Déjeuner',nom:'Omelette boeuf légumes salade',kcal:409,p:30,g:14,l:24,portions:'4 pers.',ings:['Oeufs 10 pièces','Boeuf maigre 300g','Poivron 200g','Tomates 160g','Huile olive 14g','Salade verte 160g'],steps:['Poêler le boeuf en lanières 5 min.','Faire revenir légumes 5 min.','Ajouter oeufs battus, cuire 5 min.','Servir avec salade.'],note:'Portions plus petites pour les enfants.'},
     {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:233,p:10,g:27,l:11,portions:'4 pers.',ings:['Flocons avoine 160g','Beurre cacahuète 40g','Lait végétal 320ml'],steps:['Préparer 4 bols de porridge.','Ajouter beurre de cacahuète dans chacun.'],note:''},
-    {moment:'Dîner',nom:'Saumon riz complet épinards',kcal:485,p:38,g:36,l:21,portions:'4 pers.',ings:['Filets saumon 4 pièces','Riz complet 200g cru','Épinards frais 300g','Ail 2 gousses','Huile olive 10g','Citron'],steps:['Cuire le riz complet 25 min.','Poêler le saumon 4 min/face.','Faire tomber les épinards avec ail 3 min.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants.'},
+    {moment:'Dîner',nom:'Oeufs cocotte épinards riz complet',kcal:420,p:28,g:38,l:16,portions:'4 pers.',ings:['Oeufs 8 pièces','Épinards frais 300g','Riz complet 180g','Crème légère 40g','Ail 2 gousses','Gruyère 40g'],steps:['Cuire le riz complet 25 min.','Faire tomber les épinards avec ail 3 min.','Répartir dans des ramequins avec crème + oeufs + gruyère.','Cuire au four 10 min à 180°C.'],note:'Plat familial sans poisson. Portions réduites pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:407,p:24,g:48,l:13,portions:'4 pers.',ings:['Skyr 400g','Yaourt fruits mixé 320g','Amandes 60g','Flocons avoine 80g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
     {moment:'Déjeuner',nom:'Omelette boeuf légumes salade',kcal:471,p:35,g:14,l:30,portions:'4 pers.',ings:['Oeufs 12 pièces','Boeuf maigre 300g','Poivron 200g','Tomates 160g','Huile olive 18g','Salade verte 160g'],steps:['Poêler le boeuf en lanières 5 min.','Faire revenir légumes 5 min.','Ajouter oeufs battus, cuire 5 min.','Servir avec salade.'],note:'Portions plus petites pour les enfants.'},
     {moment:'Collation',nom:'Porridge beurre cacahuète',kcal:258,p:11,g:30,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Beurre cacahuète 14g','Lait végétal 100ml'],steps:['Préparer le porridge, ajouter beurre de cacahuète.'],note:''},
-    {moment:'Dîner',nom:'Saumon riz complet épinards',kcal:534,p:43,g:40,l:24,portions:'4 pers.',ings:['Filets saumon 4 pièces','Riz complet 200g cru','Épinards frais 300g','Ail 2 gousses','Huile olive 10g','Citron'],steps:['Cuire le riz complet 25 min.','Poêler le saumon 4 min/face.','Faire tomber les épinards 3 min.','Servir avec citron.'],note:'Retirer les arêtes pour les enfants.'},
+    {moment:'Dîner',nom:'Oeufs cocotte épinards riz complet',kcal:490,p:34,g:44,l:18,portions:'4 pers.',ings:['Oeufs 10 pièces','Épinards frais 300g','Riz complet 200g','Crème légère 50g','Ail 2 gousses','Gruyère 50g'],steps:['Cuire le riz complet 25 min.','Faire tomber les épinards avec ail 3 min.','Répartir dans des ramequins avec crème + oeufs + gruyère.','Cuire au four 10 min à 180°C.'],note:'Plat familial sans poisson.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
 ];
@@ -816,8 +865,12 @@ function parseIng(ing){
 
 function normalizeIngKey(nom){
   return nom.toLowerCase()
-    // Supprimer qualificatifs de cuisson/état
-    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince)\b/g,'')
+    // Supprimer "x 2", "x2", "x 4" etc.
+    .replace(/\bx\s*\d+\b/g,'')
+    // Supprimer qualificatifs de cuisson/état/texture
+    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|dur|durs|dure|dures|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince|sans|morceaux|végétal|végétale)\b/g,'')
+    // Supprimer les chiffres isolés en fin (ex: "yaourt fruits mixé 2")
+    .replace(/\s+\d+$/, '')
     .replace(/s$/,'')
     .replace(/\s+/g,' ').trim();
 }
@@ -895,6 +948,14 @@ function renderCourses(){
   const total=Object.values(cats).reduce((s,arr)=>s+arr.length,0);
   const done=Object.values(checked[w]||{}).filter(Boolean).length;
   const pct=total?Math.round(done/total*100):0;
+  // Calculer le coût total pour le budget — prix réel sans multiplication
+  let totalCout = 0;
+  Object.entries(ingMap).forEach(([key,data])=>{
+    const prix = getPrix(data.nom);
+    totalCout += prix;
+  });
+  renderBudget(Math.round(totalCout * 100) / 100);
+
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('prog-lbl').textContent=`${done} / ${total} articles cochés`;
 
@@ -908,10 +969,16 @@ function renderCourses(){
         const qtyStr = it.data.totalQty>0
           ? `${Math.ceil(it.data.totalQty)}${it.data.unit||''}`
           : '';
+        const recettesMap = buildIngRecettesMap(w);
+        const recettes = recettesMap[it.key]||[];
+        const recettesJson = JSON.stringify(recettes).replace(/'/g,"\\'").replace(/"/g,'&quot;');
         return `<div class="course-item" onclick="toggleCourse(${w},'${it.key.replace(/'/g,"\\'")}')">
           <div class="ccheck${d?' done':''}"></div>
           <div class="clabel">
-            <div class="cname${d?' done':''}">${it.data.nom}${qtyStr?' <span style=\"font-weight:500;color:var(--g2)\">— '+qtyStr+'</span>':''}</div>
+            <div class="cname${d?' done':''}" style="display:flex;align-items:center;gap:4px">
+              ${it.data.nom}${qtyStr?' <span style=\"font-weight:500;color:var(--g2)\">— '+qtyStr+'</span>':''}
+              ${recettes.length>0?`<button class=\"ing-info-btn\" onclick=\"event.stopPropagation();showRecettesForIng('${it.data.nom}','${qtyStr}',JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(recettes))}')))\">?</button>`:''}
+            </div>
             <span class="cportion ${p4?'cp4':'cp2'}">${p4?'👨‍👩‍👧‍👦 4 pers.':'2 adultes'}</span>
           </div>
         </div>`;
@@ -923,7 +990,19 @@ function renderCourses(){
 function toggleCourse(w,key){
   if(!checked[w]) checked[w]={};
   checked[w][key]=!checked[w][key];
+  saveChecked();
   renderCourses();
+}
+
+function saveChecked(){
+  try{ localStorage.setItem('coursesChecked', JSON.stringify(checked)); }catch(e){}
+}
+
+function loadChecked(){
+  try{
+    const saved = localStorage.getItem('coursesChecked');
+    if(saved) checked = JSON.parse(saved);
+  }catch(e){}
 }
 
 // ── RESUME ────────────────────────────────────────────────────
@@ -987,6 +1066,70 @@ function renderResume(){
 }
 
 
+
+const BUDGET_MAX = 80;
+
+function renderBudget(totalCout){
+  const pct = Math.min(100, Math.round(totalCout / BUDGET_MAX * 100));
+  const restant = Math.round((BUDGET_MAX - totalCout) * 100) / 100;
+  const status = totalCout <= BUDGET_MAX * 0.85 ? 'ok' : totalCout <= BUDGET_MAX ? 'warn' : 'over';
+  const msg = status === 'over'
+    ? `⚠️ Dépassement de ${Math.abs(restant).toFixed(2)} €`
+    : status === 'warn'
+    ? `⚡ Plus que ${restant.toFixed(2)} € disponibles`
+    : `✅ ${restant.toFixed(2)} € disponibles`;
+  document.getElementById('budget-bar-wrap').innerHTML = `
+    <div class="budget-top">
+      <span class="budget-label">Budget semaine</span>
+      <span class="budget-amount ${status}">${totalCout.toFixed(2)} € / ${BUDGET_MAX} €</span>
+    </div>
+    <div class="budget-bar"><div class="budget-fill ${status}" style="width:${pct}%"></div></div>
+    <div class="budget-sub">${msg}</div>`;
+}
+
+// Construire le mapping ingrédient → recettes qui l'utilisent
+function buildIngRecettesMap(w){
+  const map = {};
+  const semaine = semaines[w];
+  JOURS.forEach((jour,di)=>{
+    semaine[di]['f'].forEach((m,mi)=>{
+      if(!isMealActive(w,di,mi)) return;
+      m.ings.forEach(ing=>{
+        const parsed = parseIng(ing);
+        const key = normalizeIngKey(parsed.nom);
+        if(!map[key]) map[key]=[];
+        map[key].push({jour, moment:m.moment, nom:m.nom});
+      });
+    });
+  });
+  return map;
+}
+
+function showRecettesForIng(ingNom, qtyStr, recettes){
+  document.getElementById('recettes-body').innerHTML = `
+    <div class="recettes-ing-title">${ingNom}</div>
+    <div class="recettes-ing-qty">${qtyStr ? 'Total : ' + qtyStr : ''}</div>
+    <div>
+      ${recettes.map(r=>`
+        <div class="recette-line">
+          <div class="recette-jour">${r.jour}</div>
+          <div>
+            <div class="recette-nom">${r.nom}</div>
+            <div class="recette-moment">${r.moment}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="btn-close-recettes" onclick="closeRecettesSheet()">Fermer</button>`;
+  document.getElementById('recettes-sheet').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeRecettesSheet(e){
+  if(e && document.getElementById('recettes-panel').contains(e.target)) return;
+  document.getElementById('recettes-sheet').classList.remove('open');
+  document.body.style.overflow='';
+}
+
 function setCoutWeek(w){
   coutWeek=w;
   document.querySelectorAll('.cwtt').forEach((el,i)=>el.classList.toggle('active',i===w));
@@ -1034,13 +1177,14 @@ function renderCouts(){
     });
   });
 
-  // Calculer les coûts regroupés
+  // Calculer les coûts — prix réel d'achat sans multiplication artificielle
   let totalBase = 0;
   const lignes = [];
   Object.entries(ingMap).forEach(([key, data])=>{
     const prixBase = getPrix(data.nom);
-    const facteur = data.maxPersons / 2;
-    const prixAjuste = Math.round(prixBase * facteur * 100) / 100;
+    // Ajuster selon la quantité totale réelle (base prix = portion standard)
+    // On ne multiplie PAS par le facteur personnes — le prix reflète l'achat réel
+    const prixAjuste = Math.round(prixBase * 100) / 100;
     totalBase += prixAjuste;
     const qtyStr = data.totalQty>0?`${Math.ceil(data.totalQty)}${data.unit||''}`:'';
     lignes.push({ing:data.nom, qtyStr, prix:prixAjuste, prixBase, persons:data.maxPersons, key});
@@ -1122,7 +1266,6 @@ function renderCouts(){
 
 function updatePrix(ingName, newPrix){
   if(isNaN(newPrix)||newPrix<=0) return;
-  // Chercher la clé correspondante dans prixUser
   const clean = extractIngName(ingName).toLowerCase();
   let found = false;
   for(const k of Object.keys(prixUser)){
@@ -1133,7 +1276,10 @@ function updatePrix(ingName, newPrix){
     }
   }
   if(!found) prixUser[ingName] = newPrix;
+  // Sauvegarder les prix modifiés
+  try{ localStorage.setItem('prixUser', JSON.stringify(prixUser)); }catch(e){}
   renderCouts();
+  renderCourses();
 }
 
 
@@ -1226,6 +1372,7 @@ function renderAnnexe(){
     </div>`).join('');
 }
 
+loadChecked();
 renderPlanning();
 renderCourses();
 renderResume();
