@@ -228,6 +228,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .btn-close-recettes{display:block;width:100%;padding:12px;background:var(--g1);color:white;border:none;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:var(--font)}
 .ing-info-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:10px;font-weight:700;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px}
 .ing-info-btn:active{background:var(--g5)}
+
+.portions-section{margin-top:14px}
+.portions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+.portion-card{background:var(--g6);border-radius:var(--rs);padding:10px 12px}
+.portion-card.elle{background:#EEF4FF;border-left:3px solid #6B8FF0}
+.portion-card.lui{background:#F0FAF3;border-left:3px solid var(--g3)}
+.portion-card.enfant{background:var(--amber-l);border-left:3px solid var(--amber)}
+.portion-who{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.portion-kcal{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.portion-macros{font-size:11px;color:var(--muted);margin-top:3px}
+.portion-poids{font-size:12px;font-weight:600;color:var(--g2);margin-top:4px}
+.ing-total-section{margin-top:14px}
+.ing-total-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--g6)}
+.ing-total-item:last-child{border-bottom:none}
+.ing-total-nom{font-size:13px;color:var(--text)}
+.ing-total-qty{font-size:13px;font-weight:600;color:var(--g1);font-family:var(--mono)}
 </style>
 </head>
 <body>
@@ -428,32 +444,85 @@ initActiveMeals();
 let coutWeek = 0;
 
 // Prix estimés en euros (modifiables par l'utilisateur, stockés localement)
+// Prix par kg/L réels Leclerc — utilisés pour calculer le coût
+// basé sur la quantité totale hebdomadaire
+const prixParKg = {
+  // Viandes (€/kg)
+  'poulet':      11.00,  // blanc poulet ~11€/kg
+  'cuisses':      7.50,  // cuisses ~7.50€/kg
+  'boeuf':       16.00,  // boeuf maigre ~16€/kg
+  'hache':       11.00,  // haché ~11€/kg
+  'dinde':        9.00,
+  // Poisson (€/kg)
+  'saumon':      22.00,
+  'cabillaud':   14.00,
+  'thon':        25.00,  // thon en boîte ~1.50€/160g = 9.37€/kg
+  // Produits laitiers (€/kg ou €/L)
+  'skyr':         4.00,  // ~4€/kg (pot 500g Leclerc = 2€)
+  'yaourt':       2.20,
+  'suisse':       3.50,
+  'oeuf':         0.30,  // 0.30€/oeuf (boîte 12 = 3.60€)
+  'creme':        3.00,
+  'gruyere':     11.00,
+  'parmesan':    20.00,
+  'tahini':       9.00,
+  'lait':         1.20,  // €/L
+  // Féculents (€/kg)
+  'riz':          2.20,
+  'pate':         2.40,
+  'flocon':       1.80,
+  'lentille':     2.20,
+  'pois':         2.00,  // pois chiches boîte ~0.85€/400g = 2.12€/kg
+  'farine':       1.00,
+  // Légumes (€/kg)
+  'courgette':    2.20,
+  'carotte':      1.20,
+  'poivron':      4.00,
+  'tomate':       3.00,
+  'salade':       2.50,
+  'oignon':       1.20,
+  'ail':         10.00,
+  'champignon':   4.50,
+  'patate douce': 2.20,
+  'epinard':      5.00,
+  'brocoli':      2.50,
+  'haricot':      3.50,
+  'banane':       1.50,
+  'citron':       2.50,
+  'avocat':       3.00,  // ~1.20€ pièce ~400g
+  // Oléagineux & condiments (€/kg)
+  'amande':      14.00,
+  'beurre de cacahuete': 7.00,
+  'beurre cacahuete':    7.00,
+  'huile':        7.00,  // €/L huile olive
+  'sauce soja':   5.00,
+  'olive':        8.00,
+  'chocolat':    12.00,
+  'beurre':       8.00,
+  // Épices & herbes — prix fixe à l'achat (boîte)
+  'herbe':        1.00,'curry':1.20,'cumin':1.00,'curcuma':1.00,
+  'cannelle':1.00,'paprika':1.00,'vinaigre':0.80,
+};
+
+// Garder prixDefaut pour compatibilité avec l'ancienne logique
 const prixDefaut = {
-  // Produits laitiers & oeufs — prix Leclerc/Intermarché
   'Skyr nature':1.80,'Skyr':1.80,'Yaourt fruits mixé':0.75,'Petit suisse':0.55,
   'Oeufs':2.20,'Gruyère':0.90,'Parmesan':1.00,'Lait végétal':1.20,'Tahini':1.20,
-  // Viandes — prix Leclerc/Intermarché
   'Blanc poulet':2.80,'Cuisses poulet':2.50,'Poulet rôti':4.50,
   'Boeuf maigre':3.50,'Boeuf haché maigre':3.20,'Boeuf mijoté':4.00,
   'Escalopes dinde':2.80,
-  // Poisson — midi uniquement, 2 fois/semaine max
   'Filets saumon':3.80,'Filets cabillaud':3.20,'Saumon fumé':3.00,'Thon en boîte':1.50,
-  // Légumineuses & féculents
   'Pois chiches':0.65,'Lentilles vertes':0.70,'Riz complet':0.55,'Riz basmati':0.60,
   'Pâtes complètes':0.95,'Flocons avoine':0.70,'Farine':0.60,'Tortillas complètes':1.00,
   'Tomates concassées':0.75,'Bouillon légumes':0.50,
-  // Fruits & légumes
   'Courgette':0.45,'Carotte':0.35,'Poivron':0.70,'Tomates cerises':1.20,
   'Patate douce':0.80,'Épinards frais':1.50,'Champignons':1.00,'Salade verte':0.70,
   'Avocats':1.20,'Banane':0.35,'Citron':0.25,'Oignon':0.25,'Ail':0.35,
   'Haricots verts':0.90,'Brocoli':0.90,'Carottes':0.35,
-  // Oléagineux & condiments
   'Amandes':1.20,'Beurre de cacahuète':1.00,'Huile olive':0.70,'Sauce soja':0.50,
   'Olives noires':0.80,'Basilic':0.70,
-  // Épices
   'Herbes de Provence':0.40,'Curry doux':0.45,'Cumin':0.40,'Curcuma':0.40,
   'Cannelle':0.40,'Paprika':0.40,
-  // Divers
   'Chocolat noir 70%+':0.80,'Chocolat noir amandes':0.70,
 };
 let prixUser = {...prixDefaut};
@@ -801,9 +870,103 @@ function renderPlanning(){
 }
 
 // ── DETAIL ───────────────────────────────────────────────────
+function calcPortions(m, nbPersons){
+  // Les macros du repas sont pour 1 adulte (base recette)
+  // On calcule le total pour toute la tablée puis on répartit
+  const est4 = m.portions.includes('4');
+  const nbAdultes = 2; // toujours 2 adultes
+  const nbEnfants = est4 ? 2 : 0;
+
+  // Ratio de répartition entre adultes basé sur objectifs caloriques
+  const ratioElle = 1520 / (1520 + 1720); // ~0.469
+  const ratioLui  = 1720 / (1520 + 1720); // ~0.531
+  const ratioEnfant = 0.6; // 60% d'un adulte moyen
+
+  // Total de la tablée = (macros × 2 adultes) + (enfants × 60%)
+  // Les macros du repas sont pour 1 adulte → ×2 pour les 2 adultes
+  const totalKcal = Math.round(m.kcal * (nbAdultes + nbEnfants * ratioEnfant));
+  const totalP    = Math.round(m.p    * (nbAdultes + nbEnfants * ratioEnfant));
+  const totalG    = Math.round(m.g    * (nbAdultes + nbEnfants * ratioEnfant));
+  const totalL    = Math.round(m.l    * (nbAdultes + nbEnfants * ratioEnfant));
+
+  // Portion adulte moyenne = total / (2 + nbEnfants*0.6)
+  const diviseur = nbAdultes + nbEnfants * ratioEnfant;
+
+  // Portions individuelles = part du total
+  const elleKcal = Math.round(totalKcal * ratioElle * nbAdultes / diviseur);
+  const luiKcal  = Math.round(totalKcal * ratioLui  * nbAdultes / diviseur);
+  const enfKcal  = nbEnfants > 0 ? Math.round(totalKcal * ratioEnfant / diviseur) : 0;
+
+  const elleP = Math.round(totalP * ratioElle * nbAdultes / diviseur);
+  const luiP  = Math.round(totalP * ratioLui  * nbAdultes / diviseur);
+  const elleG = Math.round(totalG * ratioElle * nbAdultes / diviseur);
+  const luiG  = Math.round(totalG * ratioLui  * nbAdultes / diviseur);
+  const elleL = Math.round(totalL * ratioElle * nbAdultes / diviseur);
+  const luiL  = Math.round(totalL * ratioLui  * nbAdultes / diviseur);
+
+  // Vérification : elleKcal + luiKcal + enfKcal*nbEnfants ≈ totalKcal ✓
+
+  // Poids assiette calculé depuis le total réel des ingrédients
+  // On passe le total des ingrédients en paramètre depuis buildIngredientsTotal
+  // Pour l'instant on retourne -1, le vrai poids sera calculé après
+  const ellePoids = -1;
+  const luiPoids  = -1;
+  const enfPoids  = -1;
+
+  return {
+    elleKcal,luiKcal,enfKcal,
+    elleP,luiP,elleG,luiG,elleL,luiL,
+    ellePoids,luiPoids,enfPoids,
+    ratioElle,ratioLui,ratioEnfant,diviseur,
+    nbEnfants,totalKcal,totalP,totalG,totalL
+  };
+}
+
+function buildIngredientsTotal(m, nbPersons){
+  // Les ingrédients dans la recette sont pour 1 adulte (base recette)
+  // On calcule pour toute la tablée :
+  // - 2 adultes toujours
+  // - + 2 enfants si repas 4 pers. (portion enfant = 60% adulte)
+  const est4 = m.portions.includes('4');
+  const nbAdultes = 2;
+  const nbEnfants = est4 ? 2 : 0;
+  const ratioEnfant = 0.6;
+
+  // Facteur total = nb adultes + nb enfants × ratio
+  const facteur = nbAdultes + nbEnfants * ratioEnfant;
+  // Base recette = 1 adulte → on multiplie par facteur
+
+  return m.ings.map(ing => {
+    const parsed = parseIng(ing);
+    let qtyTotale = '';
+    if(parsed.qty > 0){
+      const total = Math.ceil(parsed.qty * facteur);
+      qtyTotale = `${total}${parsed.unit||''}`;
+    }
+    return {nom: parsed.nom || ing, qty: qtyTotale, raw: parsed.raw};
+  });
+}
+
 function showDetail(w,di,mi){
   const m=semaines[w][di][person][mi];
   const pp=Math.round(m.p*4/m.kcal*100),gp=Math.round(m.g*4/m.kcal*100),lp=Math.round(m.l*9/m.kcal*100);
+  const nbPersons = getMealPersons(w,di,mi);
+  const portions = calcPortions(m, nbPersons);
+  const ingsTotal = buildIngredientsTotal(m, nbPersons);
+  const est4 = m.portions.includes('4');
+
+  // Calculer le poids total réel des ingrédients (en grammes)
+  let totalPoidsG = 0;
+  ingsTotal.forEach(it => {
+    const match = it.qty.match(/^(\d+)g$/);
+    if(match) totalPoidsG += parseInt(match[1]);
+  });
+
+  // Répartir le poids total par personne selon les mêmes ratios
+  const ellePoids = totalPoidsG > 0 ? Math.round(totalPoidsG * portions.ratioElle * 2 / portions.diviseur) : 0;
+  const luiPoids  = totalPoidsG > 0 ? Math.round(totalPoidsG * portions.ratioLui  * 2 / portions.diviseur) : 0;
+  const enfPoids  = totalPoidsG > 0 && est4 ? Math.round(totalPoidsG * portions.ratioEnfant / portions.diviseur) : 0;
+
   document.getElementById('sheet-body').innerHTML=`
     <div class="sheet-title">${m.nom}</div>
     <div class="sheet-meta">
@@ -811,7 +974,9 @@ function showDetail(w,di,mi){
       <span class="pill pill-a">${JOURS[di]} · S${w+1}</span>
       <span class="pill pill-m">${m.portions}</span>
     </div>
+
     <div class="macro-detail">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px">Macros par adulte</div>
       <div class="macro-detail-grid">
         <div class="md-box"><div class="md-val">${m.kcal}</div><div class="md-lbl">kcal</div></div>
         <div class="md-box"><div class="md-val">${m.p}g</div><div class="md-lbl">protéines</div></div>
@@ -825,8 +990,42 @@ function showDetail(w,di,mi){
         <span><span class="mdot" style="background:#E76F51"></span>L ${lp}%</span>
       </div>
     </div>
-    <div class="slabel">Ingrédients</div>
-    <div class="ing-chips">${m.ings.map(i=>`<span class="ing-chip">${i}</span>`).join('')}</div>
+
+    <div class="slabel">Répartition des portions</div>
+    <div style="background:var(--g6);border-radius:var(--rs);padding:7px 12px;margin-bottom:8px;font-size:11px;color:var(--muted)">
+      Total tablée : <strong style="color:var(--g1)">${portions.totalKcal} kcal</strong> · P ${portions.totalP}g · G ${portions.totalG}g · L ${portions.totalL}g
+    </div>
+    <div class="portions-grid">
+      <div class="portion-card elle">
+        <div class="portion-who">Elle</div>
+        <div class="portion-kcal">${portions.elleKcal} kcal</div>
+        <div class="portion-macros">P ${portions.elleP}g · G ${portions.elleG}g · L ${portions.elleL}g</div>
+        <div class="portion-poids">${ellePoids > 0 ? "~"+ellePoids+"g dans l'assiette" : ""}</div>
+      </div>
+      <div class="portion-card lui">
+        <div class="portion-who">Lui</div>
+        <div class="portion-kcal">${portions.luiKcal} kcal</div>
+        <div class="portion-macros">P ${portions.luiP}g · G ${portions.luiG}g · L ${portions.luiL}g</div>
+        <div class="portion-poids">${luiPoids > 0 ? "~"+luiPoids+"g dans l'assiette" : ""}</div>
+      </div>
+      ${est4 ? `
+      <div class="portion-card enfant" style="grid-column:span 2">
+        <div class="portion-who">Enfant (×2)</div>
+        <div class="portion-kcal">${portions.enfKcal} kcal chacun</div>
+        <div class="portion-macros">Portion réduite ~60% adulte</div>
+        <div class="portion-poids">${enfPoids > 0 ? "~"+enfPoids+"g dans l'assiette" : ""}</div>
+      </div>` : ''}
+    </div>
+
+    <div class="slabel">Ingrédients — quantité totale pour ${est4?4:nbPersons} pers.</div>
+    <div style="background:var(--g6);border-radius:var(--rs);padding:10px 12px">
+      ${ingsTotal.map(it=>`
+        <div class="ing-total-item">
+          <span class="ing-total-nom">${it.nom}</span>
+          <span class="ing-total-qty">${it.qty||'q.s.'}</span>
+        </div>`).join('')}
+    </div>
+
     <div class="slabel">Préparation</div>
     <div class="steps">${m.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><div class="stxt">${s}</div></div>`).join('')}</div>
     ${m.note?`<div class="note-enfants">👶 ${m.note}</div>`:''}
@@ -868,9 +1067,36 @@ function normalizeIngKey(nom){
     // Supprimer "x 2", "x2", "x 4" etc.
     .replace(/\bx\s*\d+\b/g,'')
     // Supprimer qualificatifs de cuisson/état/texture
-    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|dur|durs|dure|dures|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince|sans|morceaux|végétal|végétale)\b/g,'')
-    // Supprimer les chiffres isolés en fin (ex: "yaourt fruits mixé 2")
-    .replace(/\s+\d+$/, '')
+    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|dur|durs|dure|dures|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince|sans|morceaux|végétal|végétale|corail|fumée|noire|noir|verte|vert|rouge|cerises?|concassée?s?|effilées?)\b/g,'')
+    // Supprimer "+ citron", "+ vinaigre", "à la", "de", etc.
+    .replace(/[+&].*$/,'')
+    .replace(/\b(à|au|aux|de|du|des|la|le|les|avec|et)\b/g,' ')
+    // Supprimer les chiffres isolés en fin
+    .replace(/\s+\d+$/,'')
+    // Fusionner variantes communes
+    .replace(/tomates? cerise.*/,'tomate cerise')
+    .replace(/tomates? concassée.*/,'tomate concassee')
+    .replace(/yaourt.*/,'yaourt')
+    .replace(/beurre.?cacahuète.*/,'beurre cacahuete')
+    .replace(/beurre.?cacahuete.*/,'beurre cacahuete')
+    .replace(/huile.?olive.*/,'huile olive')
+    .replace(/ail.*/,'ail')
+    .replace(/herbes?.*/,'herbes')
+    .replace(/cumin.*/,'cumin')
+    .replace(/lentilles?.*/,'lentille')
+    .replace(/pois.chiches?.*/,'pois chiche')
+    .replace(/amandes?.effilées?.*/,'amande')
+    .replace(/amandes?.*/,'amande')
+    .replace(/flocons?.*/,'flocons avoine')
+    .replace(/pâtes?.complètes?.*/,'pates completes')
+    .replace(/riz.complet.*/,'riz complet')
+    .replace(/riz.basmati.*/,'riz basmati')
+    .replace(/épinards?.*/,'epinard')
+    .replace(/carottes?.*/,'carotte')
+    .replace(/courgettes?.*/,'courgette')
+    .replace(/champignons?.*/,'champignon')
+    .replace(/oignons?.*/,'oignon')
+    .replace(/citrons?.*/,'citron')
     .replace(/s$/,'')
     .replace(/\s+/g,' ').trim();
 }
@@ -948,10 +1174,10 @@ function renderCourses(){
   const total=Object.values(cats).reduce((s,arr)=>s+arr.length,0);
   const done=Object.values(checked[w]||{}).filter(Boolean).length;
   const pct=total?Math.round(done/total*100):0;
-  // Calculer le coût total pour le budget — prix réel sans multiplication
+  // Calculer le coût total pour le budget avec prix réels
   let totalCout = 0;
   Object.entries(ingMap).forEach(([key,data])=>{
-    const prix = getPrix(data.nom);
+    const prix = Math.max(0.10, getPrixReel(data.nom, data.unit==='g'||data.unit===''?data.totalQty:0));
     totalCout += prix;
   });
   renderBudget(Math.round(totalCout * 100) / 100);
@@ -1143,11 +1369,38 @@ function extractIngName(ing){
 }
 
 function getPrix(nomIng){
+  // D'abord vérifier si l'utilisateur a modifié ce prix
   const clean = extractIngName(nomIng).toLowerCase();
   for(const [k,v] of Object.entries(prixUser)){
     if(clean.includes(k.toLowerCase())||k.toLowerCase().includes(clean)) return v;
   }
   return 1.50; // défaut
+}
+
+function getPrixReel(nomIng, qtyG){
+  // Calcul basé sur prix/kg × quantité totale hebdomadaire
+  const clean = extractIngName(nomIng).toLowerCase()
+    .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[îï]/g,'i')
+    .replace(/[ôö]/g,'o').replace(/[ûü]/g,'u').replace(/ç/g,'c');
+  
+  // Chercher dans prixParKg
+  for(const [kw, prixKg] of Object.entries(prixParKg)){
+    if(clean.includes(kw) || kw.includes(clean)){
+      if(qtyG > 0){
+        // Prix = (quantité en kg) × prix/kg
+        return Math.round(qtyG / 1000 * prixKg * 100) / 100;
+      } else {
+        // Pas de quantité → prix d'une unité standard
+        return Math.round(prixKg * 0.15 * 100) / 100; // ~150g en moyenne
+      }
+    }
+  }
+  // Fallback sur prixUser/prixDefaut
+  for(const [k,v] of Object.entries(prixUser)){
+    if(clean.includes(k.toLowerCase().replace(/[éèê]/g,'e').replace(/[àâ]/g,'a'))||
+       k.toLowerCase().replace(/[éèê]/g,'e').includes(clean)) return v;
+  }
+  return 1.50;
 }
 
 function renderCouts(){
@@ -1181,13 +1434,12 @@ function renderCouts(){
   let totalBase = 0;
   const lignes = [];
   Object.entries(ingMap).forEach(([key, data])=>{
-    const prixBase = getPrix(data.nom);
-    // Ajuster selon la quantité totale réelle (base prix = portion standard)
-    // On ne multiplie PAS par le facteur personnes — le prix reflète l'achat réel
-    const prixAjuste = Math.round(prixBase * 100) / 100;
+    // Utiliser getPrixReel avec la vraie quantité cumulée
+    const qtyG = data.unit === 'g' ? data.totalQty : data.unit === 'kg' ? data.totalQty*1000 : data.totalQty;
+    const prixAjuste = Math.max(0.10, getPrixReel(data.nom, data.unit==='g'||data.unit===''?data.totalQty:0));
     totalBase += prixAjuste;
     const qtyStr = data.totalQty>0?`${Math.ceil(data.totalQty)}${data.unit||''}`:'';
-    lignes.push({ing:data.nom, qtyStr, prix:prixAjuste, prixBase, persons:data.maxPersons, key});
+    lignes.push({ing:data.nom, qtyStr, prix:prixAjuste, prixBase:prixAjuste, persons:data.maxPersons, key});
   });
 
   const total = Math.round(totalBase * 100) / 100;
