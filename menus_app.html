@@ -1126,19 +1126,26 @@ function renderCourses(){
         const key = normalizeIngKey(parsed.nom);
         if(!ingMap[key]){
           ingMap[key]={
-            nom: parsed.nom, // nom affiché
+            nom: parsed.nom,
             totalQty: 0,
+            totalPieces: 0,
             unit: parsed.unit,
             portions4: false,
             maxPersons: nbP,
             rawList: []
           };
         }
-        // Cumuler les quantités
-        if(parsed.qty>0){
-          // Ajuster selon nombre de personnes réel vs base recette
-          const factP = nbP / (p4?4:2);
-          ingMap[key].totalQty += parsed.qty * factP;
+        // Facteur : base 1 adulte → toute la tablée
+        const nbAdultes = 2;
+        const nbEnfants = p4 ? 2 : 0;
+        const facteurTotal = nbAdultes + nbEnfants * 0.6;
+        if(parsed.qty > 0){
+          ingMap[key].totalQty += parsed.qty * facteurTotal;
+        }
+        // Compter les pièces (oeufs, filets, etc.)
+        const piecesMatch = parsed.raw.match(/(\d+)\s*pièces?/i);
+        if(piecesMatch){
+          ingMap[key].totalPieces += parseInt(piecesMatch[1]) * facteurTotal;
         }
         if(p4) ingMap[key].portions4=true;
         ingMap[key].maxPersons = Math.max(ingMap[key].maxPersons, nbP);
@@ -1177,7 +1184,8 @@ function renderCourses(){
   // Calculer le coût total pour le budget avec prix réels
   let totalCout = 0;
   Object.entries(ingMap).forEach(([key,data])=>{
-    const prix = Math.max(0.10, getPrixReel(data.nom, data.unit==='g'||data.unit===''?data.totalQty:0));
+    const qtyGb = data.unit === 'g' || data.unit === '' ? data.totalQty : 0;
+    const prix = Math.max(0.10, getPrixReel(data.nom, qtyGb, data.totalPieces||0));
     totalCout += prix;
   });
   renderBudget(Math.round(totalCout * 100) / 100);
@@ -1377,25 +1385,35 @@ function getPrix(nomIng){
   return 1.50; // défaut
 }
 
-function getPrixReel(nomIng, qtyG){
+function getPrixReel(nomIng, qtyG, qtyPieces){
   // Calcul basé sur prix/kg × quantité totale hebdomadaire
   const clean = extractIngName(nomIng).toLowerCase()
     .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[îï]/g,'i')
     .replace(/[ôö]/g,'o').replace(/[ûü]/g,'u').replace(/ç/g,'c');
   
+  // Cas spécial oeufs : prix à la pièce
+  if(clean.includes('oeuf') && qtyPieces > 0){
+    return Math.round(qtyPieces * 0.30 * 100) / 100;
+  }
+  // Cas spécial thon boîte
+  if(clean.includes('thon') && qtyPieces > 0){
+    return Math.round(qtyPieces * 1.50 * 100) / 100;
+  }
+
   // Chercher dans prixParKg
   for(const [kw, prixKg] of Object.entries(prixParKg)){
     if(clean.includes(kw) || kw.includes(clean)){
       if(qtyG > 0){
-        // Prix = (quantité en kg) × prix/kg
         return Math.round(qtyG / 1000 * prixKg * 100) / 100;
+      } else if(qtyPieces > 0){
+        // Prix à la pièce × nb pièces (ex: filets poisson, cuisses poulet)
+        const prixPiece = prixKg * 0.20; // ~200g par pièce en moyenne
+        return Math.round(qtyPieces * prixPiece * 100) / 100;
       } else {
-        // Pas de quantité → prix d'une unité standard
-        return Math.round(prixKg * 0.15 * 100) / 100; // ~150g en moyenne
+        return Math.round(prixKg * 0.15 * 100) / 100;
       }
     }
   }
-  // Fallback sur prixUser/prixDefaut
   for(const [k,v] of Object.entries(prixUser)){
     if(clean.includes(k.toLowerCase().replace(/[éèê]/g,'e').replace(/[àâ]/g,'a'))||
        k.toLowerCase().replace(/[éèê]/g,'e').includes(clean)) return v;
@@ -1419,11 +1437,17 @@ function renderCouts(){
         if(parsed.nom.length<2) return;
         const key = normalizeIngKey(parsed.nom);
         if(!ingMap[key]){
-          ingMap[key]={nom:parsed.nom, totalQty:0, unit:parsed.unit, maxPersons:nbPersons};
+          ingMap[key]={nom:parsed.nom, totalQty:0, totalPieces:0, unit:parsed.unit, maxPersons:nbPersons};
         }
+        const nbAdultesC = 2;
+        const nbEnfantsC = p4 ? 2 : 0;
+        const facteurTotalC = nbAdultesC + nbEnfantsC * 0.6;
         if(parsed.qty>0){
-          const factP = nbPersons/(p4?4:2);
-          ingMap[key].totalQty += parsed.qty * factP;
+          ingMap[key].totalQty += parsed.qty * facteurTotalC;
+        }
+        const piecesMatchC = parsed.raw.match(/(\d+)\s*pièces?/i);
+        if(piecesMatchC){
+          ingMap[key].totalPieces += parseInt(piecesMatchC[1]) * facteurTotalC;
         }
         ingMap[key].maxPersons = Math.max(ingMap[key].maxPersons, nbPersons);
       });
@@ -1435,8 +1459,8 @@ function renderCouts(){
   const lignes = [];
   Object.entries(ingMap).forEach(([key, data])=>{
     // Utiliser getPrixReel avec la vraie quantité cumulée
-    const qtyG = data.unit === 'g' ? data.totalQty : data.unit === 'kg' ? data.totalQty*1000 : data.totalQty;
-    const prixAjuste = Math.max(0.10, getPrixReel(data.nom, data.unit==='g'||data.unit===''?data.totalQty:0));
+    const qtyG = data.unit === 'g' || data.unit === '' ? data.totalQty : 0;
+    const prixAjuste = Math.max(0.10, getPrixReel(data.nom, qtyG, data.totalPieces||0));
     totalBase += prixAjuste;
     const qtyStr = data.totalQty>0?`${Math.ceil(data.totalQty)}${data.unit||''}`:'';
     lignes.push({ing:data.nom, qtyStr, prix:prixAjuste, prixBase:prixAjuste, persons:data.maxPersons, key});
