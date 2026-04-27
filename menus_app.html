@@ -1009,16 +1009,16 @@ function showDetail(w,di,mi){
   const elleL    = Math.round(m.l * rE);
 
   // Portions Lui (depuis macros Lui — différentes de Elle)
-  const luiKcalVal = Math.round(mLui.kcal * rL);
-  const luiPVal    = Math.round(mLui.p    * rL);
-  const luiGVal    = Math.round(mLui.g    * rL);
-  const luiLVal    = Math.round(mLui.l    * rL);
+  const luiKcal = Math.round(mLui.kcal * rL);
+  const luiP    = Math.round(mLui.p    * rL);
+  const luiG    = Math.round(mLui.g    * rL);
+  const luiL    = Math.round(mLui.l    * rL);
 
   // Portions Enfant (depuis macros Elle × 60%)
-  const enfKcalVal = Math.round(m.kcal * rEnf);
-  const enfPVal    = Math.round(m.p    * rEnf);
-  const enfGVal    = Math.round(m.g    * rEnf);
-  const enfLVal    = Math.round(m.l    * rEnf);
+  const enfKcal = Math.round(m.kcal * rEnf);
+  const enfP    = Math.round(m.p    * rEnf);
+  const enfG    = Math.round(m.g    * rEnf);
+  const enfL    = Math.round(m.l    * rEnf);
 
   // Poids total ingrédients
   let totalPoidsG = 0;
@@ -1042,7 +1042,7 @@ function showDetail(w,di,mi){
     ratioLui:   fL_reel,
     ratioEnfant:fEnf_reel,
     diviseur:1,
-    elleKcal, luiKcal, enfKcal:enfKcalVal,
+    elleKcal, luiKcal, enfKcal:enfKcal,
     elleP, elleG, elleL,
     totalKcal, totalP, totalG, totalL
   };
