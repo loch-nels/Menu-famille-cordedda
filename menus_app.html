@@ -244,6 +244,19 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .ing-total-item:last-child{border-bottom:none}
 .ing-total-nom{font-size:13px;color:var(--text)}
 .ing-total-qty{font-size:13px;font-weight:600;color:var(--g1);font-family:var(--mono)}
+
+.ing-repartition{margin-top:14px}
+.ing-rep-section{margin-bottom:12px}
+.ing-rep-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:6px 10px;border-radius:var(--rs);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.ing-rep-title.total{background:var(--g1);color:white}
+.ing-rep-title.elle{background:#EEF4FF;color:#4A6CF7}
+.ing-rep-title.lui{background:var(--g5);color:var(--g1)}
+.ing-rep-title.enfant{background:var(--amber-l);color:#856404}
+.ing-rep-row{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-bottom:1px solid var(--g6);font-size:13px}
+.ing-rep-row:last-child{border-bottom:none}
+.ing-rep-nom{color:var(--text)}
+.ing-rep-qty{font-weight:600;font-family:var(--mono);color:var(--g1)}
+.ing-rep-box{background:var(--white);border-radius:var(--rs);border:1px solid var(--border);overflow:hidden;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -269,10 +282,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <div class="ws-label" id="ws-label">Semaine en cours<br><span class="ws-sub" id="ws-sub"></span></div>
     <button class="ws-btn" onclick="switchWeek(1)">›</button>
   </div>
-  <div class="ptoggle">
-    <button class="ptog active" onclick="setPerson('f')">Elle — 1520 kcal</button>
-    <button class="ptog" onclick="setPerson('m')">Lui — 1720 kcal</button>
-  </div>
   <div class="stats">
     <div class="stat"><div class="stat-n" id="s-actifs">—</div><div class="stat-l">repas actifs</div></div>
     <div class="stat"><div class="stat-n" id="s-kcal">—</div><div class="stat-l">kcal moy.</div></div>
@@ -297,10 +306,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 
 <!-- RESUME -->
 <div class="content" id="tab-resume">
-  <div class="ptoggle">
-    <button class="ptog active" onclick="setPersonResume('f')">Elle — 1520 kcal</button>
-    <button class="ptog" onclick="setPersonResume('m')">Lui — 1720 kcal</button>
-  </div>
   <div class="week-switcher" style="margin-bottom:12px">
     <button class="ws-btn" onclick="switchWeekResume(-1)">‹</button>
     <div class="ws-label" id="ws-label-resume">Semaine en cours</div>
@@ -565,13 +570,13 @@ function setMealPersons(w,di,mi,val){
 const semaine1=[
   // LUNDI
   {f:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes',kcal:324,p:21,g:36,l:11,portions:'2 adultes',ings:['Skyr nature 150g','Flocons avoine 50g','Amandes 15g','Yaourt fruits mixé 80g'],steps:['Verser le skyr dans un bol.','Ajouter flocons et amandes.','Terminer avec le yaourt fruits mixé.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes',kcal:324,p:21,g:36,l:11,portions:'2 adultes',ings:['Skyr nature 150g','Flocons avoine 50g','Amandes 12g','Yaourt fruits mixé 80g'],steps:['Verser le skyr dans un bol.','Ajouter flocons et amandes.','Terminer avec le yaourt fruits mixé.'],note:''},
     {moment:'Déjeuner',nom:'Poulet riz complet courgettes',kcal:457,p:36,g:42,l:10,portions:'2 adultes',ings:['Blanc poulet 130g','Riz complet 60g cru','Courgette 150g','Huile olive 5g','Herbes de Provence'],steps:['Cuire le riz complet 25 min.','Poêler le poulet en dés 7 min.','Faire revenir la courgette 5 min.','Assembler en bowl.'],note:''},
     {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:171,p:7,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 2x60g','Beurre de cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Omelette champignons salade verte',kcal:362,p:26,g:7,l:22,portions:'4 pers.',ings:['Oeufs 2 pièces','Champignons 50g','Beurre 3g','Salade verte 80g','Vinaigrette'],steps:['Battre les oeufs avec sel et poivre.','Faire revenir champignons 5 min dans le beurre.','Cuire l\'omelette à feu doux 5 min.','Servir avec salade.'],note:'Demi-omelette pour chaque enfant.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes++',kcal:380,p:24,g:43,l:12,portions:'2 adultes',ings:['Skyr nature 180g','Flocons avoine 65g','Amandes 20g','Yaourt fruits mixé 80g'],steps:['Verser le skyr.','Ajouter flocons et amandes.','Terminer avec yaourt.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Bol skyr flocons amandes++',kcal:380,p:24,g:43,l:12,portions:'2 adultes',ings:['Skyr nature 180g','Flocons avoine 65g','Amandes 15g','Yaourt fruits mixé 80g'],steps:['Verser le skyr.','Ajouter flocons et amandes.','Terminer avec yaourt.'],note:''},
     {moment:'Déjeuner',nom:'Poulet riz complet courgettes',kcal:507,p:42,g:47,l:11,portions:'2 adultes',ings:['Blanc poulet 160g','Riz complet 75g cru','Courgette 150g','Huile olive 8g','Herbes'],steps:['Cuire le riz complet 25 min.','Poêler le poulet 7 min.','Faire revenir la courgette 5 min.','Assembler.'],note:''},
     {moment:'Collation',nom:'Skyr amandes',kcal:181,p:13,g:9,l:10,portions:'2 adultes',ings:['Skyr nature 150g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Omelette champignons salade verte',kcal:416,p:30,g:9,l:26,portions:'4 pers.',ings:['Oeufs 2 pièces','Champignons 50g','Beurre 3g','Salade verte 80g','Vinaigrette'],steps:['Battre les oeufs.','Faire revenir champignons 5 min.','Cuire l\'omelette 5 min.','Servir avec salade.'],note:'Demi-omelette pour chaque enfant.'},
@@ -594,13 +599,13 @@ const semaine1=[
   // MERCREDI
   {f:[
     {moment:'Petit-déjeuner',nom:'Oeufs brouillés porridge cacahuète',kcal:343,p:21,g:21,l:19,portions:'2 adultes',ings:['Oeufs 3 pièces','Flocons avoine 30g','Lait végétal 100ml','Beurre cacahuète 12g'],steps:['Cuire le porridge flocons + lait 3 min.','Brouiller les oeufs à feu doux 3 min.','Servir avec beurre de cacahuète.'],note:''},
-    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:466,p:34,g:46,l:13,portions:'2 adultes',ings:['Boeuf maigre 120g','Riz basmati 65g cru','Poivron 100g','Courgette 100g','Huile olive 7g','Cumin paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler en bowl.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl pois chiches riz basmati légumes',kcal:420,p:20,g:52,l:11,portions:'2 adultes',ings:['Pois chiches 120g','Riz basmati 65g','Poivron 100g','Courgette 100g','Huile olive 7g','Cumin paprika'],steps:['Cuire le riz basmati 12 min.','Faire revenir légumes + pois chiches 5 min.','Assembler en bowl.'],note:''},
     {moment:'Collation',nom:'Petit suisse nature',kcal:104,p:6,g:7,l:4,portions:'2 adultes',ings:['Petit suisse 2x60g'],steps:['Déguster tel quel.'],note:''},
     {moment:'Dîner',nom:'Pâtes complètes bolognaise légère',kcal:457,p:32,g:51,l:14,portions:'4 pers.',ings:['Pâtes complètes 80g','Boeuf haché maigre 100g','Tomates concassées 100g','Oignon','Ail','Huile olive 3g'],steps:['Cuire les pâtes complètes al dente.','Faire revenir oignon + ail + boeuf 8 min.','Ajouter tomates, mijoter 10 min.','Servir sur les pâtes.'],note:'Plat familial. Pas d\'épices fortes.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Oeufs brouillés porridge cacahuète',kcal:389,p:24,g:25,l:22,portions:'2 adultes',ings:['Oeufs 4 pièces','Flocons avoine 40g','Lait végétal 120ml','Beurre cacahuète 15g'],steps:['Cuire le porridge 3 min.','Brouiller les oeufs 3 min.','Servir avec beurre de cacahuète.'],note:''},
-    {moment:'Déjeuner',nom:'Bowl boeuf riz basmati légumes',kcal:516,p:40,g:51,l:14,portions:'2 adultes',ings:['Boeuf maigre 150g','Riz basmati 80g cru','Poivron 100g','Courgette 120g','Huile olive 9g','Cumin paprika'],steps:['Cuire le riz basmati 12 min.','Poêler le boeuf avec épices 6 min.','Faire revenir légumes 5 min.','Assembler.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl pois chiches riz basmati légumes',kcal:490,p:25,g:60,l:13,portions:'2 adultes',ings:['Pois chiches 150g','Riz basmati 80g','Poivron 100g','Courgette 120g','Huile olive 9g','Cumin paprika'],steps:['Cuire le riz basmati 12 min.','Faire revenir légumes + pois chiches 5 min.','Assembler.'],note:''},
     {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:177,p:7,g:18,l:8,portions:'2 adultes',ings:['Yaourt fruits mixé 130g','Amandes 13g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Pâtes complètes bolognaise légère',kcal:516,p:37,g:56,l:14,portions:'4 pers.',ings:['Pâtes complètes 80g','Boeuf haché maigre 100g','Tomates concassées 100g','Oignon','Ail','Huile olive 3g'],steps:['Cuire les pâtes complètes al dente.','Faire revenir oignon + ail + boeuf 8 min.','Ajouter tomates, mijoter 10 min.','Servir.'],note:'Plat familial. Pas d\'épices fortes.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
@@ -622,15 +627,15 @@ const semaine1=[
   // VENDREDI
   {f:[
     {moment:'Petit-déjeuner',nom:'Bol avoine yaourt amandes',kcal:324,p:17,g:38,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Yaourt fruits mixé 100g','Amandes 15g','Skyr 60g'],steps:['Verser flocons dans un bol.','Ajouter yaourt et skyr.','Parsemer amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates basilic',kcal:466,p:34,g:48,l:14,portions:'2 adultes',ings:['Blanc poulet 130g','Pâtes complètes 80g cru','Tomates cerises 100g','Huile olive 8g','Basilic ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet avec ail + basilic 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade thon pois chiches tomates',kcal:410,p:30,g:36,l:13,portions:'2 adultes',ings:['Thon en boîte 80g','Pois chiches 100g','Tomates cerises 100g','Salade verte 60g','Huile olive citron 8g'],steps:['Égoutter thon et pois chiches.','Assembler salade + pois chiches + tomates + thon.','Assaisonner huile + citron.'],note:'Poisson uniquement au déjeuner.'},
     {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:171,p:7,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 2x60g','Beurre cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Cabillaud poêlé courgettes citron',kcal:355,p:34,g:12,l:17,portions:'4 pers.',ings:['Filets cabillaud 1 pièce','Courgettes 75g','Citron','Ail','Huile olive 3g','Herbes'],steps:['Poêler le cabillaud 4 min/face.','Faire revenir courgettes + ail 6 min.','Presser le citron, servir.'],note:'Repas rapide 15 min. Retirer arêtes pour enfants.'},
+    {moment:'Dîner',nom:'Poulet sauté courgettes express',kcal:340,p:32,g:14,l:16,portions:'4 pers.',ings:['Blanc poulet 120g','Courgettes 80g','Tomates 60g','Ail','Huile olive 3g','Herbes'],steps:['Couper le poulet en dés.','Faire saisir poulet + ail 6 min.','Ajouter courgettes + tomates, cuire 6 min.','Servir.'],note:'Plat rapide 15 min.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Bol avoine yaourt amandes',kcal:371,p:20,g:45,l:13,portions:'2 adultes',ings:['Flocons avoine 65g','Yaourt fruits mixé 120g','Amandes 20g','Skyr 80g'],steps:['Verser flocons dans un bol.','Ajouter yaourt et skyr.','Parsemer amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Poulet pâtes complètes tomates basilic',kcal:516,p:40,g:53,l:14,portions:'2 adultes',ings:['Blanc poulet 160g','Pâtes complètes 100g cru','Tomates cerises 100g','Huile olive 10g','Basilic ail'],steps:['Cuire les pâtes complètes.','Poêler le poulet 7 min.','Ajouter tomates cerises 2 min.','Mélanger avec les pâtes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade thon pois chiches tomates',kcal:480,p:36,g:42,l:15,portions:'2 adultes',ings:['Thon en boîte 100g','Pois chiches 130g','Tomates cerises 100g','Salade verte 60g','Huile olive citron 10g'],steps:['Égoutter thon et pois chiches.','Assembler salade + pois chiches + tomates + thon.','Assaisonner huile + citron.'],note:'Poisson uniquement au déjeuner.'},
     {moment:'Collation',nom:'Skyr amandes',kcal:167,p:12,g:7,l:9,portions:'2 adultes',ings:['Skyr 120g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Cabillaud poêlé courgettes citron',kcal:404,p:39,g:14,l:19,portions:'4 pers.',ings:['Filets cabillaud 1 pièce','Courgettes 75g','Citron','Ail','Huile olive 3g','Herbes'],steps:['Poêler le cabillaud 4 min/face.','Faire revenir courgettes + ail 6 min.','Presser le citron, servir.'],note:'Repas rapide 15 min. Retirer arêtes pour enfants.'},
+    {moment:'Dîner',nom:'Poulet sauté courgettes express',kcal:395,p:37,g:16,l:18,portions:'4 pers.',ings:['Blanc poulet 140g','Courgettes 80g','Tomates 60g','Ail','Huile olive 3g','Herbes'],steps:['Couper le poulet en dés.','Faire saisir poulet + ail 6 min.','Ajouter courgettes + tomates, cuire 6 min.','Servir.'],note:'Plat rapide 15 min.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:140,p:4,g:8,l:10,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   // SAMEDI
@@ -650,13 +655,13 @@ const semaine1=[
   // DIMANCHE
   {f:[
     {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:352,p:20,g:42,l:11,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 80g','Amandes 15g','Flocons avoine 20g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Omelette boeuf légumes salade',kcal:409,p:30,g:14,l:24,portions:'4 pers.',ings:['Oeufs 2 pièces','Boeuf maigre 75g','Poivron 50g','Tomates 40g','Huile olive 4g','Salade verte 40g'],steps:['Poêler le boeuf en lanières 5 min.','Faire revenir légumes 5 min.','Ajouter oeufs battus, cuire 5 min.','Servir avec salade.'],note:'Portions plus petites pour les enfants.'},
+    {moment:'Déjeuner',nom:'Dhal lentilles corail patate douce',kcal:370,p:20,g:52,l:9,portions:'4 pers.',ings:['Lentilles corail 80g','Patate douce 120g','Tomates concassees 100g','Oignon','Curry doux','Lait vegetal 25ml'],steps:['Faire revenir oignon 3 min.','Ajouter lentilles + patate douce + tomates + curry.','Couvrir eau, cuire 18 min.','Ajouter lait végétal, servir.'],note:'Plat végétal doux pour toute la famille.'},
     {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:233,p:10,g:27,l:11,portions:'4 pers.',ings:['Flocons avoine 160g','Beurre cacahuète 40g','Lait végétal 320ml'],steps:['Préparer 4 bols de porridge.','Ajouter beurre de cacahuète dans chacun.'],note:''},
     {moment:'Dîner',nom:'Oeufs cocotte épinards riz complet',kcal:420,p:28,g:38,l:16,portions:'4 pers.',ings:['Oeufs 2 pièces','Épinards frais 75g','Riz complet 45g','Crème légère 10g','Ail','Gruyère 10g'],steps:['Cuire le riz complet 25 min.','Faire tomber les épinards avec ail 3 min.','Répartir dans des ramequins avec crème + oeufs + gruyère.','Cuire au four 10 min à 180°C.'],note:'Plat familial sans poisson. Portions réduites pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Grand bol skyr fruits amandes famille',kcal:407,p:24,g:48,l:13,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 80g','Amandes 15g','Flocons avoine 20g'],steps:['Répartir skyr en 4 bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Omelette boeuf légumes salade',kcal:471,p:35,g:14,l:30,portions:'4 pers.',ings:['Oeufs 3 pièces','Boeuf maigre 75g','Poivron 50g','Tomates 40g','Huile olive 5g','Salade verte 40g'],steps:['Poêler le boeuf en lanières 5 min.','Faire revenir légumes 5 min.','Ajouter oeufs battus, cuire 5 min.','Servir avec salade.'],note:'Portions plus petites pour les enfants.'},
+    {moment:'Déjeuner',nom:'Dhal lentilles corail patate douce',kcal:380,p:20,g:52,l:9,portions:'4 pers.',ings:['Lentilles corail 80g','Patate douce 120g','Tomates concassees 100g','Oignon','Curry doux','Lait vegetal 25ml'],steps:['Faire revenir oignon 3 min.','Ajouter lentilles + patate douce + tomates + curry.','Couvrir eau, cuire 20 min.','Ajouter lait végétal, mixer partiellement.'],note:'Plat végétal. Doux pour les enfants.'},
     {moment:'Collation',nom:'Porridge beurre cacahuète',kcal:258,p:11,g:30,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Beurre cacahuète 14g','Lait végétal 100ml'],steps:['Préparer le porridge, ajouter beurre de cacahuète.'],note:''},
     {moment:'Dîner',nom:'Oeufs cocotte épinards riz complet',kcal:490,p:34,g:44,l:18,portions:'4 pers.',ings:['Oeufs 2 pièces','Épinards frais 75g','Riz complet 50g','Crème légère 13g','Ail','Gruyère 13g'],steps:['Cuire le riz complet 25 min.','Faire tomber les épinards avec ail 3 min.','Répartir dans des ramequins avec crème + oeufs + gruyère.','Cuire au four 10 min à 180°C.'],note:'Plat familial sans poisson.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
@@ -666,13 +671,13 @@ const semaine1=[
 // ── DONNÉES SEMAINE 2 (variante) ────────────────────────────────
 const semaine2=[
   {f:[
-    {moment:'Petit-déjeuner',nom:'Skyr flocons myrtilles amandes',kcal:328,p:20,g:38,l:11,portions:'2 adultes',ings:['Skyr 150g','Flocons avoine 50g','Amandes 15g','Yaourt fruits mixé 80g'],steps:['Verser le skyr dans un bol.','Ajouter flocons et amandes.','Terminer avec le yaourt.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Skyr flocons myrtilles amandes',kcal:328,p:20,g:38,l:11,portions:'2 adultes',ings:['Skyr 150g','Flocons avoine 50g','Amandes 12g','Yaourt fruits mixé 80g'],steps:['Verser le skyr dans un bol.','Ajouter flocons et amandes.','Terminer avec le yaourt.'],note:''},
     {moment:'Déjeuner',nom:'Poulet patate douce pois chiches',kcal:466,p:37,g:44,l:11,portions:'2 adultes',ings:['Blanc poulet 130g','Patate douce 150g','Pois chiches 80g','Huile olive 5g','Cumin herbes'],steps:['Rôtir patate douce + pois chiches 20 min.','Poêler le poulet avec cumin 7 min.','Assembler dans un bol.'],note:''},
     {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:162,p:6,g:19,l:6,portions:'2 adultes',ings:['Yaourt fruits mixé 120g','Amandes 12g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Omelette légumes poivrons rapide',kcal:352,p:25,g:10,l:22,portions:'4 pers.',ings:['Oeufs 2 pièces','Poivrons 50g','Tomates 38g','Huile olive 2g','Herbes'],steps:['Battre les oeufs.','Faire revenir poivrons + tomates 5 min.','Ajouter les oeufs, cuire 5 min à feu doux.','Servir chaud.'],note:'Repas rapide 15 min. Demi-omelette pour les enfants.'},
     {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Skyr flocons amandes++',kcal:385,p:24,g:45,l:12,portions:'2 adultes',ings:['Skyr 180g','Flocons avoine 65g','Amandes 20g','Yaourt fruits mixé 80g'],steps:['Verser le skyr.','Ajouter flocons et amandes.','Terminer avec yaourt.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Skyr flocons amandes++',kcal:385,p:24,g:45,l:12,portions:'2 adultes',ings:['Skyr 180g','Flocons avoine 65g','Amandes 15g','Yaourt fruits mixé 80g'],steps:['Verser le skyr.','Ajouter flocons et amandes.','Terminer avec yaourt.'],note:''},
     {moment:'Déjeuner',nom:'Poulet patate douce pois chiches',kcal:516,p:43,g:49,l:12,portions:'2 adultes',ings:['Blanc poulet 160g','Patate douce 180g','Pois chiches 100g','Huile olive 8g','Cumin herbes'],steps:['Rôtir patate douce + pois chiches 20 min.','Poêler le poulet 7 min.','Assembler.'],note:''},
     {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:177,p:13,g:9,l:9,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
     {moment:'Dîner',nom:'Omelette légumes poivrons rapide',kcal:401,p:29,g:11,l:25,portions:'4 pers.',ings:['Oeufs 2 pièces','Poivrons 50g','Tomates 38g','Huile olive 3g','Herbes'],steps:['Battre les oeufs.','Faire revenir poivrons + tomates 5 min.','Ajouter les oeufs, cuire 5 min.','Servir chaud.'],note:'Repas rapide 15 min. Demi-omelette pour les enfants.'},
@@ -940,32 +945,97 @@ function buildIngredientsTotal(m, nbPersons){
     const parsed = parseIng(ing);
     let qtyTotale = '';
     if(parsed.qty > 0){
+      // Quantité en grammes/ml
       const total = Math.ceil(parsed.qty * facteur);
-      qtyTotale = `${total}${parsed.unit||''}`;
+      qtyTotale = `${total}${parsed.unit||'g'}`;
+    } else {
+      // Essayer de parser les pièces (oeufs, filets, etc.)
+      const pieceMatch = parsed.raw.match(/(\d+)\s*pièces?/i);
+      if(pieceMatch){
+        const total = Math.ceil(parseInt(pieceMatch[1]) * facteur);
+        qtyTotale = `${total}pièces`;
+      }
     }
     return {nom: parsed.nom || ing, qty: qtyTotale, raw: parsed.raw};
   });
 }
 
 function showDetail(w,di,mi){
-  const m=semaines[w][di][person][mi];
-  const pp=Math.round(m.p*4/m.kcal*100),gp=Math.round(m.g*4/m.kcal*100),lp=Math.round(m.l*9/m.kcal*100);
+  // Toujours utiliser 'f' comme base (macros Elle) mais afficher les deux
+  const m=semaines[w][di]['f'][mi];
+  const mLui=semaines[w][di]['m'][mi];
   const nbPersons = getMealPersons(w,di,mi);
-  const portions = calcPortions(m, nbPersons);
-  const ingsTotal = buildIngredientsTotal(m, nbPersons);
   const est4 = m.portions.includes('4');
 
-  // Calculer le poids total réel des ingrédients (en grammes)
+  // Quantités totales pour cuisiner (toujours depuis 'f', indépendant de la personne)
+  const ingsTotal = buildIngredientsTotal(m, nbPersons);
+
+  // Macros Elle
+  const ppE=Math.round(m.p*4/m.kcal*100),gpE=Math.round(m.g*4/m.kcal*100),lpE=Math.round(m.l*9/m.kcal*100);
+  const portionsElle = calcPortions(m, nbPersons);
+
+  // Macros Lui
+  const ppL=Math.round(mLui.p*4/mLui.kcal*100);
+
+  // Poids total ingrédients
   let totalPoidsG = 0;
   ingsTotal.forEach(it => {
     const match = it.qty.match(/^(\d+)g$/);
     if(match) totalPoidsG += parseInt(match[1]);
   });
 
-  // Répartir le poids total par personne selon les mêmes ratios
-  const ellePoids = totalPoidsG > 0 ? Math.round(totalPoidsG * portions.ratioElle * 2 / portions.diviseur) : 0;
-  const luiPoids  = totalPoidsG > 0 ? Math.round(totalPoidsG * portions.ratioLui  * 2 / portions.diviseur) : 0;
-  const enfPoids  = totalPoidsG > 0 && est4 ? Math.round(totalPoidsG * portions.ratioEnfant / portions.diviseur) : 0;
+  const ellePoids = totalPoidsG>0 ? Math.round(totalPoidsG*portionsElle.ratioElle*2/portionsElle.diviseur) : 0;
+  const luiPoids  = totalPoidsG>0 ? Math.round(totalPoidsG*portionsElle.ratioLui*2/portionsElle.diviseur)  : 0;
+  const enfPoids  = totalPoidsG>0&&est4 ? Math.round(totalPoidsG*portionsElle.ratioEnfant/portionsElle.diviseur) : 0;
+
+  // Répartition ingrédients par personne
+  function repartirIngs(ratio){
+    return ingsTotal.map(it=>{
+      // Quantité en grammes ou ml
+      const qtyMatch = it.qty.match(/^(\d+)(g|ml)$/);
+      if(qtyMatch){
+        const qtyVal = parseInt(qtyMatch[1]);
+        const unit = qtyMatch[2];
+        const result = Math.round(qtyVal * ratio);
+        return {nom:it.nom, qty: result > 0 ? result+unit : 'q.s.'};
+      }
+      // Quantité en pièces (ex: "6pièce")
+      const pieceMatch = it.qty.match(/^(\d+)pièces?$/i);
+      if(pieceMatch){
+        const nb = parseInt(pieceMatch[1]);
+        const result = Math.max(1, Math.round(nb * ratio));
+        return {nom:it.nom, qty: result + (result > 1 ? ' pièces' : ' pièce')};
+      }
+      // Pas de quantité parseable
+      return {nom:it.nom, qty:it.qty||'q.s.'};
+    });
+  }
+
+  const ratioElle = portionsElle.ratioElle*2/portionsElle.diviseur;
+  const ratioLui  = portionsElle.ratioLui*2/portionsElle.diviseur;
+  const ratioEnf  = portionsElle.ratioEnfant/portionsElle.diviseur;
+
+  const ingsElle = repartirIngs(ratioElle);
+  const ingsLui  = repartirIngs(ratioLui);
+  const ingsEnf  = est4 ? repartirIngs(ratioEnf) : [];
+
+  function renderIngSection(title, cssClass, kcal, macros, ings, poids){
+    return `<div class="ing-rep-section">
+      <div class="ing-rep-title ${cssClass}">
+        <span>${title}</span>
+        <span>${kcal} kcal${poids?' · ~'+poids+'g':''}</span>
+      </div>
+      <div class="ing-rep-box">
+        ${ings.map(it=>`<div class="ing-rep-row">
+          <span class="ing-rep-nom">${it.nom}</span>
+          <span class="ing-rep-qty">${it.qty}</span>
+        </div>`).join('')}
+      </div>
+      <div style="font-size:11px;color:var(--muted);padding:0 4px;margin-top:-4px;margin-bottom:4px">
+        P ${macros.p}g · G ${macros.g}g · L ${macros.l}g
+      </div>
+    </div>`;
+  }
 
   document.getElementById('sheet-body').innerHTML=`
     <div class="sheet-title">${m.nom}</div>
@@ -975,56 +1045,24 @@ function showDetail(w,di,mi){
       <span class="pill pill-m">${m.portions}</span>
     </div>
 
-    <div class="macro-detail">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px">Macros par adulte</div>
-      <div class="macro-detail-grid">
-        <div class="md-box"><div class="md-val">${m.kcal}</div><div class="md-lbl">kcal</div></div>
-        <div class="md-box"><div class="md-val">${m.p}g</div><div class="md-lbl">protéines</div></div>
-        <div class="md-box"><div class="md-val">${m.g}g</div><div class="md-lbl">glucides</div></div>
-        <div class="md-box"><div class="md-val">${m.l}g</div><div class="md-lbl">lipides</div></div>
+    <div class="slabel">Quantités totales — ${est4?'4 pers.':nbPersons+' pers.'}</div>
+    <div class="ing-rep-section">
+      <div class="ing-rep-title total">
+        <span>🍳 Pour cuisiner</span>
+        <span>${portionsElle.totalKcal} kcal total</span>
       </div>
-      <div class="macro-bar"><div class="mp" style="width:${pp}%"></div><div class="mg" style="width:${gp}%"></div><div class="ml" style="width:${lp}%"></div></div>
-      <div class="macro-leg">
-        <span><span class="mdot" style="background:#40916C"></span>P ${pp}%</span>
-        <span><span class="mdot" style="background:#E9C46A"></span>G ${gp}%</span>
-        <span><span class="mdot" style="background:#E76F51"></span>L ${lp}%</span>
-      </div>
-    </div>
-
-    <div class="slabel">Répartition des portions</div>
-    <div style="background:var(--g6);border-radius:var(--rs);padding:7px 12px;margin-bottom:8px;font-size:11px;color:var(--muted)">
-      Total tablée : <strong style="color:var(--g1)">${portions.totalKcal} kcal</strong> · P ${portions.totalP}g · G ${portions.totalG}g · L ${portions.totalL}g
-    </div>
-    <div class="portions-grid">
-      <div class="portion-card elle">
-        <div class="portion-who">Elle</div>
-        <div class="portion-kcal">${portions.elleKcal} kcal</div>
-        <div class="portion-macros">P ${portions.elleP}g · G ${portions.elleG}g · L ${portions.elleL}g</div>
-        <div class="portion-poids">${ellePoids > 0 ? "~"+ellePoids+"g dans l'assiette" : ""}</div>
-      </div>
-      <div class="portion-card lui">
-        <div class="portion-who">Lui</div>
-        <div class="portion-kcal">${portions.luiKcal} kcal</div>
-        <div class="portion-macros">P ${portions.luiP}g · G ${portions.luiG}g · L ${portions.luiL}g</div>
-        <div class="portion-poids">${luiPoids > 0 ? "~"+luiPoids+"g dans l'assiette" : ""}</div>
-      </div>
-      ${est4 ? `
-      <div class="portion-card enfant" style="grid-column:span 2">
-        <div class="portion-who">Enfant (×2)</div>
-        <div class="portion-kcal">${portions.enfKcal} kcal chacun</div>
-        <div class="portion-macros">Portion réduite ~60% adulte</div>
-        <div class="portion-poids">${enfPoids > 0 ? "~"+enfPoids+"g dans l'assiette" : ""}</div>
-      </div>` : ''}
-    </div>
-
-    <div class="slabel">Ingrédients — quantité totale pour ${est4?4:nbPersons} pers.</div>
-    <div style="background:var(--g6);border-radius:var(--rs);padding:10px 12px">
-      ${ingsTotal.map(it=>`
-        <div class="ing-total-item">
-          <span class="ing-total-nom">${it.nom}</span>
-          <span class="ing-total-qty">${it.qty||'q.s.'}</span>
+      <div class="ing-rep-box">
+        ${ingsTotal.map(it=>`<div class="ing-rep-row">
+          <span class="ing-rep-nom">${it.nom}</span>
+          <span class="ing-rep-qty">${it.qty||'q.s.'}</span>
         </div>`).join('')}
+      </div>
     </div>
+
+    <div class="slabel">Répartition par assiette</div>
+    ${renderIngSection('Elle','elle',portionsElle.elleKcal,{p:portionsElle.elleP,g:portionsElle.elleG,l:portionsElle.elleL},ingsElle,ellePoids)}
+    ${renderIngSection('Lui','lui',Math.round(mLui.kcal*portionsElle.ratioLui*2/portionsElle.diviseur),{p:Math.round(mLui.p*portionsElle.ratioLui*2/portionsElle.diviseur),g:Math.round(mLui.g*portionsElle.ratioLui*2/portionsElle.diviseur),l:Math.round(mLui.l*portionsElle.ratioLui*2/portionsElle.diviseur)},ingsLui,luiPoids)}
+    ${est4?renderIngSection('Enfant (×2)','enfant',portionsElle.enfKcal,{p:Math.round(m.p*portionsElle.ratioEnfant/portionsElle.diviseur),g:Math.round(m.g*portionsElle.ratioEnfant/portionsElle.diviseur),l:Math.round(m.l*portionsElle.ratioEnfant/portionsElle.diviseur)},ingsEnf,enfPoids):''}
 
     <div class="slabel">Préparation</div>
     <div class="steps">${m.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><div class="stxt">${s}</div></div>`).join('')}</div>
@@ -1398,6 +1436,15 @@ function getPrixReel(nomIng, qtyG, qtyPieces){
   // Cas spécial thon boîte
   if(clean.includes('thon') && qtyPieces > 0){
     return Math.round(qtyPieces * 1.50 * 100) / 100;
+  }
+  // Cas spécial filets/pièces de poisson
+  if((clean.includes('cabillaud')||clean.includes('saumon')) && qtyPieces > 0 && qtyG === 0){
+    const prixPiece = clean.includes('saumon') ? 4.50 : 3.20; // prix par filet
+    return Math.round(qtyPieces * prixPiece * 100) / 100;
+  }
+  // Cas spécial cuisses poulet à la pièce
+  if(clean.includes('cuisses') && qtyPieces > 0 && qtyG === 0){
+    return Math.round(qtyPieces * 1.80 * 100) / 100; // ~1.80€/cuisse
   }
 
   // Chercher dans prixParKg
