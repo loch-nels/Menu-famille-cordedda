@@ -1031,11 +1031,16 @@ function showDetail(w,di,mi){
   const luiPoids  = totalPoidsG>0 ? Math.round(totalPoidsG * rL)  : 0;
   const enfPoids  = totalPoidsG>0&&est4 ? Math.round(totalPoidsG * rEnf / div * nbAdultes) : 0;
 
-  // Calcul des fractions de répartition selon nbPersons réel
-  // totalKcal = somme réelle de toutes les assiettes
-  const fE_reel  = totalKcal > 0 ? elleKcal  / totalKcal : rE;
-  const fL_reel  = totalKcal > 0 ? luiKcal   / totalKcal : rL;
-  const fEnf_reel = totalKcal > 0 && nbEnfants > 0 ? enfKcal / totalKcal : 0;
+  // Fractions de répartition des ingrédients
+  // Basées sur les ratios caloriques objectifs, pas sur les kcal calculés
+  // 2 adultes : Elle=rE, Lui=rL → Elle+Lui = 1.0 ✅
+  // 4 pers.   : Elle=rE*2/div, Lui=rL*2/div, Enf=0.6/div → somme=1.0 ✅
+  const divFact = nbAdultes + nbEnfants * rEnf; // facteur tablée réel
+  // Cas spécial 1 personne : Elle reçoit tout (fraction = 1.0)
+  const fE_reel   = nbAdultes === 1 && nbEnfants === 0 ? 1.0
+                  : nbAdultes > 0 ? rE * nbAdultes / divFact : 0;
+  const fL_reel   = nbAdultes > 1 ? rL * nbAdultes / divFact : 0;
+  const fEnf_reel = nbEnfants > 0 ? rEnf / divFact : 0;
 
   const portionsElle = {
     ratioElle:  fE_reel,
