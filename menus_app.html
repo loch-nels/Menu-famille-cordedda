@@ -552,6 +552,11 @@ function initMealPersons(){
   });
 }
 initMealPersons();
+// Charger mealPersons sauvegardés (écrase les valeurs par défaut)
+try{
+  const savedMP = localStorage.getItem('mealPersons');
+  if(savedMP) mealPersons = JSON.parse(savedMP);
+}catch(e){}
 
 function getMealPersons(w,di,mi){
   return (mealPersons[w]&&mealPersons[w][di]&&mealPersons[w][di][mi])||2;
@@ -561,6 +566,7 @@ function setMealPersons(w,di,mi,val){
   if(!mealPersons[w]) mealPersons[w]={};
   if(!mealPersons[w][di]) mealPersons[w][di]={};
   mealPersons[w][di][mi]=Math.max(1,Math.min(4,val));
+  try{ localStorage.setItem('mealPersons', JSON.stringify(mealPersons)); }catch(e){}
   renderPlanning();
   renderCourses();
 }
@@ -726,13 +732,13 @@ const semaine2=[
     {moment:'Petit-déjeuner',nom:'Flocons chauds beurre cacahuète miel',kcal:343,p:17,g:44,l:12,portions:'2 adultes',ings:['Flocons avoine 55g','Lait végétal 100ml','Beurre cacahuète 12g','Amandes 10g','Skyr 60g'],steps:['Cuire les flocons avec lait végétal 3 min.','Ajouter beurre de cacahuète et amandes.','Servir avec skyr à côté.'],note:''},
     {moment:'Déjeuner',nom:'Poulet riz basmati tomates provençales',kcal:462,p:35,g:48,l:13,portions:'2 adultes',ings:['Blanc poulet 130g','Riz basmati 65g cru','Tomates 200g','Ail 2 gousses','Huile olive 8g','Herbes de Provence'],steps:['Cuire le riz basmati 12 min.','Poêler le poulet avec ail + herbes 7 min.','Faire revenir tomates 5 min.','Assembler.'],note:''},
     {moment:'Collation',nom:'Petit suisse nature',kcal:104,p:6,g:7,l:4,portions:'2 adultes',ings:['Petit suisse 2x60g'],steps:['Déguster tel quel.'],note:''},
-    {moment:'Dîner',nom:'Poisson vapeur légumes haricots',kcal:342,p:32,g:18,l:14,portions:'4 pers.',ings:['Filets cabillaud 1 pièce','Haricots verts 75g','Carottes 50g','Citron','Huile olive 2g','Herbes'],steps:['Cuire les légumes vapeur 8 min.','Cuire le poisson vapeur ou poêlé 8 min.','Assaisonner huile + citron + herbes.'],note:'Repas léger 20 min. Retirer arêtes pour les enfants.'},
+    {moment:'Dîner',nom:'Poulet sauté haricots verts carottes',kcal:340,p:32,g:14,l:14,portions:'4 pers.',ings:['Blanc poulet 120g','Haricots verts 80g','Carottes 60g','Ail','Huile olive 3g','Herbes'],steps:['Poêler le poulet en dés 6 min.','Ajouter haricots verts + carottes, cuire 7 min.','Assaisonner ail + herbes.'],note:'Plat rapide 15 min.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Flocons chauds beurre cacahuète',kcal:394,p:21,g:51,l:13,portions:'2 adultes',ings:['Flocons avoine 70g','Lait végétal 120ml','Beurre cacahuète 15g','Amandes 14g','Skyr 80g'],steps:['Cuire les flocons avec lait végétal 3 min.','Ajouter beurre de cacahuète et amandes.','Servir avec skyr à côté.'],note:''},
     {moment:'Déjeuner',nom:'Poulet riz basmati tomates provençales',kcal:511,p:41,g:53,l:14,portions:'2 adultes',ings:['Blanc poulet 160g','Riz basmati 80g cru','Tomates 200g','Ail 2 gousses','Huile olive 10g','Herbes de Provence'],steps:['Cuire le riz basmati 12 min.','Poêler le poulet avec ail + herbes 7 min.','Faire revenir tomates 5 min.','Assembler.'],note:''},
     {moment:'Collation',nom:'Skyr amandes',kcal:181,p:13,g:9,l:9,portions:'2 adultes',ings:['Skyr 150g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Poisson vapeur légumes haricots',kcal:391,p:37,g:21,l:16,portions:'4 pers.',ings:['Filets cabillaud 1 pièce','Haricots verts 75g','Carottes 50g','Citron','Huile olive 2g','Herbes'],steps:['Cuire les légumes vapeur 8 min.','Cuire le poisson poêlé 8 min.','Assaisonner huile + citron + herbes.'],note:'Repas léger 20 min. Retirer arêtes pour les enfants.'},
+    {moment:'Dîner',nom:'Poulet sauté haricots verts carottes',kcal:392,p:37,g:16,l:16,portions:'4 pers.',ings:['Blanc poulet 140g','Haricots verts 80g','Carottes 60g','Ail','Huile olive 3g','Herbes'],steps:['Poêler le poulet en dés 6 min.','Ajouter haricots verts + carottes, cuire 7 min.','Assaisonner ail + herbes.'],note:'Plat rapide 15 min.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:140,p:4,g:8,l:10,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   {f:[
@@ -885,22 +891,22 @@ function calcPortions(m, nbPersons){
   // Ratio de répartition entre adultes basé sur objectifs caloriques
   const ratioElle = 1520 / (1520 + 1720); // ~0.469
   const ratioLui  = 1720 / (1520 + 1720); // ~0.531
-  const ratioEnfant = 0.6; // 60% d'un adulte moyen
+  const ratioEnfantC = 0.6; // 60% d'un adulte moyen
 
   // Total de la tablée = (macros × 2 adultes) + (enfants × 60%)
   // Les macros du repas sont pour 1 adulte → ×2 pour les 2 adultes
-  const totalKcal = Math.round(m.kcal * (nbAdultes + nbEnfants * ratioEnfant));
-  const totalP    = Math.round(m.p    * (nbAdultes + nbEnfants * ratioEnfant));
-  const totalG    = Math.round(m.g    * (nbAdultes + nbEnfants * ratioEnfant));
-  const totalL    = Math.round(m.l    * (nbAdultes + nbEnfants * ratioEnfant));
+  const totalKcal = Math.round(m.kcal * (nbAdultes + nbEnfants * ratioEnfantC));
+  const totalP    = Math.round(m.p    * (nbAdultes + nbEnfants * ratioEnfantC));
+  const totalG    = Math.round(m.g    * (nbAdultes + nbEnfants * ratioEnfantC));
+  const totalL    = Math.round(m.l    * (nbAdultes + nbEnfants * ratioEnfantC));
 
   // Portion adulte moyenne = total / (2 + nbEnfants*0.6)
-  const diviseur = nbAdultes + nbEnfants * ratioEnfant;
+  const diviseur = nbAdultes + nbEnfants * ratioEnfantC;
 
   // Portions individuelles = part du total
   const elleKcal = Math.round(totalKcal * ratioElle * nbAdultes / diviseur);
   const luiKcal  = Math.round(totalKcal * ratioLui  * nbAdultes / diviseur);
-  const enfKcal  = nbEnfants > 0 ? Math.round(totalKcal * ratioEnfant / diviseur) : 0;
+  const enfKcal  = nbEnfants > 0 ? Math.round(totalKcal * ratioEnfantC / diviseur) : 0;
 
   const elleP = Math.round(totalP * ratioElle * nbAdultes / diviseur);
   const luiP  = Math.round(totalP * ratioLui  * nbAdultes / diviseur);
@@ -922,19 +928,31 @@ function calcPortions(m, nbPersons){
     elleKcal,luiKcal,enfKcal,
     elleP,luiP,elleG,luiG,elleL,luiL,
     ellePoids,luiPoids,enfPoids,
-    ratioElle,ratioLui,ratioEnfant,diviseur,
+    ratioElle,ratioLui,ratioEnfantC,diviseur,
     nbEnfants,totalKcal,totalP,totalG,totalL
   };
 }
 
 function buildIngredientsTotal(m, nbPersons){
-  // Les ingrédients dans la recette sont pour 1 adulte (base recette)
-  // On calcule pour toute la tablée :
-  // - 2 adultes toujours
-  // - + 2 enfants si repas 4 pers. (portion enfant = 60% adulte)
+  // Les ingrédients sont pour 1 adulte (base recette)
+  // On calcule pour toute la tablée selon le nombre réel de personnes
   const est4 = m.portions.includes('4');
-  const nbAdultes = 2;
-  const nbEnfants = est4 ? 2 : 0;
+
+  // Décomposer nbPersons en adultes + enfants
+  // Convention : si repas 4 pers. → 2 adultes + 2 enfants
+  //              si repas 2 adultes → nbPersons adultes
+  //              si nbPersons personnalisé :
+  //                - repas "4 pers." avec 3 → 2 adultes + 1 enfant
+  //                - repas "2 adultes" avec 1 → 1 adulte
+  let nbAdultes, nbEnfants;
+  if(est4){
+    // Pour un repas famille, on estime 2 adultes + le reste en enfants
+    nbAdultes = Math.min(2, nbPersons);
+    nbEnfants = Math.max(0, nbPersons - 2);
+  } else {
+    nbAdultes = nbPersons;
+    nbEnfants = 0;
+  }
   const ratioEnfant = 0.6;
 
   // Facteur total = nb adultes + nb enfants × ratio
@@ -970,12 +988,37 @@ function showDetail(w,di,mi){
   // Quantités totales pour cuisiner (toujours depuis 'f', indépendant de la personne)
   const ingsTotal = buildIngredientsTotal(m, nbPersons);
 
-  // Macros Elle
-  const ppE=Math.round(m.p*4/m.kcal*100),gpE=Math.round(m.g*4/m.kcal*100),lpE=Math.round(m.l*9/m.kcal*100);
-  const portionsElle = calcPortions(m, nbPersons);
+  // Ratios de répartition (basés sur objectifs caloriques)
+  const rE = 1520/(1520+1720); // ~0.469
+  const rL = 1720/(1520+1720); // ~0.531
+  const rEnf = 0.6;
+  const nbAdultes = est4 ? Math.min(2, nbPersons) : nbPersons;
+  const nbEnfants = est4 ? Math.max(0, nbPersons - 2) : 0;
+  const div = nbAdultes + nbEnfants * rEnf;
 
-  // Macros Lui
-  const ppL=Math.round(mLui.p*4/mLui.kcal*100);
+  // Totaux tablée basés sur Elle (base recette)
+  const totalKcal = Math.round(m.kcal * (nbAdultes + nbEnfants * rEnf));
+  const totalP    = Math.round(m.p    * (nbAdultes + nbEnfants * rEnf));
+  const totalG    = Math.round(m.g    * (nbAdultes + nbEnfants * rEnf));
+  const totalL    = Math.round(m.l    * (nbAdultes + nbEnfants * rEnf));
+
+  // Portions Elle (depuis macros Elle)
+  const elleKcal = Math.round(m.kcal * rE);
+  const elleP    = Math.round(m.p * rE);
+  const elleG    = Math.round(m.g * rE);
+  const elleL    = Math.round(m.l * rE);
+
+  // Portions Lui (depuis macros Lui — différentes de Elle)
+  const luiKcalVal = Math.round(mLui.kcal * rL);
+  const luiPVal    = Math.round(mLui.p    * rL);
+  const luiGVal    = Math.round(mLui.g    * rL);
+  const luiLVal    = Math.round(mLui.l    * rL);
+
+  // Portions Enfant (depuis macros Elle × 60%)
+  const enfKcalVal = Math.round(m.kcal * rEnf);
+  const enfPVal    = Math.round(m.p    * rEnf);
+  const enfGVal    = Math.round(m.g    * rEnf);
+  const enfLVal    = Math.round(m.l    * rEnf);
 
   // Poids total ingrédients
   let totalPoidsG = 0;
@@ -984,9 +1027,25 @@ function showDetail(w,di,mi){
     if(match) totalPoidsG += parseInt(match[1]);
   });
 
-  const ellePoids = totalPoidsG>0 ? Math.round(totalPoidsG*portionsElle.ratioElle*2/portionsElle.diviseur) : 0;
-  const luiPoids  = totalPoidsG>0 ? Math.round(totalPoidsG*portionsElle.ratioLui*2/portionsElle.diviseur)  : 0;
-  const enfPoids  = totalPoidsG>0&&est4 ? Math.round(totalPoidsG*portionsElle.ratioEnfant/portionsElle.diviseur) : 0;
+  const ellePoids = totalPoidsG>0 ? Math.round(totalPoidsG * rE) : 0;
+  const luiPoids  = totalPoidsG>0 ? Math.round(totalPoidsG * rL)  : 0;
+  const enfPoids  = totalPoidsG>0&&est4 ? Math.round(totalPoidsG * rEnf / div * nbAdultes) : 0;
+
+  // Calcul des fractions de répartition selon nbPersons réel
+  // totalKcal = somme réelle de toutes les assiettes
+  const fE_reel  = totalKcal > 0 ? elleKcal  / totalKcal : rE;
+  const fL_reel  = totalKcal > 0 ? luiKcal   / totalKcal : rL;
+  const fEnf_reel = totalKcal > 0 && nbEnfants > 0 ? enfKcal / totalKcal : 0;
+
+  const portionsElle = {
+    ratioElle:  fE_reel,
+    ratioLui:   fL_reel,
+    ratioEnfant:fEnf_reel,
+    diviseur:1,
+    elleKcal, luiKcal, enfKcal:enfKcalVal,
+    elleP, elleG, elleL,
+    totalKcal, totalP, totalG, totalL
+  };
 
   // Répartition ingrédients par personne
   function repartirIngs(ratio){
@@ -1011,13 +1070,10 @@ function showDetail(w,di,mi){
     });
   }
 
-  const ratioElle = portionsElle.ratioElle*2/portionsElle.diviseur;
-  const ratioLui  = portionsElle.ratioLui*2/portionsElle.diviseur;
-  const ratioEnf  = portionsElle.ratioEnfant/portionsElle.diviseur;
-
-  const ingsElle = repartirIngs(ratioElle);
-  const ingsLui  = repartirIngs(ratioLui);
-  const ingsEnf  = est4 ? repartirIngs(ratioEnf) : [];
+  // Fractions directes depuis portionsElle (déjà calculées)
+  const ingsElle = repartirIngs(portionsElle.ratioElle);
+  const ingsLui  = repartirIngs(portionsElle.ratioLui);
+  const ingsEnf  = (est4 && nbEnfants > 0) ? repartirIngs(portionsElle.ratioEnfant) : [];
 
   function renderIngSection(title, cssClass, kcal, macros, ings, poids){
     return `<div class="ing-rep-section">
@@ -1060,9 +1116,9 @@ function showDetail(w,di,mi){
     </div>
 
     <div class="slabel">Répartition par assiette</div>
-    ${renderIngSection('Elle','elle',portionsElle.elleKcal,{p:portionsElle.elleP,g:portionsElle.elleG,l:portionsElle.elleL},ingsElle,ellePoids)}
-    ${renderIngSection('Lui','lui',Math.round(mLui.kcal*portionsElle.ratioLui*2/portionsElle.diviseur),{p:Math.round(mLui.p*portionsElle.ratioLui*2/portionsElle.diviseur),g:Math.round(mLui.g*portionsElle.ratioLui*2/portionsElle.diviseur),l:Math.round(mLui.l*portionsElle.ratioLui*2/portionsElle.diviseur)},ingsLui,luiPoids)}
-    ${est4?renderIngSection('Enfant (×2)','enfant',portionsElle.enfKcal,{p:Math.round(m.p*portionsElle.ratioEnfant/portionsElle.diviseur),g:Math.round(m.g*portionsElle.ratioEnfant/portionsElle.diviseur),l:Math.round(m.l*portionsElle.ratioEnfant/portionsElle.diviseur)},ingsEnf,enfPoids):''}
+    ${renderIngSection('Elle','elle',elleKcal,{p:elleP,g:elleG,l:elleL},ingsElle,ellePoids)}
+    ${nbAdultes >= 2 ? renderIngSection('Lui','lui',luiKcal,{p:luiP,g:luiG,l:luiL},ingsLui,luiPoids) : ''}
+    ${(est4 && nbEnfants > 0)?renderIngSection('Enfant (×'+nbEnfants+')','enfant',enfKcal,{p:enfP,g:enfG,l:enfL},ingsEnf,enfPoids):''}
 
     <div class="slabel">Préparation</div>
     <div class="steps">${m.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><div class="stxt">${s}</div></div>`).join('')}</div>
