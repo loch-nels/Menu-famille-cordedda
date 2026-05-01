@@ -151,11 +151,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .hab-val{font-size:10px;color:var(--muted)}
 .pref-chip{display:inline-block;background:var(--red-l);border:1px solid #FECACA;border-radius:20px;padding:3px 10px;font-size:12px;color:var(--red);margin:3px 3px 0 0}
 
-.persons-selector{display:flex;align-items:center;gap:4px;margin-top:4px}
-.ps-btn{width:20px;height:20px;border-radius:4px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:11px;font-weight:700;color:var(--g2);display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
+.persons-selector{display:flex;flex-direction:column;gap:3px;margin-top:5px}
+.ps-row{display:flex;align-items:center;gap:4px}
+.ps-btn{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:10px;font-weight:700;color:var(--g2);display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1}
 .ps-btn:active{background:var(--g5)}
+.ps-btn.adult{border-color:var(--g3);color:var(--g2)}
+.ps-btn.child{border-color:var(--amber);color:#856404}
 .ps-val{font-size:11px;font-weight:700;color:var(--g1);min-width:14px;text-align:center}
-.ps-lbl{font-size:9px;color:var(--muted)}
+.ps-lbl{font-size:9px;color:var(--muted);min-width:42px}
+.ps-lbl.adult{color:var(--g2)}
+.ps-lbl.child{color:#856404}
 .cout-tab{display:none}.cout-tab.active{display:block}
 .cout-week-toggle{display:flex;gap:6px;margin-bottom:12px}
 .cwtt{flex:1;padding:7px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);background:var(--white);text-align:center;font-family:var(--font)}
@@ -458,6 +463,94 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 const TARGETS={f:1520,m:1720};
 const MAINTENANCE={f:1700,m:1900};
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║         RÈGLES DE CALCUL — NE JAMAIS MODIFIER               ║
+// ╠══════════════════════════════════════════════════════════════╣
+// ║ FICHE RECETTE (showDetail)                                   ║
+// ║   ELLE kcal   = kcal_base × RATIO_ELLE × 2  (2 adultes)     ║
+// ║              = kcal_base                     (1 adulte)      ║
+// ║   LUI  kcal   = kcal_lui  × RATIO_LUI  × 2  (2 adultes)     ║
+// ║              = 0                             (1 adulte)      ║
+// ║   ENFANT kcal = kcal_base × RATIO_ENFANT     (par enfant)    ║
+// ║   TOTAL kcal  = elleKcal + luiKcal + enfKcal × nbEnfants    ║
+// ║   POIDS       = totalPoids × (kcal_personne / totalKcal)     ║
+// ╠══════════════════════════════════════════════════════════════╣
+// ║ LISTE DE COURSES (renderCourses)                             ║
+// ║   FACTEUR     = facteurTablee(nbAdultes, nbEnfants)          ║
+// ║              = nbAdultes + nbEnfants × RATIO_ENFANT          ║
+// ║   QTÉ TOTALE  = qty_base × facteur  (base = 1 adulte)        ║
+// ║   Ex: 130g poulet × 3.2 (2A+2E) = 416g à acheter            ║
+// ╠══════════════════════════════════════════════════════════════╣
+// ║ COÛTS (renderCouts / renderBudget)                           ║
+// ║   PRIX ING    = qty_totale_g / 1000 × prix_kg                ║
+// ║              = nb_pièces × prix_pièce (oeufs, filets)        ║
+// ║   BUDGET %    = total / BUDGET_MAX × 100                     ║
+// ║   SEUIL WARN  = BUDGET_MAX × SEUIL_WARN_BUDGET (0.85)        ║
+// ║   PAR PERS    = total / nb_personnes_moyen_réel              ║
+// ╠══════════════════════════════════════════════════════════════╣
+// ║ MACROS %      = P×4/kcal | G×4/kcal | L×9/kcal              ║
+// ║ ORDRE TOUJOURS : Lui > Elle > Enfant (kcal ET poids)         ║
+// ╠══════════════════════════════════════════════════════════════╣
+// ║ ⚠️  RÈGLES POUR TOUTE MODIFICATION DU CODE :                 ║
+// ║  1. Lire le fichier avant de toucher quoi que ce soit        ║
+// ║  2. Ne modifier QUE ce qui est demandé                       ║
+// ║  3. Ne JAMAIS modifier ces fonctions :                       ║
+// ║     kcalElle / kcalLui / kcalEnfant                         ║
+// ║     macroElle / macroLui / macroEnfant                       ║
+// ║     facteurTablee                                            ║
+// ║  4. Ne JAMAIS modifier les constantes RATIO_* et PRIX_*      ║
+// ║  5. Vérifier avec verif_calculs.py après chaque modif        ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ── Constantes figées — source unique de vérité ─────────────
+const RATIO_ELLE          = TARGETS.f / (TARGETS.f + TARGETS.m); // 0.469
+const RATIO_LUI           = TARGETS.m / (TARGETS.f + TARGETS.m); // 0.531
+const RATIO_ENFANT        = 0.6;    // 60% d'un adulte
+const BUDGET_MAX          = 80;     // €/semaine
+const MAX_PERSONNES       = 4;      // par repas
+const SEUIL_WARN_BUDGET   = 0.85;   // 85% → couleur ambre
+const SEMAINES_PAR_MOIS   = 4.3;
+const KCAL_PAR_KG         = 7700;   // physiologique
+const PRIX_DEFAUT_ING     = 1.50;   // € si prix inconnu
+const PRIX_OEUF           = 0.30;   // €/pièce
+const PRIX_THON_BOITE     = 1.50;   // €/boîte
+const PRIX_FILET_CABILLAUD= 3.20;   // €/filet
+const PRIX_FILET_SAUMON   = 4.50;   // €/filet
+const PRIX_CUISSE_POULET  = 1.80;   // €/pièce
+const PORTIONS_FAMILLE    = '4 pers.'; // label repas famille
+const IDX_WEEKEND         = 5;      // di >= 5 = sam/dim
+const IDX_DINER           = 3;      // mi === 3
+const IDX_COLLATION_AM    = 2;      // mi === 2
+const IDX_COLLATION_SOIR  = 4;      // mi === 4
+
+function facteurTablee(nbA, nbE){
+  return nbA + nbE * RATIO_ENFANT;
+}
+
+function kcalElle(kcalBase, nbA){
+  return nbA === 1 ? kcalBase : Math.round(kcalBase * RATIO_ELLE * 2);
+}
+
+function kcalLui(kcalLuiBase, nbA){
+  return nbA >= 2 ? Math.round(kcalLuiBase * RATIO_LUI * 2) : 0;
+}
+
+function kcalEnfant(kcalBase){
+  return Math.round(kcalBase * RATIO_ENFANT);
+}
+
+function macroElle(val, nbA){
+  return nbA === 1 ? val : Math.round(val * RATIO_ELLE * 2);
+}
+
+function macroLui(val, nbA){
+  return nbA >= 2 ? Math.round(val * RATIO_LUI * 2) : 0;
+}
+
+function macroEnfant(val){
+  return Math.round(val * RATIO_ENFANT);
+}
 const MB={'Petit-déjeuner':'mb-pdj','Déjeuner':'mb-mid','Collation':'mb-col','Dîner':'mb-din','Collation soir':'mb-soir'};
 
 let person='f', personResume='f';
@@ -576,11 +669,17 @@ function initMealPersons(){
     JOURS.forEach((_,di)=>{
       mealPersons[w][di]={};
       [0,1,2,3,4].forEach(mi=>{
-        // Défaut : midi semaine=2, soir semaine=4, week-end=4
-        const estWeekend = di>=5;
-        const estSoir = mi===3;
-        const estCollation = mi===2||mi===4;
-        mealPersons[w][di][mi] = estCollation ? 2 : (estWeekend||estSoir) ? 4 : 2;
+        const estWeekend = di>=IDX_WEEKEND;
+        const estSoir = mi===IDX_DINER;
+        const estCollation = mi===IDX_COLLATION_AM||mi===IDX_COLLATION_SOIR;
+        // Nouveau format : {a: nbAdultes, e: nbEnfants}
+        if(estCollation){
+          mealPersons[w][di][mi]={a:2,e:0};
+        } else if(estWeekend||estSoir){
+          mealPersons[w][di][mi]={a:2,e:2};
+        } else {
+          mealPersons[w][di][mi]={a:2,e:0};
+        }
       });
     });
   });
@@ -593,13 +692,30 @@ try{
 }catch(e){}
 
 function getMealPersons(w,di,mi){
-  return (mealPersons[w]&&mealPersons[w][di]&&mealPersons[w][di][mi])||2;
+  const v = mealPersons[w]&&mealPersons[w][di]&&mealPersons[w][di][mi];
+  // Compatibilité ancien format (nombre simple)
+  if(typeof v === 'number') return {a:Math.min(v,2), e:Math.max(0,v-2)};
+  return v || {a:2,e:0};
 }
 
-function setMealPersons(w,di,mi,val){
+function getMealNbAdultes(w,di,mi){ return getMealPersons(w,di,mi).a; }
+function getMealNbEnfants(w,di,mi){ return getMealPersons(w,di,mi).e; }
+function getMealNbTotal(w,di,mi){
+  const p=getMealPersons(w,di,mi);
+  return p.a + p.e;
+}
+
+function setMealPersons(w,di,mi,a,e){
   if(!mealPersons[w]) mealPersons[w]={};
   if(!mealPersons[w][di]) mealPersons[w][di]={};
-  mealPersons[w][di][mi]=Math.max(1,Math.min(4,val));
+  mealPersons[w][di][mi]={
+    a: Math.max(0, Math.min(MAX_PERSONNES, a)),
+    e: Math.max(0, Math.min(MAX_PERSONNES, e))
+  };
+  // Au moins 1 personne au total
+  if(mealPersons[w][di][mi].a===0 && mealPersons[w][di][mi].e===0){
+    mealPersons[w][di][mi].a=1;
+  }
   try{ localStorage.setItem('mealPersons', JSON.stringify(mealPersons)); }catch(e){}
   renderPlanning();
   renderCourses();
@@ -895,10 +1011,18 @@ function renderPlanning(){
           <div class="meal-nm" onclick="showDetail(${w},${di},${mi})">${m.nom}</div>
           <div class="meal-tm">${m.kcal} kcal</div>
           <div class="persons-selector">
-            <button class="ps-btn" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealPersons(${w},${di},${mi})-1)">−</button>
-            <span class="ps-val">${getMealPersons(w,di,mi)}</span>
-            <button class="ps-btn" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealPersons(${w},${di},${mi})+1)">+</button>
-            <span class="ps-lbl">pers.</span>
+            <div class="ps-row">
+              <button class="ps-btn adult" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealNbAdultes(${w},${di},${mi})-1,getMealNbEnfants(${w},${di},${mi}))">−</button>
+              <span class="ps-val">${getMealNbAdultes(w,di,mi)}</span>
+              <button class="ps-btn adult" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealNbAdultes(${w},${di},${mi})+1,getMealNbEnfants(${w},${di},${mi}))">+</button>
+              <span class="ps-lbl adult">👤 adultes</span>
+            </div>
+            <div class="ps-row">
+              <button class="ps-btn child" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealNbAdultes(${w},${di},${mi}),getMealNbEnfants(${w},${di},${mi})-1)">−</button>
+              <span class="ps-val">${getMealNbEnfants(w,di,mi)}</span>
+              <button class="ps-btn child" onclick="event.stopPropagation();setMealPersons(${w},${di},${mi},getMealNbAdultes(${w},${di},${mi}),getMealNbEnfants(${w},${di},${mi})+1)">+</button>
+              <span class="ps-lbl child">👶 enfants</span>
+            </div>
           </div>
         </div>`;
       }).join('')}
@@ -910,7 +1034,7 @@ function renderPlanning(){
 function calcPortions(m, nbPersons){
   // Les macros du repas sont pour 1 adulte (base recette)
   // On calcule le total pour toute la tablée puis on répartit
-  const est4 = m.portions.includes('4');
+  const est4 = m.portions === PORTIONS_FAMILLE;
   const nbAdultes = 2; // toujours 2 adultes
   const nbEnfants = est4 ? 2 : 0;
 
@@ -932,7 +1056,7 @@ function calcPortions(m, nbPersons){
   // Portions individuelles = part du total
   const elleKcal = Math.round(totalKcal * ratioElle * nbAdultes / diviseur);
   const luiKcal  = Math.round(totalKcal * ratioLui  * nbAdultes / diviseur);
-  const enfKcal  = nbEnfants > 0 ? Math.round(totalKcal * ratioEnfantC / diviseur) : 0;
+  const enfKcal  = nbEnfants > 0 ? Math.round(m.kcal * ratioEnfantC) : 0;
 
   const elleP = Math.round(totalP * ratioElle * nbAdultes / diviseur);
   const luiP  = Math.round(totalP * ratioLui  * nbAdultes / diviseur);
@@ -962,7 +1086,7 @@ function calcPortions(m, nbPersons){
 function buildIngredientsTotal(m, nbPersons){
   // Les ingrédients sont pour 1 adulte (base recette)
   // On calcule pour toute la tablée selon le nombre réel de personnes
-  const est4 = m.portions.includes('4');
+  const est4 = m.portions === PORTIONS_FAMILLE;
 
   // Décomposer nbPersons en adultes + enfants
   // Convention : si repas 4 pers. → 2 adultes + 2 enfants
@@ -970,20 +1094,11 @@ function buildIngredientsTotal(m, nbPersons){
   //              si nbPersons personnalisé :
   //                - repas "4 pers." avec 3 → 2 adultes + 1 enfant
   //                - repas "2 adultes" avec 1 → 1 adulte
-  let nbAdultes, nbEnfants;
-  if(est4){
-    // Pour un repas famille, on estime 2 adultes + le reste en enfants
-    nbAdultes = Math.min(2, nbPersons);
-    nbEnfants = Math.max(0, nbPersons - 2);
-  } else {
-    nbAdultes = nbPersons;
-    nbEnfants = 0;
-  }
-  const ratioEnfant = 0.6;
-
-  // Facteur total = nb adultes + nb enfants × ratio
-  const facteur = nbAdultes + nbEnfants * ratioEnfant;
-  // Base recette = 1 adulte → on multiplie par facteur
+  // Utiliser les vrais nb adultes/enfants depuis mealPersons
+  const nbAdultes = (typeof nbPersons === 'object') ? nbPersons.a : Math.min(2, nbPersons);
+  const nbEnfants = (typeof nbPersons === 'object') ? nbPersons.e : 0;
+  // Facteur tablée — utilise la fonction figée
+  const facteur = facteurTablee(nbAdultes, nbEnfants);
 
   return m.ings.map(ing => {
     const parsed = parseIng(ing);
@@ -1008,43 +1123,43 @@ function showDetail(w,di,mi){
   // Toujours utiliser 'f' comme base (macros Elle) mais afficher les deux
   const m=semaines[w][di]['f'][mi];
   const mLui=semaines[w][di]['m'][mi];
-  const nbPersons = getMealPersons(w,di,mi);
-  const est4 = m.portions.includes('4');
+  const persObj = getMealPersons(w,di,mi);
+  const nbPersons = persObj; // objet {a, e}
+  const est4 = m.portions === PORTIONS_FAMILLE;
 
   // Quantités totales pour cuisiner (toujours depuis 'f', indépendant de la personne)
   const ingsTotal = buildIngredientsTotal(m, nbPersons);
 
   // Ratios de répartition (basés sur objectifs caloriques)
-  const rE = 1520/(1520+1720); // ~0.469
-  const rL = 1720/(1520+1720); // ~0.531
-  const rEnf = 0.6;
-  const nbAdultes = est4 ? Math.min(2, nbPersons) : nbPersons;
-  const nbEnfants = est4 ? Math.max(0, nbPersons - 2) : 0;
+  // Ratios depuis constantes globales figées
+  const rE   = RATIO_ELLE;
+  const rL   = RATIO_LUI;
+  const rEnf = RATIO_ENFANT;
+  const nbAdultes = (typeof nbPersons === 'object') ? nbPersons.a : Math.min(2, nbPersons);
+  const nbEnfants = (typeof nbPersons === 'object') ? nbPersons.e : (est4 ? Math.max(0,nbPersons-2) : 0);
   const div = nbAdultes + nbEnfants * rEnf;
 
-  // Totaux tablée basés sur Elle (base recette)
-  const totalKcal = Math.round(m.kcal * (nbAdultes + nbEnfants * rEnf));
-  const totalP    = Math.round(m.p    * (nbAdultes + nbEnfants * rEnf));
-  const totalG    = Math.round(m.g    * (nbAdultes + nbEnfants * rEnf));
-  const totalL    = Math.round(m.l    * (nbAdultes + nbEnfants * rEnf));
+  // Portions — utilise les fonctions figées
+  const elleKcal = kcalElle(m.kcal, nbAdultes);
+  const elleP    = macroElle(m.p, nbAdultes);
+  const elleG    = macroElle(m.g, nbAdultes);
+  const elleL    = macroElle(m.l, nbAdultes);
 
-  // Portions Elle (depuis macros Elle)
-  const elleKcal = Math.round(m.kcal * rE);
-  const elleP    = Math.round(m.p * rE);
-  const elleG    = Math.round(m.g * rE);
-  const elleL    = Math.round(m.l * rE);
+  const luiKcal  = kcalLui(mLui.kcal, nbAdultes);
+  const luiP     = macroLui(mLui.p, nbAdultes);
+  const luiG     = macroLui(mLui.g, nbAdultes);
+  const luiL     = macroLui(mLui.l, nbAdultes);
 
-  // Portions Lui (depuis macros Lui — différentes de Elle)
-  const luiKcal = Math.round(mLui.kcal * rL);
-  const luiP    = Math.round(mLui.p    * rL);
-  const luiG    = Math.round(mLui.g    * rL);
-  const luiL    = Math.round(mLui.l    * rL);
+  const enfKcal  = nbEnfants > 0 ? kcalEnfant(m.kcal) : 0;
+  const enfP     = nbEnfants > 0 ? macroEnfant(m.p) : 0;
+  const enfG     = nbEnfants > 0 ? macroEnfant(m.g) : 0;
+  const enfL     = nbEnfants > 0 ? macroEnfant(m.l) : 0;
 
-  // Portions Enfant (depuis macros Elle × 60%)
-  const enfKcal = Math.round(m.kcal * rEnf);
-  const enfP    = Math.round(m.p    * rEnf);
-  const enfG    = Math.round(m.g    * rEnf);
-  const enfL    = Math.round(m.l    * rEnf);
+  // Total = somme réelle des assiettes (pas estimation depuis Elle seule)
+  const totalKcal = elleKcal + luiKcal + enfKcal * nbEnfants;
+  const totalP    = elleP    + luiP    + enfP    * nbEnfants;
+  const totalG    = elleG    + luiG    + enfG    * nbEnfants;
+  const totalL    = elleL    + luiL    + enfL    * nbEnfants;
 
   // Poids total ingrédients
   let totalPoidsG = 0;
@@ -1053,20 +1168,25 @@ function showDetail(w,di,mi){
     if(match) totalPoidsG += parseInt(match[1]);
   });
 
-  const ellePoids = totalPoidsG>0 ? Math.round(totalPoidsG * rE) : 0;
-  const luiPoids  = totalPoidsG>0 ? Math.round(totalPoidsG * rL)  : 0;
-  const enfPoids  = totalPoidsG>0&&est4 ? Math.round(totalPoidsG * rEnf / div * nbAdultes) : 0;
+  // Poids par assiette — calculé APRÈS les fractions (fE_reel etc.)
+  // Note: fE_reel/fL_reel/fEnf_reel définis juste après
+  // On utilise les mêmes fractions que pour les ingrédients
 
   // Fractions de répartition des ingrédients
   // Basées sur les ratios caloriques objectifs, pas sur les kcal calculés
   // 2 adultes : Elle=rE, Lui=rL → Elle+Lui = 1.0 ✅
   // 4 pers.   : Elle=rE*2/div, Lui=rL*2/div, Enf=0.6/div → somme=1.0 ✅
-  const divFact = nbAdultes + nbEnfants * rEnf; // facteur tablée réel
-  // Cas spécial 1 personne : Elle reçoit tout (fraction = 1.0)
+  const divFact = facteurTablee(nbAdultes, nbEnfants);
+  // Fractions pour répartir les ingrédients proportionnellement
   const fE_reel   = nbAdultes === 1 && nbEnfants === 0 ? 1.0
-                  : nbAdultes > 0 ? rE * nbAdultes / divFact : 0;
-  const fL_reel   = nbAdultes > 1 ? rL * nbAdultes / divFact : 0;
-  const fEnf_reel = nbEnfants > 0 ? rEnf / divFact : 0;
+                  : nbAdultes > 0 ? RATIO_ELLE * nbAdultes / divFact : 0;
+  const fL_reel   = nbAdultes > 1 ? RATIO_LUI * nbAdultes / divFact : 0;
+  const fEnf_reel = nbEnfants > 0 ? RATIO_ENFANT / divFact : 0;
+
+  // Poids par assiette basé sur les fractions réelles
+  const ellePoids = totalPoidsG > 0 ? Math.round(totalPoidsG * fE_reel) : 0;
+  const luiPoids  = totalPoidsG > 0 ? Math.round(totalPoidsG * fL_reel) : 0;
+  const enfPoids  = totalPoidsG > 0 && nbEnfants > 0 ? Math.round(totalPoidsG * fEnf_reel) : 0;
 
   const portionsElle = {
     ratioElle:  fE_reel,
@@ -1104,7 +1224,7 @@ function showDetail(w,di,mi){
   // Fractions directes depuis portionsElle (déjà calculées)
   const ingsElle = repartirIngs(portionsElle.ratioElle);
   const ingsLui  = repartirIngs(portionsElle.ratioLui);
-  const ingsEnf  = (est4 && nbEnfants > 0) ? repartirIngs(portionsElle.ratioEnfant) : [];
+  const ingsEnf  = nbEnfants > 0 ? repartirIngs(portionsElle.ratioEnfant) : [];
 
   function renderIngSection(title, cssClass, kcal, macros, ings, poids){
     return `<div class="ing-rep-section">
@@ -1132,7 +1252,7 @@ function showDetail(w,di,mi){
       <span class="pill pill-m">${m.portions}</span>
     </div>
 
-    <div class="slabel">Quantités totales — ${est4?'4 pers.':nbPersons+' pers.'}</div>
+    <div class="slabel">Quantités totales — ${nbAdultes} adulte${nbAdultes>1?'s':''} + ${nbEnfants} enfant${nbEnfants>1?'s':''}</div>
     <div class="ing-rep-section">
       <div class="ing-rep-title total">
         <span>🍳 Pour cuisiner</span>
@@ -1149,7 +1269,7 @@ function showDetail(w,di,mi){
     <div class="slabel">Répartition par assiette</div>
     ${renderIngSection('Elle','elle',elleKcal,{p:elleP,g:elleG,l:elleL},ingsElle,ellePoids)}
     ${nbAdultes >= 2 ? renderIngSection('Lui','lui',luiKcal,{p:luiP,g:luiG,l:luiL},ingsLui,luiPoids) : ''}
-    ${(est4 && nbEnfants > 0)?renderIngSection('Enfant (×'+nbEnfants+')','enfant',enfKcal,{p:enfP,g:enfG,l:enfL},ingsEnf,enfPoids):''}
+    ${nbEnfants > 0 ? renderIngSection('Enfant (×'+nbEnfants+')','enfant',enfKcal,{p:enfP,g:enfG,l:enfL},ingsEnf,enfPoids) : ''}
 
     <div class="slabel">Préparation</div>
     <div class="steps">${m.steps.map((s,i)=>`<div class="step"><div class="snum">${i+1}</div><div class="stxt">${s}</div></div>`).join('')}</div>
@@ -1243,8 +1363,11 @@ function renderCourses(){
   JOURS.forEach((_,di)=>{
     semaine[di]['f'].forEach((m,mi)=>{
       if(!isMealActive(w,di,mi)) return;
-      const p4=m.portions.includes('4');
-      const nbP = getMealPersons(w,di,mi);
+      const p4=m.portions === PORTIONS_FAMILLE;
+      const persC = getMealPersons(w,di,mi); // toujours {a, e}
+        const nbAdultesC2 = persC.a;
+        const nbEnfantsC2 = persC.e;
+        const nbP = nbAdultesC2 + nbEnfantsC2;
       m.ings.forEach(ing=>{
         const parsed = parseIng(ing);
         if(parsed.nom.length<2) return;
@@ -1261,9 +1384,7 @@ function renderCourses(){
           };
         }
         // Facteur : base 1 adulte → toute la tablée
-        const nbAdultes = 2;
-        const nbEnfants = p4 ? 2 : 0;
-        const facteurTotal = nbAdultes + nbEnfants * 0.6;
+        const facteurTotal = facteurTablee(nbAdultesC2, nbEnfantsC2);
         if(parsed.qty > 0){
           ingMap[key].totalQty += parsed.qty * facteurTotal;
         }
@@ -1272,7 +1393,8 @@ function renderCourses(){
         if(piecesMatch){
           ingMap[key].totalPieces += parseInt(piecesMatch[1]) * facteurTotal;
         }
-        if(p4) ingMap[key].portions4=true;
+        // Badge famille si enfants présents dans le sélecteur
+        if(nbEnfantsC2 > 0) ingMap[key].portions4=true;
         ingMap[key].maxPersons = Math.max(ingMap[key].maxPersons, nbP);
         ingMap[key].rawList.push(parsed.raw);
       });
@@ -1314,6 +1436,8 @@ function renderCourses(){
     totalCout += prix;
   });
   renderBudget(Math.round(totalCout * 100) / 100);
+  // Mettre à jour le label de courses-info avec les vrais nombres
+  // (déjà géré plus haut)
 
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('prog-lbl').textContent=`${done} / ${total} articles cochés`;
@@ -1426,12 +1550,10 @@ function renderResume(){
 
 
 
-const BUDGET_MAX = 80;
-
 function renderBudget(totalCout){
   const pct = Math.min(100, Math.round(totalCout / BUDGET_MAX * 100));
   const restant = Math.round((BUDGET_MAX - totalCout) * 100) / 100;
-  const status = totalCout <= BUDGET_MAX * 0.85 ? 'ok' : totalCout <= BUDGET_MAX ? 'warn' : 'over';
+  const status = totalCout <= BUDGET_MAX * SEUIL_WARN_BUDGET ? 'ok' : totalCout <= BUDGET_MAX ? 'warn' : 'over';
   const msg = status === 'over'
     ? `⚠️ Dépassement de ${Math.abs(restant).toFixed(2)} €`
     : status === 'warn'
@@ -1507,7 +1629,7 @@ function getPrix(nomIng){
   for(const [k,v] of Object.entries(prixUser)){
     if(clean.includes(k.toLowerCase())||k.toLowerCase().includes(clean)) return v;
   }
-  return 1.50; // défaut
+  return PRIX_DEFAUT_ING;
 }
 
 function getPrixReel(nomIng, qtyG, qtyPieces){
@@ -1518,20 +1640,20 @@ function getPrixReel(nomIng, qtyG, qtyPieces){
   
   // Cas spécial oeufs : prix à la pièce
   if(clean.includes('oeuf') && qtyPieces > 0){
-    return Math.round(qtyPieces * 0.30 * 100) / 100;
+    return Math.round(qtyPieces * PRIX_OEUF * 100) / 100;
   }
   // Cas spécial thon boîte
   if(clean.includes('thon') && qtyPieces > 0){
-    return Math.round(qtyPieces * 1.50 * 100) / 100;
+    return Math.round(qtyPieces * PRIX_THON_BOITE * 100) / 100;
   }
   // Cas spécial filets/pièces de poisson
   if((clean.includes('cabillaud')||clean.includes('saumon')) && qtyPieces > 0 && qtyG === 0){
-    const prixPiece = clean.includes('saumon') ? 4.50 : 3.20; // prix par filet
+    const prixPiece = clean.includes('saumon') ? PRIX_FILET_SAUMON : PRIX_FILET_CABILLAUD; // prix par filet
     return Math.round(qtyPieces * prixPiece * 100) / 100;
   }
   // Cas spécial cuisses poulet à la pièce
   if(clean.includes('cuisses') && qtyPieces > 0 && qtyG === 0){
-    return Math.round(qtyPieces * 1.80 * 100) / 100; // ~1.80€/cuisse
+    return Math.round(qtyPieces * PRIX_CUISSE_POULET * 100) / 100;
   }
 
   // Chercher dans prixParKg
@@ -1564,8 +1686,11 @@ function renderCouts(){
   JOURS.forEach((_,di)=>{
     semaine[di]['f'].forEach((m,mi)=>{
       if(!isMealActive(w,di,mi)) return;
-      const nbPersons = getMealPersons(w,di,mi);
-      const p4 = m.portions.includes('4');
+      const persCout = getMealPersons(w,di,mi); // toujours {a, e}
+      const nbAdultesCout = persCout.a;
+      const nbEnfantsCout = persCout.e;
+      const nbPersons = nbAdultesCout + nbEnfantsCout;
+      const p4 = m.portions === PORTIONS_FAMILLE;
       m.ings.forEach(ing=>{
         const parsed = parseIng(ing);
         if(parsed.nom.length<2) return;
@@ -1573,9 +1698,7 @@ function renderCouts(){
         if(!ingMap[key]){
           ingMap[key]={nom:parsed.nom, totalQty:0, totalPieces:0, unit:parsed.unit, maxPersons:nbPersons};
         }
-        const nbAdultesC = 2;
-        const nbEnfantsC = p4 ? 2 : 0;
-        const facteurTotalC = nbAdultesC + nbEnfantsC * 0.6;
+        const facteurTotalC = facteurTablee(nbAdultesCout, nbEnfantsCout);
         if(parsed.qty>0){
           ingMap[key].totalQty += parsed.qty * facteurTotalC;
         }
@@ -1602,8 +1725,19 @@ function renderCouts(){
 
   const total = Math.round(totalBase * 100) / 100;
   const totalHebdo = total;
-  const totalMois = Math.round(total * 4.3 * 100) / 100;
-  const parPers = Math.round(total / 3 * 100) / 100; // ~3 personnes en moyenne
+  const totalMois = Math.round(total * SEMAINES_PAR_MOIS * 100) / 100;
+  // Nb personnes moyen = moyenne des nb personnes par repas actif
+  let totalPersonsRepas = 0, nbRepasActifs = 0;
+  JOURS.forEach((_,di)=>{
+    semaines[w][di]['f'].forEach((m,mi)=>{
+      if(!isMealActive(w,di,mi)) return;
+      const p = getMealPersons(w,di,mi);
+      totalPersonsRepas += p.a + p.e;
+      nbRepasActifs++;
+    });
+  });
+  const nbPersonsMoyen = nbRepasActifs > 0 ? Math.max(1, Math.round(totalPersonsRepas/nbRepasActifs)) : 3;
+  const parPers = Math.round(total / nbPersonsMoyen * 100) / 100;
 
   document.getElementById('cout-summary').innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
