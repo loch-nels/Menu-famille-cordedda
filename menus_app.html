@@ -499,7 +499,9 @@ const MAINTENANCE={f:1700,m:1900};
 // ║     kcalElle / kcalLui / kcalEnfant                         ║
 // ║     macroElle / macroLui / macroEnfant                       ║
 // ║     facteurTablee                                            ║
-// ║  4. Ne JAMAIS modifier les constantes RATIO_* et PRIX_*      ║
+// ║  4. Ne JAMAIS modifier sauf demande EXPLICITE :              ║
+// ║     - Constantes RATIO_*, PRIX_*, BUDGET_MAX (80€)           ║
+// ║     - Le tableau prixParKg (prix Leclerc/Intermarché 2024)   ║
 // ║  5. Vérifier avec verif_calculs.py après chaque modif        ║
 // ╚══════════════════════════════════════════════════════════════╝
 
@@ -507,7 +509,7 @@ const MAINTENANCE={f:1700,m:1900};
 const RATIO_ELLE          = TARGETS.f / (TARGETS.f + TARGETS.m); // 0.469
 const RATIO_LUI           = TARGETS.m / (TARGETS.f + TARGETS.m); // 0.531
 const RATIO_ENFANT        = 0.6;    // 60% d'un adulte
-const BUDGET_MAX          = 80;     // €/semaine
+const BUDGET_MAX          = 80;     // €/semaine — FIGÉ, ne pas modifier sauf demande explicite
 const MAX_PERSONNES       = 4;      // par repas
 const SEUIL_WARN_BUDGET   = 0.85;   // 85% → couleur ambre
 const SEMAINES_PAR_MOIS   = 4.3;
@@ -572,6 +574,11 @@ function initActiveMeals(){
   });
 }
 initActiveMeals();
+// Charger activeMeals sauvegardés (écrase les valeurs par défaut)
+try{
+  const savedAM = localStorage.getItem('activeMeals');
+  if(savedAM) activeMeals = JSON.parse(savedAM);
+}catch(e){}
 
 let coutWeek = 0;
 
@@ -579,21 +586,22 @@ let coutWeek = 0;
 // Prix par kg/L réels Leclerc — utilisés pour calculer le coût
 // basé sur la quantité totale hebdomadaire
 const prixParKg = {
+  // ── PRIX FIGÉS — Leclerc/Intermarché 2024 ────────────────
   // Viandes (€/kg)
-  'poulet':      11.00,  // blanc poulet ~11€/kg
-  'cuisses':      7.50,  // cuisses ~7.50€/kg
-  'boeuf':       16.00,  // boeuf maigre ~16€/kg
-  'hache':       11.00,  // haché ~11€/kg
+  'poulet':      11.00,  // blanc poulet
+  'cuisses':      7.50,
+  'boeuf':       16.00,  // boeuf maigre
+  'hache':       11.00,
   'dinde':        9.00,
   // Poisson (€/kg)
   'saumon':      22.00,
   'cabillaud':   14.00,
-  'thon':        25.00,  // thon en boîte ~1.50€/160g = 9.37€/kg
+  'thon':         9.50,  // boîte 160g = 1.50€ → 9.37€/kg
   // Produits laitiers (€/kg ou €/L)
-  'skyr':         4.00,  // ~4€/kg (pot 500g Leclerc = 2€)
+  'skyr':         4.00,
   'yaourt':       2.20,
   'suisse':       3.50,
-  'oeuf':         0.30,  // 0.30€/oeuf (boîte 12 = 3.60€)
+  'oeuf':         0.30,  // par pièce
   'creme':        3.00,
   'gruyere':     11.00,
   'parmesan':    20.00,
@@ -604,36 +612,57 @@ const prixParKg = {
   'pate':         2.40,
   'flocon':       1.80,
   'lentille':     2.20,
-  'pois':         2.00,  // pois chiches boîte ~0.85€/400g = 2.12€/kg
+  'pois':         2.00,
   'farine':       1.00,
+  'quinoa':       7.00,
   // Légumes (€/kg)
   'courgette':    2.20,
   'carotte':      1.20,
-  'poivron':      4.00,
-  'tomate':       3.00,
-  'salade':       2.50,
-  'oignon':       1.20,
-  'ail':         10.00,
+  'poivron':      3.00,
+  'tomate':       2.50,
+  'salade':       2.00,
+  'oignon':       1.00,
+  'ail':          5.00,  // tête ail ~0.50€/100g
   'champignon':   4.50,
   'patate douce': 2.20,
-  'epinard':      5.00,
+  'epinard':      3.00,
   'brocoli':      2.50,
   'haricot':      3.50,
   'banane':       1.50,
-  'citron':       2.50,
-  'avocat':       3.00,  // ~1.20€ pièce ~400g
+  'citron':       2.00,
+  'avocat':       3.00,
+  'mais':         3.00,
+  'poireau':      3.00,
+  'courge':       2.50,
+  'pomme de terre': 1.50,
   // Oléagineux & condiments (€/kg)
   'amande':      14.00,
+  'noisette':    18.00,
   'beurre de cacahuete': 7.00,
   'beurre cacahuete':    7.00,
-  'huile':        7.00,  // €/L huile olive
+  'huile':        6.00,  // €/L huile olive
   'sauce soja':   5.00,
   'olive':        8.00,
   'chocolat':    12.00,
-  'beurre':       8.00,
+  'beurre':       7.00,
+  'miel':         8.00,
+  'noix de coco': 8.00,
+  // Fruits (€/kg)
+  'pomme':        2.50,
+  'fruits rouges': 8.00,
+  'mangue':       4.00,
+  'myrtille':    12.00,
+  'framboise':    8.00,
+  'abricot':     12.00,
+  // Pain & autres
+  'pain complet': 4.00,
+  'tortilla':     5.00,
   // Épices & herbes — prix fixe à l'achat (boîte)
   'herbe':        1.00,'curry':1.20,'cumin':1.00,'curcuma':1.00,
-  'cannelle':1.00,'paprika':1.00,'vinaigre':0.80,
+  'cannelle':1.00,'paprika':1.00,'vinaigre':0.80,'gingembre':2.00,
+  'basilic':1.00,'persil':1.00,'thym':1.00,'coriandre':1.00,
+  'graines':      8.00,
+  'bouillon':     1.00,
 };
 
 // Garder prixDefaut pour compatibilité avec l'ancienne logique
@@ -725,95 +754,95 @@ function setMealPersons(w,di,mi,a,e){
 // ── DONNÉES SEMAINE 1 ──────────────────────────────────────────
 const semaine1=[
   {f:[
-    {moment:'Petit-déjeuner',nom:'Bircher muesli skyr pomme',kcal:335,p:19,g:42,l:10,portions:'2 adultes',ings:['Flocons avoine 50g','Skyr 120g','Pomme râpée 80g','Amandes 12g','Cannelle'],steps:['Mélanger flocons + skyr la veille.','Râper la pomme le matin et ajouter.','Parsemer amandes et cannelle.'],note:''},
-    {moment:'Déjeuner',nom:'Quinoa poulet légumes grillés',kcal:462,p:36,g:44,l:13,portions:'2 adultes',ings:['Blanc poulet 130g','Quinoa 70g','Poivron 100g','Courgette 100g','Huile olive 7g','Paprika herbes'],steps:['Cuire le quinoa 15 min.','Griller poivron + courgette 6 min.','Poêler le poulet avec paprika 7 min.','Assembler en bowl.'],note:''},
-    {moment:'Collation',nom:'Fromage blanc miel amandes',kcal:175,p:8,g:16,l:8,portions:'2 adultes',ings:['Fromage blanc 150g','Miel 8g','Amandes 12g'],steps:['Verser le miel sur le fromage blanc.','Parsemer les amandes.'],note:''},
-    {moment:'Dîner',nom:'Gratin courgettes boeuf haché',kcal:420,p:32,g:18,l:24,portions:'4 pers.',ings:['Boeuf haché maigre 100g','Courgette 150g','Tomates concassées 50g','Gruyère 15g','Ail','Huile olive 3g'],steps:['Couper les courgettes, faire revenir avec ail 5 min.','Préparer sauce boeuf + tomates 8 min.','Superposer courgettes + boeuf + gruyère.','Gratiner 15 min à 180°C.'],note:'Plat familial. Portion réduite pour les enfants.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+    {moment:'Petit-déjeuner',nom:'Bircher muesli skyr pomme',kcal:335,p:19,g:42,l:10,portions:'2 adultes',ings:['Flocons avoine 50g','Skyr 100g','Pomme râpée 80g','Amandes 12g','Cannelle'],steps:['Mélanger flocons + skyr la veille.','Râper la pomme le matin et ajouter.','Parsemer amandes et cannelle.'],note:''},
+    {moment:'Déjeuner',nom:'Riz poulet légumes grillés',kcal:462,p:36,g:44,l:13,portions:'2 adultes',ings:['Blanc poulet 90g','Riz complet 70g','Poivron 100g','Courgette 100g','Huile olive 7g','Paprika herbes'],steps:['Cuire le riz complet 18 min.','Griller poivron + courgette 6 min.','Poêler le poulet avec paprika 7 min.','Assembler en bowl.'],note:''},
+    {moment:'Collation',nom:'Fromage blanc miel amandes',kcal:175,p:8,g:16,l:8,portions:'2 adultes',ings:['Fromage blanc 120g','Miel 8g','Amandes 12g'],steps:['Verser le miel sur le fromage blanc.','Parsemer les amandes.'],note:''},
+    {moment:'Dîner',nom:'Gratin courgettes boeuf haché',kcal:420,p:32,g:18,l:24,portions:'4 pers.',ings:['Boeuf haché maigre 70g','Courgette 150g','Tomates concassées 50g','Gruyère 10g','Ail','Huile olive 3g'],steps:['Couper les courgettes, faire revenir avec ail 5 min.','Préparer sauce boeuf + tomates 8 min.','Superposer courgettes + boeuf + gruyère.','Gratiner 15 min à 180°C.'],note:'Plat familial. Portion réduite pour les enfants.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Bircher muesli skyr pomme',kcal:390,p:23,g:49,l:11,portions:'2 adultes',ings:['Flocons avoine 65g','Skyr 150g','Pomme râpée 80g','Amandes 17g','Cannelle'],steps:['Mélanger flocons + skyr la veille.','Râper la pomme le matin.','Parsemer amandes et cannelle.'],note:''},
-    {moment:'Déjeuner',nom:'Quinoa poulet légumes grillés',kcal:516,p:43,g:49,l:14,portions:'2 adultes',ings:['Blanc poulet 160g','Quinoa 85g','Poivron 100g','Courgette 120g','Huile olive 9g','Paprika herbes'],steps:['Cuire le quinoa 15 min.','Griller poivron + courgette 6 min.','Poêler le poulet 7 min.','Assembler en bowl.'],note:''},
-    {moment:'Collation',nom:'Fromage blanc miel amandes',kcal:185,p:10,g:14,l:9,portions:'2 adultes',ings:['Fromage blanc 200g','Miel 8g','Amandes 12g'],steps:['Verser le miel sur le fromage blanc.','Parsemer les amandes.'],note:''},
-    {moment:'Dîner',nom:'Gratin courgettes boeuf haché',kcal:420,p:32,g:18,l:24,portions:'4 pers.',ings:['Boeuf haché maigre 100g','Courgette 150g','Tomates concassées 50g','Gruyère 15g','Ail','Huile olive 3g'],steps:['Couper les courgettes, faire revenir avec ail 5 min.','Préparer sauce boeuf + tomates 8 min.','Superposer courgettes + boeuf + gruyère.','Gratiner 15 min à 180°C.'],note:'Plat familial.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+    {moment:'Petit-déjeuner',nom:'Bircher muesli skyr pomme',kcal:390,p:23,g:49,l:11,portions:'2 adultes',ings:['Flocons avoine 50g','Yaourt nature 150g','Pomme râpée 80g','Amandes 12g','Cannelle'],steps:['Mélanger flocons + skyr la veille.','Râper la pomme le matin.','Parsemer amandes et cannelle.'],note:''},
+    {moment:'Déjeuner',nom:'Riz poulet légumes grillés',kcal:516,p:43,g:49,l:14,portions:'2 adultes',ings:['Blanc poulet 90g','Riz complet 85g','Poivron 100g','Courgette 120g','Huile olive 9g','Paprika herbes'],steps:['Cuire le riz complet 18 min.','Griller poivron + courgette 6 min.','Poêler le poulet 7 min.','Assembler en bowl.'],note:''},
+    {moment:'Collation',nom:'Fromage blanc miel amandes',kcal:185,p:10,g:14,l:9,portions:'2 adultes',ings:['Fromage blanc 120g','Miel 8g','Amandes 12g'],steps:['Verser le miel sur le fromage blanc.','Parsemer les amandes.'],note:''},
+    {moment:'Dîner',nom:'Gratin courgettes boeuf haché',kcal:420,p:32,g:18,l:24,portions:'4 pers.',ings:['Boeuf haché maigre 70g','Courgette 150g','Tomates concassées 50g','Gruyère 10g','Ail','Huile olive 3g'],steps:['Couper les courgettes, faire revenir avec ail 5 min.','Préparer sauce boeuf + tomates 8 min.','Superposer courgettes + boeuf + gruyère.','Gratiner 15 min à 180°C.'],note:'Plat familial.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   {f:[
     {moment:'Petit-déjeuner',nom:'Pain complet oeuf au plat skyr',kcal:340,p:21,g:30,l:14,portions:'2 adultes',ings:['Oeufs 2 pièces','Skyr 100g','Beurre 5g'],steps:['Cuire les oeufs au plat dans le beurre 3 min.','Servir avec skyr nature.'],note:''},
-    {moment:'Déjeuner',nom:'Bowl thon riz basmati légumes',kcal:448,p:34,g:46,l:11,portions:'2 adultes',ings:['Thon en boîte 130g','Riz basmati 65g','Tomates cerises 100g','Maïs 60g','Huile olive 6g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Égoutter le thon.','Assembler riz + thon + tomates + maïs.','Assaisonner huile + citron + herbes.'],note:'Sans concombre pour Elle.'},
+    {moment:'Déjeuner',nom:'Bowl thon riz basmati légumes',kcal:448,p:34,g:46,l:11,portions:'2 adultes',ings:['Thon en boîte 130g','Riz basmati 65g','Tomates 100g','Maïs 60g','Huile olive 6g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Égoutter le thon.','Assembler riz + thon + tomates + maïs.','Assaisonner huile + citron + herbes.'],note:'Sans concombre pour Elle.'},
     {moment:'Collation',nom:'Yaourt fruits mixé',kcal:123,p:4,g:21,l:3,portions:'2 adultes',ings:['Yaourt fruits mixé 150g'],steps:['Déguster tel quel.'],note:''},
     {moment:'Dîner',nom:'Soupe poireaux pommes de terre',kcal:355,p:12,g:52,l:10,portions:'4 pers.',ings:['Poireaux 100g','Pommes de terre 75g','Bouillon légumes 250ml','Crème légère 8g'],steps:['Émincer poireaux, cuire avec bouillon 20 min.','Ajouter pommes de terre, cuire 10 min.','Mixer, incorporer la crème.','Servir chaud.'],note:'Plat chaud réconfortant. Les enfants adorent.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Pain complet oeuf au plat skyr',kcal:395,p:25,g:36,l:16,portions:'2 adultes',ings:['Oeufs 3 pièces','Skyr 130g','Beurre 5g'],steps:['Cuire les oeufs au plat 3 min.','Servir avec skyr nature.'],note:''},
-    {moment:'Déjeuner',nom:'Bowl thon riz basmati légumes',kcal:507,p:40,g:52,l:12,portions:'2 adultes',ings:['Thon en boîte 160g','Riz basmati 80g','Tomates cerises 100g','Maïs 60g','Huile olive 8g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Égoutter le thon.','Assembler et assaisonner.'],note:''},
-    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:177,p:13,g:9,l:9,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Pain complet oeuf au plat skyr',kcal:395,p:25,g:36,l:16,portions:'2 adultes',ings:['Oeufs 3 pièces','Skyr 100g','Beurre 5g'],steps:['Cuire les oeufs au plat 3 min.','Servir avec skyr nature.'],note:''},
+    {moment:'Déjeuner',nom:'Bowl thon riz basmati légumes',kcal:507,p:40,g:52,l:12,portions:'2 adultes',ings:['Thon en boîte 160g','Riz basmati 80g','Tomates 100g','Maïs 60g','Huile olive 8g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Égoutter le thon.','Assembler et assaisonner.'],note:''},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:177,p:13,g:9,l:9,portions:'2 adultes',ings:['Yaourt nature 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
     {moment:'Dîner',nom:'Soupe poireaux pommes de terre',kcal:355,p:12,g:52,l:10,portions:'4 pers.',ings:['Poireaux 100g','Pommes de terre 75g','Bouillon légumes 250ml','Crème légère 8g'],steps:['Émincer poireaux, cuire avec bouillon 20 min.','Ajouter pommes de terre, cuire 10 min.','Mixer, incorporer la crème.','Servir.'],note:'Les enfants adorent.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:140,p:4,g:8,l:10,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   {f:[
-    {moment:'Petit-déjeuner',nom:'Fromage blanc flocons fruits rouges',kcal:320,p:18,g:38,l:9,portions:'2 adultes',ings:['Fromage blanc 150g','Flocons avoine 50g','Fruits rouges surgelés 80g','Amandes 10g'],steps:['Décongeler les fruits rouges.','Mélanger fromage blanc + flocons.','Ajouter les fruits rouges et amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Salade caesar poulet maison',kcal:455,p:35,g:28,l:22,portions:'2 adultes',ings:['Blanc poulet 130g','Salade romaine 150g','Parmesan 20g','Huile olive 8g','Citron ail'],steps:['Griller le poulet en lanières 7 min.','Préparer sauce caesar légère.','Assembler salade + poulet + parmesan.','Assaisonner.'],note:''},
-    {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:171,p:7,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 60g','Beurre cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Fromage blanc flocons fruits rouges',kcal:320,p:18,g:38,l:9,portions:'2 adultes',ings:['Fromage blanc 120g','Flocons avoine 50g','Banane 70g','Amandes 10g'],steps:['Décongeler les fruits rouges.','Mélanger fromage blanc + flocons.','Ajouter les fruits rouges et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade caesar poulet maison',kcal:455,p:35,g:28,l:22,portions:'2 adultes',ings:['Blanc poulet 90g','Salade romaine 150g','Parmesan 12g','Huile olive 8g','Citron ail'],steps:['Griller le poulet en lanières 7 min.','Préparer sauce caesar légère.','Assembler salade + poulet + parmesan.','Assaisonner.'],note:''},
+    {moment:'Collation',nom:'Petit suisse beurre cacahuète',kcal:171,p:7,g:10,l:11,portions:'2 adultes',ings:['Petit suisse 50g','Beurre cacahuète 15g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Dahl lentilles corail épices douces',kcal:445,p:22,g:62,l:11,portions:'4 pers.',ings:['Lentilles corail 50g','Lait de coco 50ml','Tomates concassées 50g','Oignon','Cumin coriandre','Riz basmati 50g'],steps:['Faire revenir oignon + épices 3 min.','Ajouter lentilles + tomates + lait de coco.','Mijoter 20 min à feu doux.','Servir avec riz basmati.'],note:'Épices douces. Végétarien. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Fromage blanc flocons fruits rouges',kcal:375,p:22,g:44,l:10,portions:'2 adultes',ings:['Fromage blanc 200g','Flocons avoine 65g','Fruits rouges surgelés 80g','Amandes 14g'],steps:['Décongeler les fruits rouges.','Mélanger fromage blanc + flocons.','Ajouter les fruits rouges et amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Salade caesar poulet maison',kcal:510,p:42,g:32,l:23,portions:'2 adultes',ings:['Blanc poulet 160g','Salade romaine 150g','Parmesan 25g','Huile olive 10g','Citron ail'],steps:['Griller le poulet en lanières 7 min.','Préparer sauce caesar légère.','Assembler salade + poulet + parmesan.','Assaisonner.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Fromage blanc flocons fruits rouges',kcal:375,p:22,g:44,l:10,portions:'2 adultes',ings:['Fromage blanc 120g','Flocons avoine 50g','Banane 70g','Amandes 14g'],steps:['Décongeler les fruits rouges.','Mélanger fromage blanc + flocons.','Ajouter les fruits rouges et amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Salade caesar poulet maison',kcal:510,p:42,g:32,l:23,portions:'2 adultes',ings:['Blanc poulet 90g','Salade romaine 150g','Parmesan 15g','Huile olive 10g','Citron ail'],steps:['Griller le poulet en lanières 7 min.','Préparer sauce caesar légère.','Assembler salade + poulet + parmesan.','Assaisonner.'],note:''},
     {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:172,p:7,g:18,l:8,portions:'2 adultes',ings:['Yaourt fruits mixé 130g','Amandes 13g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Dahl lentilles corail épices douces',kcal:445,p:22,g:62,l:11,portions:'4 pers.',ings:['Lentilles corail 50g','Lait de coco 50ml','Tomates concassées 50g','Oignon','Cumin coriandre','Riz basmati 50g'],steps:['Faire revenir oignon + épices 3 min.','Ajouter lentilles + tomates + lait de coco.','Mijoter 20 min à feu doux.','Servir avec riz basmati.'],note:'Épices douces. Végétarien.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   {f:[
     {moment:'Petit-déjeuner',nom:'Overnight oats banane amandes',kcal:338,p:18,g:46,l:9,portions:'2 adultes',ings:['Flocons avoine 55g','Lait végétal 100ml','Skyr 100g','Banane 70g','Amandes 10g'],steps:['Mélanger flocons + lait + skyr la veille.','Trancher la banane le matin.','Parsemer amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Cabillaud quinoa épinards citron',kcal:440,p:38,g:34,l:11,portions:'2 adultes',ings:['Filet cabillaud 150g','Quinoa 65g','Épinards frais 150g','Ail','Huile olive 7g','Citron'],steps:['Cuire le quinoa 15 min.','Poêler le cabillaud 4 min/face.','Faire tomber épinards + ail 3 min.','Assembler et presser le citron.'],note:''},
+    {moment:'Déjeuner',nom:'Cabillaud riz épinards citron',kcal:440,p:38,g:34,l:11,portions:'2 adultes',ings:['Blanc poulet 90g','Riz complet 65g','Épinards frais 150g','Ail','Huile olive 7g','Citron'],steps:['Cuire le riz complet 18 min.','Poêler le poulet 6 min/face.','Faire tomber épinards + ail 3 min.','Assembler et presser le citron.'],note:''},
     {moment:'Collation',nom:'Flocons avoine skyr',kcal:191,p:13,g:23,l:4,portions:'2 adultes',ings:['Flocons avoine 30g','Skyr 80g'],steps:['Mélanger ou déguster séparément.'],note:''},
     {moment:'Dîner',nom:'Tortilla espagnole pommes de terre',kcal:400,p:26,g:28,l:21,portions:'4 pers.',ings:['Oeufs 2 pièces','Pommes de terre 125g','Oignon','Huile olive 3g','Poivron 25g'],steps:['Cuire pommes de terre + oignon + poivron dans l\'huile 15 min.','Battre les oeufs, verser sur les légumes.','Cuire 5 min/face à feu doux.','Servir avec salade verte.'],note:'Plat convivial. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Overnight oats banane amandes',kcal:388,p:22,g:53,l:10,portions:'2 adultes',ings:['Flocons avoine 70g','Lait végétal 120ml','Skyr 130g','Banane 80g','Amandes 15g'],steps:['Mélanger flocons + lait + skyr la veille.','Trancher la banane le matin.','Parsemer amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Cabillaud quinoa épinards citron',kcal:495,p:45,g:38,l:12,portions:'2 adultes',ings:['Filet cabillaud 180g','Quinoa 80g','Épinards frais 150g','Ail','Huile olive 9g','Citron'],steps:['Cuire le quinoa 15 min.','Poêler le cabillaud 4 min/face.','Faire tomber épinards + ail 3 min.','Assembler et presser le citron.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Overnight oats banane amandes',kcal:388,p:22,g:53,l:10,portions:'2 adultes',ings:['Flocons avoine 50g','Lait végétal 100ml','Skyr 100g','Banane 70g','Amandes 15g'],steps:['Mélanger flocons + lait + skyr la veille.','Trancher la banane le matin.','Parsemer amandes.'],note:''},
+    {moment:'Déjeuner',nom:'Cabillaud riz épinards citron',kcal:495,p:45,g:38,l:12,portions:'2 adultes',ings:['Blanc poulet 90g','Riz complet 80g','Épinards frais 150g','Ail','Huile olive 9g','Citron'],steps:['Cuire le riz complet 18 min.','Poêler le poulet 6 min/face.','Faire tomber épinards + ail 3 min.','Assembler et presser le citron.'],note:''},
     {moment:'Collation',nom:'Flocons avoine skyr',kcal:217,p:14,g:27,l:5,portions:'2 adultes',ings:['Flocons avoine 40g','Skyr 100g'],steps:['Mélanger ou déguster séparément.'],note:''},
     {moment:'Dîner',nom:'Tortilla espagnole pommes de terre',kcal:400,p:26,g:28,l:21,portions:'4 pers.',ings:['Oeufs 2 pièces','Pommes de terre 125g','Oignon','Huile olive 3g','Poivron 25g'],steps:['Cuire pommes de terre + oignon + poivron dans l\'huile 15 min.','Battre les oeufs, verser sur les légumes.','Cuire 5 min/face à feu doux.','Servir avec salade verte.'],note:'Plat convivial. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   {f:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr mangue coco',kcal:330,p:19,g:40,l:10,portions:'2 adultes',ings:['Skyr 150g','Mangue 100g','Flocons avoine 40g','Noix de coco râpée 8g'],steps:['Verser le skyr dans un bol.','Ajouter les morceaux de mangue.','Parsemer flocons et coco râpée.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Bol skyr mangue coco',kcal:330,p:19,g:40,l:10,portions:'2 adultes',ings:['Yaourt nature 150g','Mangue 100g','Flocons avoine 40g','Noix de coco râpée 8g'],steps:['Verser le skyr dans un bol.','Ajouter les morceaux de mangue.','Parsemer flocons et coco râpée.'],note:''},
     {moment:'Déjeuner',nom:'Wrap thon crudités maison',kcal:445,p:30,g:42,l:14,portions:'2 adultes',ings:['Thon en boîte 120g','Tortillas complètes 1','Tomates 80g','Salade verte','Maïs 50g','Huile olive + citron 8g'],steps:['Égoutter le thon.','Garnir les tortillas de salade + tomates + maïs.','Ajouter le thon, assaisonner.','Rouler et servir.'],note:'Sans concombre pour Elle.'},
-    {moment:'Collation',nom:'Petit suisse nature',kcal:104,p:6,g:7,l:4,portions:'2 adultes',ings:['Petit suisse 60g'],steps:['Déguster tel quel.'],note:''},
+    {moment:'Collation',nom:'Petit suisse nature',kcal:104,p:6,g:7,l:4,portions:'2 adultes',ings:['Petit suisse 50g'],steps:['Déguster tel quel.'],note:''},
     {moment:'Dîner',nom:'Oeufs cocotte poivrons tomates rapide',kcal:362,p:26,g:12,l:23,portions:'4 pers.',ings:['Oeufs 2 pièces','Poivrons 50g','Tomates cerises 38g','Épinards frais 25g','Huile olive 3g','Herbes'],steps:['Faire revenir poivrons + épinards 5 min.','Ajouter tomates, cuire 2 min.','Creuser des nids, casser les oeufs.','Couvrir et cuire 5 min à feu doux.'],note:'Repas rapide 15 min. Les enfants adorent.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
   ],m:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr mangue coco',kcal:385,p:23,g:47,l:11,portions:'2 adultes',ings:['Skyr 180g','Mangue 120g','Flocons avoine 55g','Noix de coco râpée 10g'],steps:['Verser le skyr dans un bol.','Ajouter les morceaux de mangue.','Parsemer flocons et coco râpée.'],note:''},
+    {moment:'Petit-déjeuner',nom:'Bol skyr mangue coco',kcal:385,p:23,g:47,l:11,portions:'2 adultes',ings:['Yaourt nature 180g','Mangue 120g','Flocons avoine 55g','Noix de coco râpée 10g'],steps:['Verser le skyr dans un bol.','Ajouter les morceaux de mangue.','Parsemer flocons et coco râpée.'],note:''},
     {moment:'Déjeuner',nom:'Wrap thon crudités maison',kcal:498,p:37,g:47,l:15,portions:'2 adultes',ings:['Thon en boîte 150g','Tortillas complètes 1','Tomates 80g','Salade verte','Maïs 50g','Avocat 50g','Huile olive + citron 8g'],steps:['Égoutter le thon.','Garnir les tortillas.','Ajouter thon + avocat, assaisonner.','Rouler et servir.'],note:''},
-    {moment:'Collation',nom:'Skyr amandes',kcal:181,p:13,g:9,l:10,portions:'2 adultes',ings:['Skyr 150g','Amandes 20g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Collation',nom:'Skyr amandes',kcal:181,p:13,g:9,l:10,portions:'2 adultes',ings:['Yaourt nature 150g','Amandes 12g'],steps:['Déguster ensemble.'],note:''},
     {moment:'Dîner',nom:'Oeufs cocotte poivrons tomates rapide',kcal:412,p:30,g:14,l:27,portions:'4 pers.',ings:['Oeufs 3 pièces','Poivrons 50g','Tomates cerises 38g','Épinards frais 25g','Huile olive 3g','Herbes'],steps:['Faire revenir poivrons + épinards 5 min.','Ajouter tomates, cuire 2 min.','Creuser des nids, casser les oeufs.','Couvrir et cuire 5 min à feu doux.'],note:'Repas rapide 15 min. Les enfants adorent.'},
     {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:140,p:4,g:8,l:10,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   {f:[
     {moment:'Petit-déjeuner',nom:'Crêpes avoine miel skyr famille',kcal:358,p:20,g:44,l:12,portions:'4 pers.',ings:['Flocons avoine mixés 30g','Oeufs 1 pièce','Lait végétal 38ml','Miel 5g','Skyr 40g'],steps:['Mixer flocons + oeufs + lait en pâte.','Cuire des crêpes fines 2 min/face.','Servir avec miel et skyr nature.'],note:'Les enfants adorent !'},
-    {moment:'Déjeuner',nom:'Poulet citron vert riz thaï doux',kcal:460,p:38,g:44,l:13,portions:'4 pers.',ings:['Blanc poulet 125g','Riz basmati 50g','Citron vert','Lait de coco 38ml','Gingembre','Huile olive 2g'],steps:['Mariner poulet dans citron vert + gingembre 10 min.','Cuire le riz basmati 12 min.','Poêler le poulet mariné 8 min.','Servir avec lait de coco tiédi.'],note:'Plat doux et parfumé. Épices très douces.'},
+    {moment:'Déjeuner',nom:'Poulet citron vert riz thaï doux',kcal:460,p:38,g:44,l:13,portions:'4 pers.',ings:['Blanc poulet 90g','Riz basmati 50g','Citron vert','Lait de coco 38ml','Gingembre','Huile olive 2g'],steps:['Mariner poulet dans citron vert + gingembre 10 min.','Cuire le riz basmati 12 min.','Poêler le poulet mariné 8 min.','Servir avec lait de coco tiédi.'],note:'Plat doux et parfumé. Épices très douces.'},
     {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:133,p:5,g:17,l:4,portions:'4 pers.',ings:['Yaourt fruits mixé 60g','Amandes 5g'],steps:['Répartir en portions avec amandes.'],note:''},
-    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:466,p:32,g:46,l:15,portions:'4 pers.',ings:['Boeuf haché maigre 100g','Patate douce 200g','Oignon','Lait végétal 25ml','Gruyère 15g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial du week-end. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:466,p:32,g:46,l:15,portions:'4 pers.',ings:['Boeuf haché maigre 70g','Patate douce 200g','Oignon','Lait végétal 25ml','Gruyère 10g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial du week-end. Les enfants adorent.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Crêpes avoine miel skyr famille',kcal:412,p:24,g:52,l:14,portions:'4 pers.',ings:['Flocons avoine mixés 30g','Oeufs 1 pièce','Lait végétal 38ml','Miel 5g','Skyr 40g','Beurre cacahuète 5g'],steps:['Mixer flocons + oeufs + lait en pâte.','Cuire des crêpes fines 2 min/face.','Servir avec miel, skyr et beurre de cacahuète.'],note:''},
-    {moment:'Déjeuner',nom:'Poulet citron vert riz thaï doux',kcal:516,p:45,g:49,l:14,portions:'4 pers.',ings:['Blanc poulet 125g','Riz basmati 50g','Citron vert','Lait de coco 38ml','Gingembre','Huile olive 2g'],steps:['Mariner poulet dans citron vert + gingembre 10 min.','Cuire le riz basmati 12 min.','Poêler le poulet mariné 8 min.','Servir avec lait de coco tiédi.'],note:'Épices très douces.'},
+    {moment:'Déjeuner',nom:'Poulet citron vert riz thaï doux',kcal:516,p:45,g:49,l:14,portions:'4 pers.',ings:['Blanc poulet 90g','Riz basmati 50g','Citron vert','Lait de coco 38ml','Gingembre','Huile olive 2g'],steps:['Mariner poulet dans citron vert + gingembre 10 min.','Cuire le riz basmati 12 min.','Poêler le poulet mariné 8 min.','Servir avec lait de coco tiédi.'],note:'Épices très douces.'},
     {moment:'Collation',nom:'Skyr amandes beurre cacahuète',kcal:204,p:14,g:9,l:13,portions:'2 adultes',ings:['Skyr 100g','Amandes 15g','Beurre cacahuète 10g'],steps:['Mélanger skyr + beurre cacahuète, ajouter amandes.'],note:''},
-    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:516,p:37,g:51,l:17,portions:'4 pers.',ings:['Boeuf haché maigre 100g','Patate douce 200g','Oignon','Lait végétal 25ml','Gruyère 15g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial du week-end.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+    {moment:'Dîner',nom:'Hachis parmentier patate douce',kcal:516,p:37,g:51,l:17,portions:'4 pers.',ings:['Boeuf haché maigre 70g','Patate douce 200g','Oignon','Lait végétal 25ml','Gruyère 10g'],steps:['Cuire et écraser patate douce avec lait.','Faire revenir oignon + boeuf 10 min.','Superposer viande et purée, couvrir gruyère.','Gratiner 10 min à 200°C.'],note:'Plat familial du week-end.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
   {f:[
     {moment:'Petit-déjeuner',nom:'Grand bol skyr granola famille',kcal:355,p:19,g:45,l:12,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 80g','Flocons avoine 20g','Amandes 15g'],steps:['Répartir skyr en bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
     {moment:'Déjeuner',nom:'Poulet rôti légumes du four',kcal:470,p:42,g:24,l:22,portions:'4 pers.',ings:['Cuisses poulet 1 pièce','Pommes de terre 125g','Carottes 50g','Oignon','Ail','Huile olive 4g','Herbes de Provence'],steps:['Préchauffer le four à 200°C.','Disposer les légumes dans un plat, arroser huile + herbes.','Déposer le poulet par-dessus.','Rôtir 40 min en arrosant régulièrement.'],note:'Plat familial dominical. Portion réduite pour les enfants.'},
     {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:233,p:10,g:27,l:11,portions:'4 pers.',ings:['Flocons avoine 40g','Beurre cacahuète 10g','Lait végétal 80ml'],steps:['Préparer porridge.','Ajouter beurre de cacahuète dans chacun.'],note:''},
     {moment:'Dîner',nom:'Velouté courge butternut graines',kcal:298,p:8,g:40,l:11,portions:'4 pers.',ings:['Courge butternut 200g','Oignon','Lait de coco 25ml','Bouillon légumes 200ml','Graines de courge 5g','Huile olive 2g'],steps:['Cuire courge + oignon dans le bouillon 20 min.','Mixer avec le lait de coco.','Assaisonner sel + poivre.','Servir avec graines de courge torréfiées.'],note:'Soupe douce du dimanche soir. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:104,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
   ],m:[
     {moment:'Petit-déjeuner',nom:'Grand bol skyr granola famille',kcal:410,p:23,g:52,l:13,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 80g','Flocons avoine 20g','Amandes 15g'],steps:['Répartir skyr en bols.','Ajouter yaourt fruits mixé.','Parsemer flocons et amandes.'],note:''},
     {moment:'Déjeuner',nom:'Poulet rôti légumes du four',kcal:525,p:49,g:28,l:25,portions:'4 pers.',ings:['Cuisses poulet 1 pièce','Pommes de terre 125g','Carottes 50g','Oignon','Ail','Huile olive 4g','Herbes de Provence'],steps:['Préchauffer le four à 200°C.','Disposer les légumes dans un plat, arroser huile + herbes.','Déposer le poulet par-dessus.','Rôtir 40 min en arrosant régulièrement.'],note:'Plat familial dominical.'},
     {moment:'Collation',nom:'Porridge beurre cacahuète',kcal:258,p:11,g:30,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Beurre cacahuète 14g','Lait végétal 100ml'],steps:['Préparer le porridge, ajouter beurre de cacahuète.'],note:''},
     {moment:'Dîner',nom:'Velouté courge butternut graines',kcal:298,p:8,g:40,l:11,portions:'4 pers.',ings:['Courge butternut 200g','Oignon','Lait de coco 25ml','Bouillon légumes 200ml','Graines de courge 5g','Huile olive 2g'],steps:['Cuire courge + oignon dans le bouillon 20 min.','Mixer avec le lait de coco.','Assaisonner sel + poivre.','Servir avec graines de courge torréfiées.'],note:'Soupe douce du dimanche soir.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 20g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:100,p:2,g:7,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
   ]},
 ];
 
@@ -941,6 +970,7 @@ function toggleMeal(w,di,mi){
   if(!activeMeals[w]) activeMeals[w]={};
   if(!activeMeals[w][di]) activeMeals[w][di]={0:true,1:true,2:true,3:true,4:true};
   activeMeals[w][di][mi]=!activeMeals[w][di][mi];
+  try{ localStorage.setItem('activeMeals', JSON.stringify(activeMeals)); }catch(e){}
   renderPlanning();
   renderCourses();
 }
@@ -950,6 +980,7 @@ function toggleDay(w,di){
   if(!activeMeals[w][di]) activeMeals[w][di]={0:true,1:true,2:true,3:true,4:true};
   const allActive=Object.values(activeMeals[w][di]).every(v=>v);
   [0,1,2,3,4].forEach(mi=>{ activeMeals[w][di][mi]=!allActive; });
+  try{ localStorage.setItem('activeMeals', JSON.stringify(activeMeals)); }catch(e){}
   renderPlanning();
   renderCourses();
 }
@@ -1312,7 +1343,7 @@ function normalizeIngKey(nom){
     // Supprimer "x 2", "x2", "x 4" etc.
     .replace(/\bx\s*\d+\b/g,'')
     // Supprimer qualificatifs de cuisson/état/texture
-    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|dur|durs|dure|dures|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince|sans|morceaux|végétal|végétale|corail|fumée|noire|noir|verte|vert|rouge|cerises?|concassée?s?|effilées?)\b/g,'')
+    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|dur|durs|dure|dures|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince|sans|morceaux|végétal|végétale|corail|fumée|noire|noir|verte|vert|rouge|effilées?)\b/g,'')
     // Supprimer "+ citron", "+ vinaigre", "à la", "de", etc.
     .replace(/[+&].*$/,'')
     .replace(/\b(à|au|aux|de|du|des|la|le|les|avec|et)\b/g,' ')
@@ -1674,7 +1705,17 @@ function getPrixReel(nomIng, qtyG, qtyPieces){
     if(clean.includes(k.toLowerCase().replace(/[éèê]/g,'e').replace(/[àâ]/g,'a'))||
        k.toLowerCase().replace(/[éèê]/g,'e').includes(clean)) return v;
   }
-  return 1.50;
+  // Condiments/épices/aromates sans quantité : coût négligeable
+  const condiments = ['ail','oignon','herbe','epice','curry','cumin','curcuma',
+                      'paprika','cannelle','poivre','sel','citron','basilic',
+                      'persil','thym','laurier','gingembre','coriandre','muscade',
+                      'safran','vanille','menthe','origan','romarin'];
+  if(qtyG === 0 && qtyPieces === 0){
+    for(const c of condiments){
+      if(clean.includes(c)) return 0.20; // condiment quasi gratuit
+    }
+  }
+  return PRIX_DEFAUT_ING;
 }
 
 function renderCouts(){
