@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fond vert -->
+  <rect width="512" height="512" rx="96" fill="#1B4332"/>
+  <!-- Fourchette (gauche) -->
+  <rect x="172" y="100" width="16" height="100" rx="8" fill="white"/>
+  <rect x="196" y="100" width="16" height="100" rx="8" fill="white"/>
+  <rect x="220" y="100" width="16" height="100" rx="8" fill="white"/>
+  <path d="M172 200 Q188 240 196 280 L196 412 Q196 422 204 422 L204 422 Q212 422 212 412 L212 280 Q220 240 236 200 Z" fill="white"/>
+  <!-- Couteau (droite) -->
+  <path d="M292 100 L308 100 L308 200 Q330 220 330 260 L330 412 Q330 422 322 422 L322 422 Q314 422 314 412 L314 260 Q314 240 292 200 Z" fill="white"/>
+  <!-- Point décoratif amber -->
+  <circle cx="256" cy="460" r="12" fill="#E9C46A"/>
+</svg>
