@@ -262,33 +262,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .ing-rep-nom{color:var(--text)}
 .ing-rep-qty{font-weight:600;font-family:var(--mono);color:var(--g1)}
 .ing-rep-box{background:var(--white);border-radius:var(--rs);border:1px solid var(--border);overflow:hidden;margin-bottom:8px}
-
-/* ── ENVIES ──────────────────────────────────────────────── */
-.envies-header{padding:16px 16px 8px;border-bottom:1px solid var(--border);}
-.envies-title{font-size:17px;font-weight:700;color:var(--g1);}
-.envies-sub{font-size:12px;color:var(--muted);margin-top:3px;}
-.envies-add-row{display:flex;gap:6px;padding:12px 16px;align-items:center;}
-.envies-add-row input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:var(--white);color:var(--g1);}
-.envies-add-row input:focus{outline:none;border-color:var(--green);}
-.envies-add-row select{padding:8px 6px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;background:var(--white);color:var(--g2);}
-.envies-add-btn{width:36px;height:36px;border-radius:8px;background:var(--green);border:none;color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.envies-toolbar{display:flex;justify-content:space-between;align-items:center;padding:4px 16px 8px;}
-.envies-count{font-size:12px;color:var(--muted);}
-.envies-clear-btn{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;}
-.envie-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--border);}
-.envie-item:last-child{border-bottom:none;}
-.envie-nom{flex:1;font-size:14px;color:var(--g1);font-weight:500;}
-.envie-badges{display:flex;gap:4px;}
-.envie-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;}
-.envie-badge.moment{background:#e8f5e9;color:var(--green);}
-.envie-badge.semaine{background:#fff3e0;color:#e65100;}
-.envie-del{width:24px;height:24px;border-radius:6px;background:none;border:1.5px solid var(--border);color:var(--muted);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.envie-del:active{background:var(--g5);}
-.envies-empty{padding:32px 16px;text-align:center;color:var(--muted);font-size:13px;}
-.envies-info{margin:16px;padding:12px 14px;background:var(--g6);border-radius:10px;border:1px solid var(--border);}
-.envies-info-title{font-size:13px;font-weight:600;color:var(--g2);margin-bottom:6px;}
-.envies-info-text{font-size:12px;color:var(--muted);line-height:1.6;}
-
 </style>
 </head>
 <body>
@@ -303,7 +276,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <div class="nav-tab" onclick="switchTab('couts')"><span class="tab-icon">💰</span>Coûts</div>
     <div class="nav-tab" onclick="switchTab('annexe')"><span class="tab-icon">📝</span>Divers</div>
     <div class="nav-tab" onclick="switchTab('infos')"><span class="tab-icon">ℹ️</span>Infos</div>
-    <div class="nav-tab" onclick="switchTab('envies')"><span class="tab-icon">💬</span>Envies</div>
   </div>
 </nav>
 <div class="scroll-area">
@@ -477,43 +449,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
   <div class="recettes-panel" id="recettes-panel">
     <div class="recettes-handle"></div>
     <div class="recettes-body" id="recettes-body"></div>
-  </div>
-</div>
-
-<!-- ENVIES -->
-<div class="content" id="tab-envies">
-  <div class="envies-header">
-    <div class="envies-title">💬 Envies de repas</div>
-    <div class="envies-sub">Cowork intègre ces envies dans la prochaine semaine générée</div>
-  </div>
-  <div class="envies-add-row">
-    <input type="text" id="envies-input" placeholder="Ex: Tajine poulet, Melon..." onkeydown="if(event.key==='Enter')addEnvie()" />
-    <select id="envies-moment-select">
-      <option value="">Peu importe</option>
-      <option value="Petit-déjeuner">Petit-déj</option>
-      <option value="Déjeuner">Déjeuner</option>
-      <option value="Collation">Collation</option>
-      <option value="Dîner">Dîner</option>
-      <option value="Collation soir">Collation soir</option>
-    </select>
-    <select id="envies-semaine-select">
-      <option value="prochaine">Sem. prochaine</option>
-      <option value="suivante">Sem. suivante</option>
-    </select>
-    <button class="envies-add-btn" onclick="addEnvie()">+</button>
-  </div>
-  <div class="envies-toolbar">
-    <span class="envies-count" id="envies-count">0 envie(s)</span>
-    <button class="envies-clear-btn" onclick="clearEnvies()">Tout effacer</button>
-  </div>
-  <div id="envies-list"></div>
-  <div class="envies-info">
-    <div class="envies-info-title">ℹ️ Comment ça marche ?</div>
-    <div class="envies-info-text">
-      Ajoute tes envies ici avant mardi matin.<br>
-      Cowork lira cette liste et essaiera de les intégrer dans la semaine suivante.<br>
-      Les envies restent jusqu'à ce que tu les supprimes manuellement.
-    </div>
   </div>
 </div>
 
@@ -819,100 +754,6 @@ function setMealPersons(w,di,mi,a,e){
 // ── DONNÉES SEMAINE 1 ──────────────────────────────────────────
 const semaine1=[
   {f:[
-    {moment:'Petit-déjeuner',nom:'Skyr banane flocons noisettes',kcal:380,p:22,g:50,l:10,portions:'2 adultes',ings:['Skyr 150g','Flocons avoine 45g','Banane 60g','Noisettes 12g'],steps:['Verser le skyr dans un bol.','Trancher la banane et l\'ajouter.','Parsemer flocons et noisettes.','Déguster frais.'],note:''},
-    {moment:'Déjeuner',nom:'Maquereau fumé riz basmati épinards',kcal:450,p:26,g:44,l:18,portions:'2 adultes',ings:['Maquereau fumé en boîte 80g','Riz basmati 65g','Épinards frais 80g','Ail','Huile olive 4g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Faire sauter les épinards avec l\'ail 3 min.','Émietter le maquereau fumé.','Servir riz + épinards + maquereau avec citron pressé.'],note:'Poisson gras riche en oméga-3.'},
-    {moment:'Collation',nom:'Yaourt fruits mixé beurre cacahuète',kcal:200,p:8,g:18,l:10,portions:'2 adultes',ings:['Yaourt fruits mixé 150g','Beurre cacahuète 10g'],steps:['Mélanger le beurre de cacahuète dans le yaourt.','Déguster.'],note:''},
-    {moment:'Dîner',nom:'Curry pois chiches épinards patate douce',kcal:400,p:18,g:54,l:12,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Patate douce 80g','Épinards frais 60g','Lait de coco 25ml','Oignon','Ail','Curry doux','Huile olive 2g'],steps:['Faire revenir oignon + ail + curry dans l\'huile 2 min.','Ajouter patate douce en dés + 200ml d\'eau, cuire 10 min.','Ajouter pois chiches + lait de coco, chauffer 3 min.','Incorporer les épinards 2 min.','Servir chaud.'],note:'Plat végétarien 18 min. Doux et parfumé pour les enfants.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
-  ],m:[
-    {moment:'Petit-déjeuner',nom:'Skyr banane flocons noisettes',kcal:440,p:27,g:60,l:12,portions:'2 adultes',ings:['Skyr 180g','Flocons avoine 60g','Banane 80g','Noisettes 15g','Miel 5g'],steps:['Verser le skyr dans un bol.','Trancher la banane et l\'ajouter.','Parsemer flocons et noisettes.','Ajouter un filet de miel.'],note:''},
-    {moment:'Déjeuner',nom:'Maquereau fumé riz basmati épinards',kcal:515,p:32,g:52,l:20,portions:'2 adultes',ings:['Maquereau fumé en boîte 100g','Riz basmati 80g','Épinards frais 80g','Ail','Huile olive 5g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Faire sauter les épinards avec l\'ail 3 min.','Émietter le maquereau fumé.','Servir avec citron pressé.'],note:'Poisson gras riche en oméga-3.'},
-    {moment:'Collation',nom:'Yaourt fruits mixé beurre cacahuète',kcal:215,p:10,g:18,l:12,portions:'2 adultes',ings:['Yaourt fruits mixé 150g','Beurre cacahuète 15g'],steps:['Mélanger le beurre de cacahuète dans le yaourt.','Déguster.'],note:''},
-    {moment:'Dîner',nom:'Curry pois chiches épinards patate douce',kcal:400,p:18,g:54,l:12,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Patate douce 80g','Épinards frais 60g','Lait de coco 25ml','Oignon','Ail','Curry doux','Huile olive 2g'],steps:['Faire revenir oignon + ail + curry dans l\'huile 2 min.','Ajouter patate douce en dés + eau, cuire 10 min.','Ajouter pois chiches + lait de coco, chauffer 3 min.','Incorporer les épinards 2 min.','Servir chaud.'],note:'Plat végétarien 18 min.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ]},
-  {f:[
-    {moment:'Petit-déjeuner',nom:'Porridge avoine poire noix cannelle',kcal:340,p:12,g:52,l:10,portions:'2 adultes',ings:['Flocons avoine 55g','Lait végétal 100ml','Poire 80g','Noix 12g','Cannelle'],steps:['Cuire les flocons avec le lait végétal 4 min en remuant.','Couper la poire en dés et l\'incorporer.','Parsemer noix et cannelle.','Servir chaud.'],note:''},
-    {moment:'Déjeuner',nom:'Blanc poulet riz basmati poivrons sauce moutarde',kcal:455,p:38,g:44,l:12,portions:'2 adultes',ings:['Blanc poulet 100g','Riz basmati 65g','Poivron rouge 100g','Moutarde 10g','Huile olive 4g','Ail herbes'],steps:['Cuire le riz basmati 12 min.','Poêler le poivron en lamelles 5 min.','Poêler le poulet en lanières 7 min, badigeonner de moutarde à mi-cuisson.','Servir riz + poulet + poivrons.'],note:''},
-    {moment:'Collation',nom:'Skyr amandes',kcal:175,p:13,g:9,l:10,portions:'2 adultes',ings:['Skyr 150g','Amandes 15g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Omelette courgettes tomates herbes',kcal:300,p:18,g:12,l:20,portions:'4 pers.',ings:['Oeufs 2 pièces','Courgette 100g','Tomates 80g','Ail','Huile olive 4g','Herbes de Provence'],steps:['Faire revenir courgette en rondelles + ail 4 min.','Ajouter les tomates en dés, cuire 2 min.','Battre les oeufs et verser sur les légumes.','Cuire à feu doux 5 min, finir sous le gril 2 min.','Parsemer d\'herbes fraîches et servir.'],note:'Repas léger rapide 15 min.'},
-    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
-  ],m:[
-    {moment:'Petit-déjeuner',nom:'Porridge avoine poire noix cannelle',kcal:395,p:15,g:62,l:12,portions:'2 adultes',ings:['Flocons avoine 70g','Lait végétal 120ml','Poire 100g','Noix 15g','Cannelle'],steps:['Cuire les flocons avec le lait végétal 4 min en remuant.','Couper la poire en dés et l\'incorporer.','Parsemer noix et cannelle.','Servir chaud.'],note:''},
-    {moment:'Déjeuner',nom:'Blanc poulet riz basmati poivrons sauce moutarde',kcal:515,p:46,g:50,l:14,portions:'2 adultes',ings:['Blanc poulet 130g','Riz basmati 80g','Poivron rouge 100g','Moutarde 12g','Huile olive 5g','Ail herbes'],steps:['Cuire le riz basmati 12 min.','Poêler le poivron en lamelles 5 min.','Poêler le poulet 7 min, badigeonner de moutarde.','Servir riz + poulet + poivrons.'],note:''},
-    {moment:'Collation',nom:'Skyr amandes',kcal:200,p:16,g:10,l:11,portions:'2 adultes',ings:['Skyr 170g','Amandes 18g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Omelette courgettes tomates herbes',kcal:350,p:21,g:14,l:24,portions:'4 pers.',ings:['Oeufs 3 pièces','Courgette 100g','Tomates 80g','Ail','Huile olive 4g','Herbes de Provence'],steps:['Faire revenir courgette + ail 4 min.','Ajouter les tomates en dés, cuire 2 min.','Battre les oeufs et verser.','Cuire 5 min, finir sous le gril 2 min.','Parsemer d\'herbes fraîches.'],note:'Repas léger rapide 15 min.'},
-    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:140,p:4,g:8,l:10,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ]},
-  {f:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr fraises flocons amandes',kcal:335,p:20,g:38,l:11,portions:'2 adultes',ings:['Skyr 150g','Fraises 100g','Flocons avoine 40g','Amandes 12g'],steps:['Verser le skyr dans un bol.','Couper les fraises en deux.','Parsemer flocons et amandes.','Servir frais.'],note:''},
-    {moment:'Déjeuner',nom:'Boeuf haché poêlée courgettes poivrons riz basmati',kcal:460,p:35,g:44,l:14,portions:'2 adultes',ings:['Boeuf haché maigre 100g','Riz basmati 65g','Courgette 80g','Poivron rouge 80g','Oignon','Ail','Huile olive 4g','Herbes de Provence'],steps:['Cuire le riz basmati 12 min.','Faire revenir oignon + ail 2 min.','Ajouter courgette + poivron en dés, cuire 5 min.','Ajouter le boeuf haché, dorer 6 min en remuant.','Assaisonner aux herbes, servir avec le riz.'],note:''},
-    {moment:'Collation',nom:'Petit suisse miel noix',kcal:165,p:6,g:14,l:9,portions:'2 adultes',ings:['Petit suisse 100g','Miel 8g','Noix 10g'],steps:['Verser le miel sur le petit suisse.','Parsemer les noix.'],note:''},
-    {moment:'Dîner',nom:'Soupe minestrone légumes pois chiches',kcal:350,p:14,g:52,l:8,portions:'4 pers.',ings:['Pois chiches en bocal 60g','Carottes 50g','Courgette 50g','Tomates concassées 75g','Pâtes complètes 25g','Oignon','Ail','Bouillon légumes 200ml','Basilic','Huile olive 2g'],steps:['Faire revenir oignon + ail + carottes 4 min.','Ajouter courgette + tomates concassées + bouillon + pois chiches.','Porter à ébullition, ajouter les pâtes complètes.','Cuire 8 min.','Parsemer de basilic frais et servir.'],note:'Soupe-repas végétarienne 18 min. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ],m:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr fraises flocons amandes',kcal:390,p:25,g:46,l:12,portions:'2 adultes',ings:['Skyr 180g','Fraises 100g','Flocons avoine 55g','Amandes 15g'],steps:['Verser le skyr dans un bol.','Couper les fraises en deux.','Parsemer flocons et amandes.','Servir frais.'],note:''},
-    {moment:'Déjeuner',nom:'Boeuf haché poêlée courgettes poivrons riz basmati',kcal:525,p:42,g:52,l:16,portions:'2 adultes',ings:['Boeuf haché maigre 130g','Riz basmati 80g','Courgette 80g','Poivron rouge 80g','Oignon','Ail','Huile olive 5g','Herbes de Provence'],steps:['Cuire le riz basmati 12 min.','Faire revenir oignon + ail 2 min.','Ajouter courgette + poivron, cuire 5 min.','Ajouter le boeuf haché, dorer 6 min.','Assaisonner aux herbes, servir avec le riz.'],note:''},
-    {moment:'Collation',nom:'Petit suisse miel noix',kcal:200,p:8,g:17,l:12,portions:'2 adultes',ings:['Petit suisse 100g','Miel 10g','Noix 14g'],steps:['Verser le miel sur le petit suisse.','Parsemer les noix.'],note:''},
-    {moment:'Dîner',nom:'Soupe minestrone légumes pois chiches',kcal:350,p:14,g:52,l:8,portions:'4 pers.',ings:['Pois chiches en bocal 60g','Carottes 50g','Courgette 50g','Tomates concassées 75g','Pâtes complètes 25g','Oignon','Ail','Bouillon légumes 200ml','Basilic','Huile olive 2g'],steps:['Faire revenir oignon + ail + carottes 4 min.','Ajouter courgette + tomates + bouillon + pois chiches.','Porter à ébullition, ajouter les pâtes.','Cuire 8 min.','Parsemer basilic frais.'],note:'Soupe-repas végétarienne 18 min.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ]},
-  {f:[
-    {moment:'Petit-déjeuner',nom:'Oeufs brouillés pain complet tomates',kcal:335,p:22,g:26,l:16,portions:'2 adultes',ings:['Oeufs 2 pièces','Pain complet 40g','Tomates 100g','Huile olive 4g','Ciboulette'],steps:['Battre les oeufs et cuire à feu doux en remuant 4 min.','Toaster le pain complet.','Couper les tomates en tranches.','Servir oeufs brouillés + pain + tomates avec ciboulette.'],note:''},
-    {moment:'Déjeuner',nom:'Thon riz complet tomates cerises avocat',kcal:450,p:34,g:44,l:16,portions:'2 adultes',ings:['Thon en boîte 120g','Riz complet 65g','Tomates cerises 80g','Avocat 50g','Huile olive 4g','Citron herbes'],steps:['Cuire le riz complet 18 min.','Égoutter le thon.','Couper l\'avocat en dés et les tomates cerises en deux.','Assembler riz + thon + avocat + tomates cerises.','Assaisonner huile + citron + herbes.'],note:'Préparer le riz la veille pour gagner du temps.'},
-    {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:172,p:7,g:18,l:8,portions:'2 adultes',ings:['Yaourt fruits mixé 130g','Amandes 13g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Galettes courgettes pois chiches oeufs',kcal:400,p:20,g:44,l:16,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Courgette 100g','Oeufs 1 pièce','Oignon','Farine complète 12g','Cumin coriandre','Huile olive 4g'],steps:['Mixer pois chiches + oeuf + farine + épices.','Râper la courgette, presser pour enlever l\'eau, incorporer.','Façonner des galettes.','Cuire 4 min/face dans l\'huile.','Servir avec une salade verte.'],note:'Galettes végétariennes rapides 18 min. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ],m:[
-    {moment:'Petit-déjeuner',nom:'Oeufs brouillés pain complet tomates',kcal:395,p:27,g:32,l:18,portions:'2 adultes',ings:['Oeufs 3 pièces','Pain complet 50g','Tomates 100g','Huile olive 5g','Ciboulette'],steps:['Battre les oeufs et cuire à feu doux en remuant 4 min.','Toaster le pain complet.','Couper les tomates.','Servir avec ciboulette.'],note:''},
-    {moment:'Déjeuner',nom:'Thon riz complet tomates cerises avocat',kcal:515,p:40,g:52,l:18,portions:'2 adultes',ings:['Thon en boîte 150g','Riz complet 80g','Tomates cerises 80g','Avocat 60g','Huile olive 5g','Citron herbes'],steps:['Cuire le riz complet 18 min.','Égoutter le thon.','Couper l\'avocat et les tomates cerises.','Assembler et assaisonner.'],note:'Préparer le riz la veille pour gagner du temps.'},
-    {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:200,p:9,g:20,l:10,portions:'2 adultes',ings:['Yaourt fruits mixé 170g','Amandes 15g'],steps:['Déguster ensemble.'],note:''},
-    {moment:'Dîner',nom:'Galettes courgettes pois chiches oeufs',kcal:400,p:20,g:44,l:16,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Courgette 100g','Oeufs 1 pièce','Oignon','Farine complète 12g','Cumin coriandre','Huile olive 4g'],steps:['Mixer pois chiches + oeuf + farine + épices.','Râper la courgette, presser pour enlever l\'eau, incorporer.','Façonner des galettes.','Cuire 4 min/face dans l\'huile.','Servir avec salade verte.'],note:'Galettes végétariennes rapides 18 min.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ]},
-  {f:[
-    {moment:'Petit-déjeuner',nom:'Bircher avoine kiwi amandes',kcal:335,p:14,g:48,l:10,portions:'2 adultes',ings:['Flocons avoine 55g','Skyr 80g','Lait végétal 50ml','Kiwi 80g','Amandes 12g','Cannelle'],steps:['Mélanger flocons + skyr + lait végétal la veille au soir.','Le matin : couper le kiwi et l\'ajouter.','Parsemer amandes et cannelle.','Déguster froid.'],note:''},
-    {moment:'Déjeuner',nom:'Blanc poulet pâtes complètes courgettes basilic',kcal:450,p:36,g:44,l:12,portions:'2 adultes',ings:['Blanc poulet 100g','Pâtes complètes 65g','Courgette 100g','Ail','Basilic','Huile olive 4g','Citron'],steps:['Cuire les pâtes complètes 8-10 min.','Poêler le poulet en lanières 7 min.','Faire sauter la courgette en rondelles 4 min.','Mélanger pâtes + poulet + courgette + citron + basilic.','Servir immédiatement.'],note:''},
-    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:177,p:13,g:9,l:9,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
-    {moment:'Dîner',nom:'Soupe lentilles corail carottes cumin',kcal:360,p:18,g:52,l:8,portions:'4 pers.',ings:['Lentilles corail 60g','Carottes 80g','Oignon','Ail','Bouillon légumes 300ml','Cumin','Huile olive 2g','Persil'],steps:['Faire revenir oignon + ail + cumin dans l\'huile 2 min.','Ajouter carottes en rondelles + lentilles corail + bouillon.','Cuire 12 min à feu moyen.','Mixer légèrement et assaisonner.','Parsemer de persil frais.'],note:'Soupe consistante et rapide 15 min. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
-  ],m:[
-    {moment:'Petit-déjeuner',nom:'Bircher avoine kiwi amandes',kcal:390,p:18,g:56,l:12,portions:'2 adultes',ings:['Flocons avoine 70g','Skyr 100g','Lait végétal 60ml','Kiwi 100g','Amandes 15g','Cannelle'],steps:['Mélanger flocons + skyr + lait végétal la veille.','Le matin : couper le kiwi et l\'ajouter.','Parsemer amandes et cannelle.','Déguster froid.'],note:''},
-    {moment:'Déjeuner',nom:'Blanc poulet pâtes complètes courgettes basilic',kcal:515,p:44,g:52,l:14,portions:'2 adultes',ings:['Blanc poulet 130g','Pâtes complètes 80g','Courgette 100g','Ail','Basilic','Huile olive 5g','Citron'],steps:['Cuire les pâtes complètes 8-10 min.','Poêler le poulet en lanières 7 min.','Faire sauter la courgette 4 min.','Mélanger et assaisonner basilic + citron.'],note:''},
-    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:177,p:13,g:9,l:9,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 12g'],steps:['Mélanger ou déguster séparément.'],note:''},
-    {moment:'Dîner',nom:'Soupe lentilles corail carottes cumin',kcal:360,p:18,g:52,l:8,portions:'4 pers.',ings:['Lentilles corail 60g','Carottes 80g','Oignon','Ail','Bouillon légumes 300ml','Cumin','Huile olive 2g','Persil'],steps:['Faire revenir oignon + ail + cumin 2 min.','Ajouter carottes + lentilles corail + bouillon.','Cuire 12 min.','Mixer légèrement.','Parsemer de persil frais.'],note:'Soupe consistante et rapide 15 min.'},
-    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:140,p:4,g:8,l:10,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ]},
-  {f:[
-    {moment:'Petit-déjeuner',nom:'Pancakes avoine framboises skyr famille',kcal:355,p:18,g:50,l:11,portions:'4 pers.',ings:['Flocons avoine mixés 30g','Oeufs 1 pièce','Lait végétal 30ml','Skyr 30g','Framboises 50g','Miel 4g'],steps:['Mixer flocons + oeufs + lait en pâte lisse.','Cuire des pancakes 3 min/face à feu moyen.','Servir avec skyr, framboises et miel.'],note:'Les enfants adorent !'},
-    {moment:'Déjeuner',nom:'Cuisses poulet rôties légumes du four patate douce',kcal:475,p:38,g:40,l:18,portions:'4 pers.',ings:['Cuisses poulet désossées 100g','Patate douce 120g','Courgette 60g','Poivron rouge 60g','Oignon','Ail','Huile olive 4g','Herbes de Provence'],steps:['Préchauffer le four à 200°C.','Couper les légumes, disposer dans un plat avec huile + herbes.','Déposer les cuisses de poulet par-dessus.','Rôtir 30 min en retournant à mi-cuisson.','Servir directement depuis le plat.'],note:'Plat du week-end (35 min). Simple et savoureux.'},
-    {moment:'Collation',nom:'Yaourt fruits mixé noisettes famille',kcal:155,p:5,g:20,l:7,portions:'4 pers.',ings:['Yaourt fruits mixé 150g','Noisettes 10g'],steps:['Répartir en bols.','Parsemer les noisettes.'],note:''},
-    {moment:'Dîner',nom:'Bolognaise pois chiches carottes pâtes complètes',kcal:440,p:20,g:60,l:12,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Carottes 40g','Tomates concassées 80g','Oignon','Ail','Pâtes complètes 70g','Huile olive 3g','Herbes de Provence'],steps:['Faire revenir oignon + ail + carottes en dés 5 min.','Ajouter pois chiches + tomates concassées + 100ml d\'eau + herbes.','Mijoter 15 min à feu doux.','Cuire les pâtes complètes 8-10 min.','Mélanger et servir.'],note:'Bolognaise végétale du week-end. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
-  ],m:[
-    {moment:'Petit-déjeuner',nom:'Pancakes avoine framboises skyr famille',kcal:410,p:22,g:58,l:13,portions:'4 pers.',ings:['Flocons avoine mixés 30g','Oeufs 1 pièce','Lait végétal 30ml','Skyr 30g','Framboises 50g','Beurre cacahuète 5g','Miel 4g'],steps:['Mixer flocons + oeufs + lait en pâte lisse.','Cuire des pancakes 3 min/face.','Servir avec skyr, framboises, miel et beurre de cacahuète.'],note:''},
-    {moment:'Déjeuner',nom:'Cuisses poulet rôties légumes du four patate douce',kcal:540,p:45,g:46,l:20,portions:'4 pers.',ings:['Cuisses poulet désossées 130g','Patate douce 130g','Courgette 60g','Poivron rouge 60g','Oignon','Ail','Huile olive 5g','Herbes de Provence'],steps:['Préchauffer le four à 200°C.','Couper les légumes, disposer avec huile + herbes.','Déposer les cuisses de poulet par-dessus.','Rôtir 30 min en retournant à mi-cuisson.','Servir depuis le plat.'],note:'Plat du week-end (35 min).'},
-    {moment:'Collation',nom:'Skyr amandes beurre cacahuète',kcal:204,p:14,g:9,l:13,portions:'2 adultes',ings:['Skyr 100g','Amandes 15g','Beurre cacahuète 10g'],steps:['Mélanger skyr + beurre cacahuète, parsemer amandes.'],note:''},
-    {moment:'Dîner',nom:'Bolognaise pois chiches carottes pâtes complètes',kcal:440,p:20,g:60,l:12,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Carottes 40g','Tomates concassées 80g','Oignon','Ail','Pâtes complètes 70g','Huile olive 3g','Herbes de Provence'],steps:['Faire revenir oignon + ail + carottes 5 min.','Ajouter pois chiches + tomates concassées + eau + herbes.','Mijoter 15 min.','Cuire les pâtes complètes.','Mélanger et servir.'],note:'Bolognaise végétale du week-end.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ]},
-  {f:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr framboises banane amandes famille',kcal:340,p:18,g:46,l:9,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 60g','Flocons avoine 25g','Framboises 50g','Banane 40g','Amandes 10g'],steps:['Répartir le skyr et le yaourt en bols.','Trancher la banane.','Disposer les framboises.','Parsemer flocons et amandes.'],note:''},
-    {moment:'Déjeuner',nom:'Rôti de boeuf maigre carottes pommes de terre',kcal:480,p:40,g:36,l:20,portions:'4 pers.',ings:['Rôti de boeuf maigre 110g','Pommes de terre 100g','Carottes 60g','Oignon','Ail','Huile olive 4g','Thym romarin'],steps:['Préchauffer le four à 200°C.','Couper les légumes, disposer dans un plat avec huile + thym.','Saisir le rôti 3 min/face à la poêle.','Déposer le rôti sur les légumes, rôtir 35 min en arrosant.','Laisser reposer 10 min avant de trancher.'],note:'Plat dominical (45 min). Portion réduite pour les enfants.'},
-    {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:230,p:10,g:28,l:10,portions:'4 pers.',ings:['Flocons avoine 40g','Lait végétal 80ml','Beurre cacahuète 10g'],steps:['Cuire les flocons avec le lait végétal 4 min.','Incorporer le beurre de cacahuète.','Servir tiède.'],note:''},
-    {moment:'Dîner',nom:'Soupe potiron lentilles corail curry',kcal:310,p:14,g:44,l:8,portions:'4 pers.',ings:['Potiron 150g','Lentilles corail 45g','Lait de coco 25ml','Oignon','Curry doux','Bouillon légumes 200ml','Huile olive 2g'],steps:['Faire revenir oignon + curry dans l\'huile 2 min.','Ajouter potiron en dés + lentilles corail + bouillon.','Cuire 15 min à feu moyen.','Mixer avec le lait de coco.','Assaisonner et servir chaud.'],note:'Soupe douce du dimanche soir. Les enfants adorent.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
-  ],m:[
-    {moment:'Petit-déjeuner',nom:'Bol skyr framboises banane amandes famille',kcal:400,p:23,g:54,l:11,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 80g','Flocons avoine 35g','Framboises 50g','Banane 50g','Amandes 15g','Miel 4g'],steps:['Répartir le skyr et le yaourt en bols.','Trancher la banane.','Disposer les framboises.','Parsemer flocons, amandes et filet de miel.'],note:''},
-    {moment:'Déjeuner',nom:'Rôti de boeuf maigre carottes pommes de terre',kcal:540,p:48,g:42,l:22,portions:'4 pers.',ings:['Rôti de boeuf maigre 130g','Pommes de terre 120g','Carottes 60g','Oignon','Ail','Huile olive 5g','Thym romarin'],steps:['Préchauffer le four à 200°C.','Couper les légumes, disposer avec huile + thym.','Saisir le rôti 3 min/face.','Rôtir 35 min en arrosant.','Laisser reposer 10 min.'],note:'Plat dominical (45 min).'},
-    {moment:'Collation',nom:'Porridge beurre cacahuète',kcal:258,p:11,g:32,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Lait végétal 100ml','Beurre cacahuète 14g'],steps:['Cuire les flocons avec le lait végétal 4 min.','Incorporer le beurre de cacahuète.','Servir tiède.'],note:''},
-    {moment:'Dîner',nom:'Soupe potiron lentilles corail curry',kcal:310,p:14,g:44,l:8,portions:'4 pers.',ings:['Potiron 150g','Lentilles corail 45g','Lait de coco 25ml','Oignon','Curry doux','Bouillon légumes 200ml','Huile olive 2g'],steps:['Faire revenir oignon + curry 2 min.','Ajouter potiron + lentilles + bouillon.','Cuire 15 min.','Mixer avec le lait de coco.','Assaisonner et servir.'],note:'Soupe douce du dimanche soir.'},
-    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
-  ]},
-];
-
-const semaine2=[
-  {f:[
     {moment:'Petit-déjeuner',nom:'Smoothie bowl skyr mangue graines de chia',kcal:340,p:20,g:42,l:9,portions:'2 adultes',ings:['Skyr 130g','Mangue 80g','Flocons avoine 40g','Graines de chia 8g','Cannelle'],steps:['Verser le skyr dans un bol.','Disposer la mangue coupée en dés.','Parsemer flocons et graines de chia.','Saupoudrer de cannelle et déguster frais.'],note:''},
     {moment:'Déjeuner',nom:'Cabillaud poêlé patate douce épinards',kcal:355,p:25,g:38,l:10,portions:'2 adultes',ings:['Filet cabillaud 120g','Patate douce 120g','Épinards frais 80g','Ail','Huile olive 5g','Citron herbes'],steps:['Cuire la patate douce vapeur 12 min.','Poêler le cabillaud 4 min/face avec ail.','Faire sauter les épinards 3 min.','Servir avec citron pressé et herbes fraîches.'],note:'Poisson gras riche en oméga-3.'},
     {moment:'Collation',nom:'Petit suisse miel amandes',kcal:170,p:10,g:14,l:8,portions:'2 adultes',ings:['Petit suisse 100g','Miel 8g','Amandes 8g'],steps:['Verser le miel sur le petit suisse.','Parsemer les amandes.'],note:''},
@@ -1005,6 +846,100 @@ const semaine2=[
   ]},
 ];
 
+const semaine2=[
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr abricots flocons amandes',kcal:330,p:22,g:40,l:9,portions:'2 adultes',ings:['Skyr 150g','Flocons avoine 40g','Abricots frais 80g','Amandes 12g'],steps:['Verser le skyr dans un bol.','Couper les abricots en quartiers.','Parsemer flocons et amandes.','Servir frais.'],note:''},
+    {moment:'Déjeuner',nom:'Thon riz basmati haricots verts citron',kcal:415,p:33,g:57,l:6,portions:'2 adultes',ings:['Thon en boîte 100g','Riz basmati 65g','Haricots verts 100g','Huile olive 4g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Cuire les haricots verts vapeur 8 min.','Égoutter le thon.','Assembler riz + thon + haricots verts.','Assaisonner huile + citron + herbes.'],note:'Poisson léger en boîte. Pratique et rapide 15 min.'},
+    {moment:'Collation',nom:'Skyr amandes',kcal:168,p:17,g:7,l:8,portions:'2 adultes',ings:['Skyr 150g','Amandes 15g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Omelette aubergines poivrons herbes',kcal:365,p:28,g:12,l:24,portions:'4 pers.',ings:['Oeufs 2 pièces','Aubergine 80g','Poivron rouge 80g','Oignon','Huile olive 4g','Herbes de Provence'],steps:['Faire revenir aubergine + poivron en dés + oignon dans l\'huile 7 min.','Battre les oeufs et verser sur les légumes.','Cuire à feu doux 5 min puis finir sous le gril 2 min.','Assaisonner aux herbes de Provence et servir.'],note:'Omelette estivale rapide 15 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr abricots flocons amandes',kcal:445,p:28,g:57,l:11,portions:'2 adultes',ings:['Skyr 180g','Flocons avoine 55g','Abricots frais 100g','Amandes 15g','Miel 5g'],steps:['Verser le skyr dans un bol.','Couper les abricots en quartiers.','Parsemer flocons et amandes.','Filer un trait de miel.'],note:''},
+    {moment:'Déjeuner',nom:'Thon riz basmati haricots verts citron',kcal:515,p:43,g:70,l:7,portions:'2 adultes',ings:['Thon en boîte 130g','Riz basmati 80g','Haricots verts 120g','Huile olive 5g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Cuire les haricots verts vapeur 8 min.','Égoutter le thon.','Assembler et assaisonner.'],note:'Poisson léger en boîte.'},
+    {moment:'Collation',nom:'Skyr amandes',kcal:195,p:17,g:9,l:10,portions:'2 adultes',ings:['Skyr 170g','Amandes 18g'],steps:['Déguster ensemble.'],note:''},
+    {moment:'Dîner',nom:'Omelette aubergines poivrons herbes',kcal:470,p:40,g:14,l:28,portions:'4 pers.',ings:['Oeufs 3 pièces','Aubergine 80g','Poivron rouge 80g','Oignon','Huile olive 4g','Herbes de Provence'],steps:['Faire revenir aubergine + poivron + oignon dans l\'huile 7 min.','Battre les oeufs et verser.','Cuire 5 min puis finir sous le gril 2 min.','Assaisonner aux herbes et servir.'],note:'Omelette estivale rapide 15 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Skyr pêche flocons noisettes',kcal:315,p:20,g:39,l:9,portions:'2 adultes',ings:['Skyr 140g','Flocons avoine 40g','Pêche 80g','Noisettes 10g','Cannelle'],steps:['Verser le skyr dans un bol.','Couper la pêche en dés.','Parsemer flocons et noisettes.','Saupoudrer de cannelle et déguster.'],note:''},
+    {moment:'Déjeuner',nom:'Blanc poulet pâtes complètes tomates basilic',kcal:395,p:32,g:48,l:7,portions:'2 adultes',ings:['Blanc poulet 100g','Pâtes complètes 65g','Tomates 100g','Ail','Basilic','Huile olive 4g','Citron'],steps:['Cuire les pâtes complètes 8-10 min.','Poêler le poulet en lanières 7 min.','Couper les tomates en dés.','Mélanger pâtes + poulet + tomates + ail haché.','Assaisonner basilic + citron + huile et servir.'],note:''},
+    {moment:'Collation',nom:'Yaourt fruits mixé',kcal:150,p:6,g:24,l:3,portions:'2 adultes',ings:['Yaourt fruits mixé 150g'],steps:['Déguster frais.'],note:''},
+    {moment:'Dîner',nom:'Dahl lentilles corail épinards tomates',kcal:310,p:18,g:42,l:8,portions:'4 pers.',ings:['Lentilles corail 60g','Épinards frais 80g','Tomates concassées 80g','Lait de coco 20ml','Oignon','Ail','Curry doux','Huile olive 3g','Persil'],steps:['Faire revenir oignon + ail + curry dans l\'huile 2 min.','Ajouter lentilles corail + tomates concassées + 200ml d\'eau.','Cuire 12 min à feu moyen.','Incorporer épinards + lait de coco 3 min.','Parsemer de persil frais et servir.'],note:'Dahl végétarien rapide 18 min. Les enfants adorent.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Skyr pêche flocons noisettes',kcal:415,p:25,g:55,l:11,portions:'2 adultes',ings:['Skyr 170g','Flocons avoine 55g','Pêche 100g','Noisettes 12g','Miel 4g','Cannelle'],steps:['Verser le skyr dans un bol.','Couper la pêche en dés.','Parsemer flocons et noisettes.','Ajouter un trait de miel et de cannelle.'],note:''},
+    {moment:'Déjeuner',nom:'Blanc poulet pâtes complètes tomates basilic',kcal:490,p:41,g:58,l:9,portions:'2 adultes',ings:['Blanc poulet 130g','Pâtes complètes 80g','Tomates 100g','Ail','Basilic','Huile olive 5g','Citron'],steps:['Cuire les pâtes complètes 8-10 min.','Poêler le poulet en lanières 7 min.','Couper les tomates en dés.','Mélanger pâtes + poulet + tomates + ail.','Assaisonner basilic + citron + huile.'],note:''},
+    {moment:'Collation',nom:'Yaourt fruits mixé amandes',kcal:238,p:9,g:30,l:9,portions:'2 adultes',ings:['Yaourt fruits mixé 180g','Amandes 10g'],steps:['Parsemer les amandes sur le yaourt.','Déguster.'],note:''},
+    {moment:'Dîner',nom:'Dahl lentilles corail épinards tomates',kcal:310,p:18,g:42,l:8,portions:'4 pers.',ings:['Lentilles corail 60g','Épinards frais 80g','Tomates concassées 80g','Lait de coco 20ml','Oignon','Ail','Curry doux','Huile olive 3g','Persil'],steps:['Faire revenir oignon + ail + curry 2 min.','Ajouter lentilles + tomates + eau.','Cuire 12 min.','Incorporer épinards + lait de coco 3 min.','Parsemer de persil.'],note:'Dahl végétarien rapide 18 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Porridge avoine abricots noix cannelle',kcal:345,p:11,g:48,l:13,portions:'2 adultes',ings:['Flocons avoine 55g','Lait végétal 100ml','Abricots frais 80g','Noix 12g','Cannelle'],steps:['Cuire les flocons avec le lait végétal 4 min en remuant.','Couper les abricots en dés et les incorporer.','Parsemer noix et cannelle.','Servir chaud.'],note:''},
+    {moment:'Déjeuner',nom:'Saumon poêlé riz basmati courgettes citron',kcal:490,p:26,g:53,l:19,portions:'2 adultes',ings:['Saumon 100g','Riz basmati 65g','Courgette 100g','Ail','Huile olive 4g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Poêler les rondelles de courgette avec l\'ail 4 min.','Poêler le saumon 4 min/face.','Servir riz + courgettes + saumon avec citron pressé.'],note:'Poisson riche en oméga-3.'},
+    {moment:'Collation',nom:'Petit suisse miel amandes',kcal:190,p:9,g:11,l:12,portions:'2 adultes',ings:['Petit suisse 100g','Miel 8g','Amandes 10g'],steps:['Verser le miel sur le petit suisse.','Parsemer les amandes.'],note:''},
+    {moment:'Dîner',nom:'Galettes haricots rouges courgettes oeufs',kcal:400,p:28,g:28,l:19,portions:'4 pers.',ings:['Haricots rouges en bocal 70g','Courgette 100g','Oeufs 2 pièces','Oignon','Farine complète 12g','Cumin coriandre','Huile olive 4g'],steps:['Égoutter et écraser grossièrement les haricots rouges.','Râper la courgette et presser pour éliminer l\'eau.','Mélanger haricots + courgette + oeufs + farine + épices.','Façonner des galettes et cuire 4 min/face dans l\'huile.','Servir avec une salade verte de saison.'],note:'Galettes végétariennes rapides 18 min. Les enfants adorent.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Porridge avoine abricots noix cannelle',kcal:440,p:13,g:62,l:16,portions:'2 adultes',ings:['Flocons avoine 70g','Lait végétal 120ml','Abricots frais 100g','Noix 15g','Miel 5g','Cannelle'],steps:['Cuire les flocons avec le lait végétal 4 min.','Couper les abricots et les incorporer.','Parsemer noix et cannelle.','Ajouter un filet de miel.'],note:''},
+    {moment:'Déjeuner',nom:'Saumon poêlé riz basmati courgettes citron',kcal:610,p:33,g:62,l:24,portions:'2 adultes',ings:['Saumon 130g','Riz basmati 80g','Courgette 100g','Ail','Huile olive 5g','Citron herbes'],steps:['Cuire le riz basmati 12 min.','Poêler les rondelles de courgette avec l\'ail 4 min.','Poêler le saumon 4 min/face.','Servir riz + courgettes + saumon avec citron.'],note:'Poisson riche en oméga-3.'},
+    {moment:'Collation',nom:'Petit suisse miel amandes',kcal:235,p:11,g:14,l:15,portions:'2 adultes',ings:['Petit suisse 120g','Miel 10g','Amandes 13g'],steps:['Verser le miel sur le petit suisse.','Parsemer les amandes.'],note:''},
+    {moment:'Dîner',nom:'Galettes haricots rouges courgettes oeufs',kcal:400,p:28,g:28,l:19,portions:'4 pers.',ings:['Haricots rouges en bocal 70g','Courgette 100g','Oeufs 2 pièces','Oignon','Farine complète 12g','Cumin coriandre','Huile olive 4g'],steps:['Égoutter et écraser grossièrement les haricots rouges.','Râper la courgette et presser pour éliminer l\'eau.','Mélanger haricots + courgette + oeufs + farine + épices.','Façonner des galettes et cuire 4 min/face dans l\'huile.','Servir avec une salade verte.'],note:'Galettes végétariennes rapides 18 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Bircher avoine framboises beurre cacahuète',kcal:315,p:16,g:45,l:8,portions:'2 adultes',ings:['Flocons avoine 50g','Skyr 80g','Lait végétal 50ml','Framboises 60g','Beurre cacahuète 8g'],steps:['Mélanger flocons + skyr + lait végétal la veille au soir.','Le matin : ajouter les framboises.','Incorporer le beurre de cacahuète.','Déguster froid.'],note:''},
+    {moment:'Déjeuner',nom:'Boeuf maigre poêlée haricots verts riz complet',kcal:450,p:28,g:55,l:12,portions:'2 adultes',ings:['Boeuf maigre 100g','Riz complet 65g','Haricots verts 100g','Oignon','Ail','Huile olive 4g','Herbes de Provence'],steps:['Cuire le riz complet 20 min.','Cuire les haricots verts vapeur 8 min.','Poêler le boeuf en lamelles avec oignon + ail 7 min.','Assaisonner aux herbes.','Servir riz + boeuf + haricots verts.'],note:''},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:155,p:13,g:8,l:7,portions:'2 adultes',ings:['Skyr 150g','Beurre cacahuète 10g'],steps:['Mélanger ou déguster séparément.'],note:''},
+    {moment:'Dîner',nom:'Minestrone aubergines pois chiches tomates',kcal:340,p:14,g:48,l:8,portions:'4 pers.',ings:['Pois chiches en bocal 60g','Aubergine 60g','Courgette 50g','Tomates concassées 80g','Pâtes complètes 25g','Oignon','Ail','Bouillon légumes 250ml','Basilic','Huile olive 3g'],steps:['Faire revenir oignon + ail + aubergine en dés 5 min.','Ajouter courgette + tomates concassées + bouillon + pois chiches.','Porter à ébullition, ajouter les pâtes complètes.','Cuire 8 min.','Parsemer de basilic frais et servir.'],note:'Minestrone estival végétarien 18 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster ensemble.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Bircher avoine framboises beurre cacahuète',kcal:420,p:21,g:56,l:11,portions:'2 adultes',ings:['Flocons avoine 65g','Skyr 100g','Lait végétal 60ml','Framboises 80g','Beurre cacahuète 12g'],steps:['Mélanger flocons + skyr + lait végétal la veille.','Le matin : ajouter les framboises.','Incorporer le beurre de cacahuète.','Déguster froid.'],note:''},
+    {moment:'Déjeuner',nom:'Boeuf maigre poêlée haricots verts riz complet',kcal:560,p:35,g:68,l:16,portions:'2 adultes',ings:['Boeuf maigre 130g','Riz complet 80g','Haricots verts 120g','Oignon','Ail','Huile olive 5g','Herbes de Provence'],steps:['Cuire le riz complet 20 min.','Cuire les haricots verts vapeur 8 min.','Poêler le boeuf en lamelles avec oignon + ail 7 min.','Assaisonner aux herbes.','Servir riz + boeuf + haricots verts.'],note:''},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:200,p:15,g:10,l:11,portions:'2 adultes',ings:['Skyr 170g','Beurre cacahuète 13g'],steps:['Mélanger.'],note:''},
+    {moment:'Dîner',nom:'Minestrone aubergines pois chiches tomates',kcal:340,p:14,g:48,l:8,portions:'4 pers.',ings:['Pois chiches en bocal 60g','Aubergine 60g','Courgette 50g','Tomates concassées 80g','Pâtes complètes 25g','Oignon','Ail','Bouillon légumes 250ml','Basilic','Huile olive 3g'],steps:['Faire revenir oignon + ail + aubergine 5 min.','Ajouter courgette + tomates + bouillon + pois chiches.','Porter à ébullition, ajouter les pâtes.','Cuire 8 min.','Parsemer basilic frais.'],note:'Minestrone estival végétarien 18 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir amandes',kcal:148,p:4,g:9,l:11,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g','Amandes 8g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Oeufs brouillés pain complet tomates cerises',kcal:330,p:20,g:26,l:16,portions:'2 adultes',ings:['Oeufs 2 pièces','Pain complet 40g','Tomates cerises 80g','Huile olive 3g','Ciboulette basilic'],steps:['Battre les oeufs et cuire à feu doux en remuant 4 min.','Toaster le pain complet.','Couper les tomates cerises en deux.','Servir oeufs brouillés + pain + tomates cerises avec ciboulette.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet courgettes tomates cerises riz basmati basilic',kcal:445,p:33,g:46,l:12,portions:'2 adultes',ings:['Blanc poulet 100g','Riz basmati 65g','Courgette 80g','Tomates cerises 60g','Ail','Basilic','Huile olive 4g'],steps:['Cuire le riz basmati 12 min.','Poêler le poulet en lanières avec l\'ail 7 min.','Ajouter courgette + tomates cerises, cuire 4 min.','Parsemer de basilic frais.','Servir riz + poulet + légumes.'],note:''},
+    {moment:'Collation',nom:'Yaourt fruits mixé noix',kcal:175,p:7,g:18,l:9,portions:'2 adultes',ings:['Yaourt fruits mixé 130g','Noix 12g'],steps:['Parsemer les noix et déguster.'],note:''},
+    {moment:'Dîner',nom:'Bowl lentilles vertes poivrons courgettes cumin',kcal:370,p:18,g:52,l:8,portions:'4 pers.',ings:['Lentilles vertes en bocal 80g','Poivron rouge 80g','Poivron jaune 80g','Courgette 60g','Oignon rouge','Ail','Huile olive 4g','Cumin paprika doux','Persil'],steps:['Faire revenir oignon + ail + cumin dans l\'huile 2 min.','Ajouter poivrons + courgette en dés, cuire 7 min.','Incorporer les lentilles vertes égouttées, réchauffer 3 min.','Assaisonner paprika + sel.','Parsemer de persil frais et servir.'],note:'Bowl végétarien estival 15 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Oeufs brouillés pain complet tomates cerises',kcal:390,p:25,g:32,l:18,portions:'2 adultes',ings:['Oeufs 3 pièces','Pain complet 50g','Tomates cerises 80g','Huile olive 4g','Ciboulette basilic'],steps:['Battre les oeufs et cuire à feu doux en remuant 4 min.','Toaster le pain complet.','Couper les tomates cerises en deux.','Servir avec ciboulette et basilic.'],note:''},
+    {moment:'Déjeuner',nom:'Poulet courgettes tomates cerises riz basmati basilic',kcal:510,p:40,g:54,l:14,portions:'2 adultes',ings:['Blanc poulet 130g','Riz basmati 80g','Courgette 80g','Tomates cerises 60g','Ail','Basilic','Huile olive 5g'],steps:['Cuire le riz basmati 12 min.','Poêler le poulet en lanières avec l\'ail 7 min.','Ajouter courgette + tomates cerises, cuire 4 min.','Parsemer de basilic frais.','Servir.'],note:''},
+    {moment:'Collation',nom:'Skyr beurre cacahuète',kcal:200,p:15,g:10,l:11,portions:'2 adultes',ings:['Skyr 170g','Beurre cacahuète 13g'],steps:['Mélanger.'],note:''},
+    {moment:'Dîner',nom:'Bowl lentilles vertes poivrons courgettes cumin',kcal:370,p:18,g:52,l:8,portions:'4 pers.',ings:['Lentilles vertes en bocal 80g','Poivron rouge 80g','Poivron jaune 80g','Courgette 60g','Oignon rouge','Ail','Huile olive 4g','Cumin paprika doux','Persil'],steps:['Faire revenir oignon + ail + cumin 2 min.','Ajouter poivrons + courgette en dés, cuire 7 min.','Incorporer les lentilles égouttées, réchauffer 3 min.','Assaisonner paprika + sel.','Parsemer de persil.'],note:'Bowl végétarien estival 15 min.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Pancakes avoine pêche skyr famille',kcal:350,p:16,g:50,l:11,portions:'4 pers.',ings:['Flocons avoine mixés 30g','Oeufs 1 pièce','Lait végétal 30ml','Skyr 30g','Pêche 60g','Miel 4g'],steps:['Mixer flocons + oeuf + lait végétal en pâte lisse.','Cuire des pancakes 3 min/face à feu moyen.','Couper la pêche en tranches.','Servir avec skyr, pêche et un filet de miel.'],note:'Les enfants adorent !'},
+    {moment:'Déjeuner',nom:'Cuisses poulet rôties aubergines tomates poivrons',kcal:460,p:36,g:26,l:26,portions:'4 pers.',ings:['Cuisses poulet désossées 100g','Aubergine 80g','Tomates 80g','Poivron rouge 60g','Oignon','Ail','Huile olive 5g','Thym romarin','Riz basmati 40g'],steps:['Préchauffer le four à 200°C.','Couper aubergine + tomates + poivron en gros cubes, disposer dans un plat avec huile + thym + romarin.','Déposer les cuisses de poulet par-dessus.','Rôtir 30 min en retournant à mi-cuisson.','Servir avec le riz basmati cuit séparément.'],note:'Plat du week-end (35 min). Saveurs méditerranéennes.'},
+    {moment:'Collation',nom:'Yaourt fruits mixé amandes famille',kcal:138,p:5,g:18,l:5,portions:'4 pers.',ings:['Yaourt fruits mixé 60g','Amandes 6g'],steps:['Répartir en bols avec les amandes.'],note:''},
+    {moment:'Dîner',nom:'Gratin courgettes pois chiches tomates concassées',kcal:380,p:18,g:42,l:14,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Courgettes 120g','Tomates concassées 80g','Oignon','Ail','Huile olive 4g','Herbes de Provence','Gruyère râpé 15g'],steps:['Préchauffer le four à 180°C.','Poêler oignon + ail + courgettes en rondelles 5 min.','Ajouter pois chiches + tomates concassées + herbes, mijoter 5 min.','Verser dans un plat à gratin, parsemer de gruyère.','Gratiner 15 min au four.'],note:'Gratin végétarien du week-end (25 min). Les enfants adorent.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Pancakes avoine pêche skyr famille',kcal:405,p:20,g:58,l:13,portions:'4 pers.',ings:['Flocons avoine mixés 30g','Oeufs 1 pièce','Lait végétal 30ml','Skyr 30g','Pêche 80g','Beurre cacahuète 5g','Miel 4g'],steps:['Mixer flocons + oeuf + lait végétal en pâte lisse.','Cuire des pancakes 3 min/face.','Couper la pêche en tranches.','Servir avec skyr, pêche, miel et beurre de cacahuète.'],note:''},
+    {moment:'Déjeuner',nom:'Cuisses poulet rôties aubergines tomates poivrons',kcal:525,p:44,g:30,l:30,portions:'4 pers.',ings:['Cuisses poulet désossées 130g','Aubergine 80g','Tomates 80g','Poivron rouge 60g','Oignon','Ail','Huile olive 6g','Thym romarin','Riz basmati 50g'],steps:['Préchauffer le four à 200°C.','Couper les légumes en gros cubes, disposer avec huile + aromates.','Déposer les cuisses de poulet par-dessus.','Rôtir 30 min.','Servir avec le riz basmati.'],note:'Plat du week-end (35 min).'},
+    {moment:'Collation',nom:'Skyr amandes beurre cacahuète',kcal:204,p:14,g:9,l:13,portions:'2 adultes',ings:['Skyr 100g','Amandes 15g','Beurre cacahuète 10g'],steps:['Mélanger skyr + beurre cacahuète, parsemer amandes.'],note:''},
+    {moment:'Dîner',nom:'Gratin courgettes pois chiches tomates concassées',kcal:380,p:18,g:42,l:14,portions:'4 pers.',ings:['Pois chiches en bocal 70g','Courgettes 120g','Tomates concassées 80g','Oignon','Ail','Huile olive 4g','Herbes de Provence','Gruyère râpé 15g'],steps:['Préchauffer le four à 180°C.','Poêler oignon + ail + courgettes 5 min.','Ajouter pois chiches + tomates + herbes, mijoter 5 min.','Verser dans un plat, parsemer de gruyère.','Gratiner 15 min.'],note:'Gratin végétarien du week-end (25 min).'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+  {f:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr myrtilles abricots flocons famille',kcal:335,p:18,g:44,l:9,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 80g','Flocons avoine 30g','Myrtilles surgelées 40g','Abricots frais 50g','Amandes 10g'],steps:['Décongeler légèrement les myrtilles.','Répartir le skyr et le yaourt en bols.','Couper les abricots en quartiers.','Parsemer flocons, amandes et fruits.'],note:''},
+    {moment:'Déjeuner',nom:'Boeuf haché poêlée aubergines tomates riz complet',kcal:450,p:32,g:46,l:16,portions:'4 pers.',ings:['Boeuf haché maigre 100g','Riz complet 60g','Aubergine 80g','Tomates 80g','Oignon','Ail','Huile olive 4g','Cumin herbes de Provence'],steps:['Cuire le riz complet 20 min.','Faire revenir oignon + ail + aubergine en dés dans l\'huile 6 min.','Ajouter le boeuf haché, dorer 6 min en remuant.','Ajouter les tomates en dés, cuire 4 min.','Assaisonner cumin + herbes. Servir avec le riz.'],note:'Plat dominical familial (30 min).'},
+    {moment:'Collation',nom:'Porridge beurre cacahuète famille',kcal:230,p:10,g:28,l:10,portions:'4 pers.',ings:['Flocons avoine 40g','Lait végétal 80ml','Beurre cacahuète 10g'],steps:['Cuire les flocons avec le lait végétal 4 min.','Incorporer le beurre de cacahuète.','Servir tiède.'],note:''},
+    {moment:'Dîner',nom:'Soupe fenouil lentilles vertes carottes',kcal:320,p:14,g:46,l:7,portions:'4 pers.',ings:['Lentilles vertes en bocal 70g','Fenouil 100g','Carottes 60g','Oignon','Ail','Bouillon légumes 300ml','Thym','Huile olive 3g','Persil'],steps:['Faire revenir oignon + ail + fenouil émincé dans l\'huile 4 min.','Ajouter carottes en rondelles + lentilles vertes + bouillon + thym.','Cuire 15 min à feu moyen.','Rectifier l\'assaisonnement.','Parsemer de persil frais et servir.'],note:'Soupe légère du dimanche soir. Fenouil de saison.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster en fin de soirée.'],note:'Adultes uniquement.'},
+  ],m:[
+    {moment:'Petit-déjeuner',nom:'Bol skyr myrtilles abricots flocons famille',kcal:390,p:22,g:52,l:11,portions:'4 pers.',ings:['Skyr 100g','Yaourt fruits mixé 80g','Flocons avoine 40g','Myrtilles surgelées 50g','Abricots frais 60g','Amandes 14g','Miel 4g'],steps:['Décongeler légèrement les myrtilles.','Répartir le skyr et le yaourt en bols.','Couper les abricots.','Parsemer flocons, amandes, fruits et filet de miel.'],note:''},
+    {moment:'Déjeuner',nom:'Boeuf haché poêlée aubergines tomates riz complet',kcal:510,p:39,g:52,l:18,portions:'4 pers.',ings:['Boeuf haché maigre 130g','Riz complet 80g','Aubergine 80g','Tomates 80g','Oignon','Ail','Huile olive 5g','Cumin herbes de Provence'],steps:['Cuire le riz complet 20 min.','Faire revenir oignon + ail + aubergine dans l\'huile 6 min.','Ajouter le boeuf haché, dorer 6 min.','Ajouter les tomates en dés, cuire 4 min.','Assaisonner et servir avec le riz.'],note:'Plat dominical familial (30 min).'},
+    {moment:'Collation',nom:'Porridge beurre cacahuète',kcal:258,p:11,g:32,l:12,portions:'2 adultes',ings:['Flocons avoine 50g','Lait végétal 100ml','Beurre cacahuète 14g'],steps:['Cuire les flocons avec le lait végétal 4 min.','Incorporer le beurre de cacahuète.','Servir tiède.'],note:''},
+    {moment:'Dîner',nom:'Soupe fenouil lentilles vertes carottes',kcal:320,p:14,g:46,l:7,portions:'4 pers.',ings:['Lentilles vertes en bocal 70g','Fenouil 100g','Carottes 60g','Oignon','Ail','Bouillon légumes 300ml','Thym','Huile olive 3g','Persil'],steps:['Faire revenir oignon + ail + fenouil 4 min.','Ajouter carottes + lentilles + bouillon + thym.','Cuire 15 min.','Rectifier l\'assaisonnement.','Parsemer de persil.'],note:'Soupe légère du dimanche soir.'},
+    {moment:'Collation soir',nom:'Chocolat noir 70%',kcal:90,p:1,g:8,l:6,portions:'2 adultes',ings:['Chocolat noir 70%+ 15g'],steps:['Déguster.'],note:'Adultes uniquement.'},
+  ]},
+];
+
 const semaines=[semaine1, semaine2];
 const semaineLabels=['Semaine en cours','Semaine suivante'];
 
@@ -1052,7 +987,7 @@ function toggleDay(w,di){
 
 // ── TABS ─────────────────────────────────────────────────────
 function switchTab(t){
-  document.querySelectorAll('.nav-tab').forEach((el,i)=>el.classList.toggle('active',['planning','courses','resume','couts','annexe','infos','envies'][i]===t));
+  document.querySelectorAll('.nav-tab').forEach((el,i)=>el.classList.toggle('active',['planning','courses','resume','couts','annexe','infos'][i]===t));
   document.querySelectorAll('.content').forEach(el=>el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
   if(t==='courses') renderCourses();
@@ -2026,86 +1961,6 @@ loadChecked();
 renderPlanning();
 renderCourses();
 renderResume();
-
-// ══════════════════════════════════════════════════════════
-// ONGLET ENVIES — Ne pas modifier les fonctions existantes
-// ══════════════════════════════════════════════════════════
-
-// Données envies — stockées dans localStorage
-// Format : [{id, nom, moment, semaine, date}]
-let enviesItems = [];
-let enviesNextId = 1;
-
-function loadEnvies(){
-  try{
-    const saved = localStorage.getItem('enviesItems');
-    if(saved){
-      enviesItems = JSON.parse(saved);
-      enviesNextId = Math.max(...enviesItems.map(i=>i.id), 0) + 1;
-    }
-  }catch(e){ enviesItems = []; }
-}
-
-function saveEnvies(){
-  try{ localStorage.setItem('enviesItems', JSON.stringify(enviesItems)); }catch(e){}
-}
-
-function addEnvie(){
-  const input   = document.getElementById('envies-input');
-  const moment  = document.getElementById('envies-moment-select').value;
-  const semaine = document.getElementById('envies-semaine-select').value;
-  const nom     = input.value.trim();
-  if(!nom) return;
-  enviesItems.push({
-    id: enviesNextId++,
-    nom,
-    moment,
-    semaine,
-    date: new Date().toLocaleDateString('fr-FR')
-  });
-  input.value = '';
-  saveEnvies();
-  renderEnvies();
-}
-
-function deleteEnvie(id){
-  enviesItems = enviesItems.filter(i=>i.id !== id);
-  saveEnvies();
-  renderEnvies();
-}
-
-function clearEnvies(){
-  if(!enviesItems.length) return;
-  if(!confirm('Effacer toutes les envies ?')) return;
-  enviesItems = [];
-  saveEnvies();
-  renderEnvies();
-}
-
-function renderEnvies(){
-  const list  = document.getElementById('envies-list');
-  const count = document.getElementById('envies-count');
-  if(!list) return;
-  count.textContent = enviesItems.length + ' envie' + (enviesItems.length>1?'s':'');
-  if(!enviesItems.length){
-    list.innerHTML = '<div class="envies-empty">Aucune envie pour l\'instant.<br>Ajoute un plat ou un ingr&eacute;dient que tu aimerais voir la semaine prochaine !</div>';
-    return;
-  }
-  list.innerHTML = enviesItems.map(item=>`
-    <div class="envie-item">
-      <div class="envie-nom">${item.nom}</div>
-      <div class="envie-badges">
-        ${item.moment ? `<span class="envie-badge moment">${item.moment}</span>` : ''}
-        <span class="envie-badge semaine">${item.semaine === 'prochaine' ? 'Sem. prochaine' : 'Sem. suivante'}</span>
-      </div>
-      <button class="envie-del" onclick="deleteEnvie(${item.id})">×</button>
-    </div>
-  `).join('');
-}
-
-// Charger les envies au démarrage
-loadEnvies();
-
 </script>
 </body>
 </html>
