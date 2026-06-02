@@ -1,16 +1,21 @@
 // ── Service Worker — Mes Menus ────────────────────────────────
 // Stratégie :
-//   - App shell (HTML, manifest) : cache-first → fonctionne hors-ligne
-//   - menus_data.js              : network-first → mise à jour hebdo propagée
-//   - Polices Google             : cache-first après premier chargement
+//   - App shell (HTML, manifest, firebase-sync) : cache-first
+//   - menus_data.js : network-first → mise à jour hebdo propagée
+//   - Polices Google : cache-first après premier chargement
+//
+// ⚠️ 20260602-1013 est remplacé automatiquement par la date du jour
+//    lors de chaque upload via _github_upload_test.html
+//    → force tous les navigateurs à vider l'ancien cache
 
-const CACHE_APP  = 'menus-app-v1';
-const CACHE_DATA = 'menus-data-v1';
+const CACHE_APP  = 'menus-app-20260602-1013';
+const CACHE_DATA = 'menus-data-20260602-1013';
 
 const APP_SHELL = [
   './menus_app.html',
   './manifest.json',
   './icon.svg',
+  './firebase-sync.js',
   'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap',
 ];
 
@@ -53,8 +58,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Polices et ressources externes → cache-first
-  if (url.startsWith('https://fonts.')) {
+  // Polices et ressources Firebase CDN → cache-first
+  if (url.startsWith('https://fonts.') || url.includes('firebasejs')) {
     event.respondWith(
       caches.match(event.request).then(r => r || fetch(event.request)
         .then(response => {
