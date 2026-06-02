@@ -11,6 +11,8 @@
 <link rel="apple-touch-icon" href="icon.svg">
 <title>Mes Menus — Famille</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--g1:#1B4332;--g2:#2D6A4F;--g3:#40916C;--g4:#74C69D;--g5:#D8F3DC;--g6:#F0FAF3;--amber:#E9C46A;--amber-l:#FFF8E1;--coral:#E76F51;--choc:#3D1A0A;--choc-l:#FDF0E8;--red:#DC2626;--red-l:#FEF2F2;--text:#1A1A1A;--muted:#6B7280;--border:#D1E7DD;--bg:#F4F8F5;--white:#FFFFFF;--r:14px;--rs:8px;--shadow:0 2px 16px rgba(27,67,50,.10);--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -464,6 +466,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 <script src="menus_data.js"></script>
 <script>
 const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+// fbSync stub — remplacé par firebase-sync.js au chargement
+let fbSync = {
+  saveActiveMeals: d => { try{localStorage.setItem('activeMeals',JSON.stringify(d));}catch(e){} },
+  saveMealPersons: d => { try{localStorage.setItem('mealPersons',JSON.stringify(d));}catch(e){} },
+  saveChecked:     d => { try{localStorage.setItem('coursesChecked',JSON.stringify(d));}catch(e){} },
+  savePrixUser:    d => { try{localStorage.setItem('prixUser',JSON.stringify(d));}catch(e){} },
+  saveAnnexe:      d => { try{localStorage.setItem('annexeItems',JSON.stringify(d));}catch(e){} },
+};
 const TARGETS={f:1520,m:1720};
 const MAINTENANCE={f:1700,m:1900};
 
@@ -748,7 +758,7 @@ function setMealPersons(w,di,mi,a,e){
   if(mealPersons[w][di][mi].a===0 && mealPersons[w][di][mi].e===0){
     mealPersons[w][di][mi].a=1;
   }
-  try{ localStorage.setItem('mealPersons', JSON.stringify(mealPersons)); }catch(e){}
+  fbSync.saveMealPersons(mealPersons);
   renderPlanning();
   renderCourses();
 }
@@ -781,7 +791,7 @@ function toggleMeal(w,di,mi){
   if(!activeMeals[w]) activeMeals[w]={};
   if(!activeMeals[w][di]) activeMeals[w][di]={0:true,1:true,2:true,3:true,4:true};
   activeMeals[w][di][mi]=!activeMeals[w][di][mi];
-  try{ localStorage.setItem('activeMeals', JSON.stringify(activeMeals)); }catch(e){}
+  fbSync.saveActiveMeals(activeMeals);
   renderPlanning();
   renderCourses();
 }
@@ -791,7 +801,7 @@ function toggleDay(w,di){
   if(!activeMeals[w][di]) activeMeals[w][di]={0:true,1:true,2:true,3:true,4:true};
   const allActive=Object.values(activeMeals[w][di]).every(v=>v);
   [0,1,2,3,4].forEach(mi=>{ activeMeals[w][di][mi]=!allActive; });
-  try{ localStorage.setItem('activeMeals', JSON.stringify(activeMeals)); }catch(e){}
+  fbSync.saveActiveMeals(activeMeals);
   renderPlanning();
   renderCourses();
 }
@@ -1320,7 +1330,7 @@ function toggleCourse(w,key){
 }
 
 function saveChecked(){
-  try{ localStorage.setItem('coursesChecked', JSON.stringify(checked)); }catch(e){}
+  fbSync.saveChecked(checked);
 }
 
 function loadChecked(){
@@ -1673,7 +1683,7 @@ function updatePrix(ingName, newPrix){
   }
   if(!found) prixUser[ingName] = newPrix;
   // Sauvegarder les prix modifiés
-  try{ localStorage.setItem('prixUser', JSON.stringify(prixUser)); }catch(e){}
+  fbSync.savePrixUser(prixUser);
   renderCouts();
   renderCourses();
 }
@@ -1700,7 +1710,7 @@ let annexeItems = JSON.parse(localStorage.getItem('annexeItems')||'null') || JSO
 let annexeNextId = Math.max(...annexeItems.map(i=>i.id), 20) + 1;
 
 function saveAnnexe(){
-  try{ localStorage.setItem('annexeItems', JSON.stringify(annexeItems)); }catch(e){}
+  fbSync.saveAnnexe(annexeItems);
 }
 
 function addAnnexeItem(){
@@ -1782,5 +1792,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<script src="firebase-sync.js"></script>
 </body>
 </html>
