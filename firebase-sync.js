@@ -26,6 +26,15 @@
   let _db = null;
   let _firestoreReady = false;
 
+  // ── DEBUG TEMPORAIRE (30/06/2026) — à retirer une fois le bug résolu ──
+  function dbg(msg) {
+    const el = document.getElementById('fb-debug');
+    if (!el) return;
+    el.style.display = 'block';
+    el.textContent += new Date().toLocaleTimeString() + ' — ' + msg + '\n';
+  }
+  dbg('Script firebase-sync.js charge');
+
   // ── Barre de connexion (UI) ───────────────────────────────────
   function renderAuthBar(state, label) {
     const el = document.getElementById('auth-bar');
@@ -49,11 +58,14 @@
   }
 
   window.fbSignIn = function () {
+    dbg('Clic sur Se connecter — tentative popup');
     renderAuthBar('loading');
-    auth.signInWithPopup(provider).catch(err => {
-      console.warn('[FB] Erreur connexion:', err.code, err.message);
+    auth.signInWithPopup(provider).then(result => {
+      dbg('Popup OK — email=' + result.user.email);
+    }).catch(err => {
+      dbg('Popup ECHEC — code=' + err.code + ' msg=' + err.message);
       if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
-        // Repli sur la redirection si la popup est bloquée par le navigateur
+        dbg('Repli sur signInWithRedirect');
         auth.signInWithRedirect(provider);
       } else {
         renderAuthBar('signed-out');
@@ -118,25 +130,32 @@
   }
 
   // ── État de connexion ──────────────────────────────────────────
-  auth.getRedirectResult().catch(err => {
-    console.warn('[FB] Erreur redirection connexion:', err.code);
+  dbg('Verification getRedirectResult...');
+  auth.getRedirectResult().then(result => {
+    if (result && result.user) dbg('getRedirectResult OK — email=' + result.user.email);
+    else dbg('getRedirectResult — aucun resultat en attente');
+  }).catch(err => {
+    dbg('getRedirectResult ECHEC — code=' + err.code + ' msg=' + err.message);
     renderAuthBar('signed-out');
   });
 
   let _deniedUntil = 0;
 
   auth.onAuthStateChanged(user => {
+    dbg('onAuthStateChanged declenche — user=' + (user ? user.email : 'null'));
     if (!user) {
       if (Date.now() < _deniedUntil) return; // laisser le message "compte refusé" visible un instant
       renderAuthBar('signed-out');
       return;
     }
     if (!user.emailVerified || !ALLOWED_EMAILS.includes(user.email)) {
+      dbg('Compte refuse — emailVerified=' + user.emailVerified + ' email=' + user.email);
       _deniedUntil = Date.now() + 4000;
       renderAuthBar('denied', user.email || 'compte inconnu');
       auth.signOut();
       return;
     }
+    dbg('Compte autorise — activation synchro');
     renderAuthBar('signed-in', user.email === 'lauriecordedda@gmail.com' ? 'Elle' : 'Lui');
     enableFirestoreSync();
   });
