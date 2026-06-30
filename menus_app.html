@@ -12,6 +12,7 @@
 <title>Mes Menus — Famille</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--g1:#1B4332;--g2:#2D6A4F;--g3:#40916C;--g4:#74C69D;--g5:#D8F3DC;--g6:#F0FAF3;--amber:#E9C46A;--amber-l:#FFF8E1;--coral:#E76F51;--choc:#3D1A0A;--choc-l:#FDF0E8;--red:#DC2626;--red-l:#FEF2F2;--text:#1A1A1A;--muted:#6B7280;--border:#D1E7DD;--bg:#F4F8F5;--white:#FFFFFF;--r:14px;--rs:8px;--shadow:0 2px 16px rgba(27,67,50,.10);--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace}
@@ -26,6 +27,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .nav-tab{flex:1;padding:9px 4px 11px;text-align:center;font-size:11px;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;font-family:var(--font)}
 .nav-tab.active{color:white;border-bottom-color:var(--amber)}
 .tab-icon{font-size:17px;display:block;margin-bottom:2px}
+.auth-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 14px;font-size:11px;background:var(--g6);color:var(--g2);border-bottom:1px solid var(--border);flex-shrink:0}
+.auth-bar.ok{background:var(--g5);color:var(--g1)}
+.auth-bar.err{background:var(--red-l);color:var(--red)}
+.auth-bar button{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;font-family:var(--font);white-space:nowrap}
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .content{padding:14px 14px 32px;display:none}
 .content.active{display:block}
@@ -282,6 +287,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <div class="nav-tab" onclick="switchTab('infos')"><span class="tab-icon">ℹ️</span>Infos</div>
   </div>
 </nav>
+<div class="auth-bar" id="auth-bar"><span>Connexion en cours…</span></div>
 <div class="scroll-area">
 
 <!-- PLANNING -->
