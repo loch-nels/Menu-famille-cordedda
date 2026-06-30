@@ -406,15 +406,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
       <span class="pref-chip">☐ Fermeture OK</span><br><br>
       <strong>4. Courses & Budget</strong><br>
       <span class="pref-chip">☐ Pas de doublons</span>
-      <span class="pref-chip">☐ Budget entre 50€ et 80€</span>
+      <span class="pref-chip">☐ Budget entre 50€ et 81.60€</span>
       <span class="pref-chip">☐ Cases cochées mémorisées</span><br><br>
       <strong>5. Mémoire</strong><br>
       <span class="pref-chip">☐ Changer nb personnes → courses s'adapte</span>
       <span class="pref-chip">☐ Désactiver repas → retiré des courses</span>
       <span class="pref-chip">☐ Fermer/rouvrir → tout mémorisé</span><br><br>
-      <strong>6. Cowork (chaque mardi)</strong><br>
+      <strong>6. Cowork (chaque lundi 21h)</strong><br>
       <span class="pref-chip">☐ Nouveau planning généré</span>
-      <span class="pref-chip">☐ Budget ≤ 80€</span>
+      <span class="pref-chip">☐ Budget ≤ 81.60€</span>
       <span class="pref-chip">☐ Aucun poisson le soir</span>
       <span class="pref-chip">☐ Repas semaine &lt; 20 min</span>
     </div>
@@ -513,16 +513,17 @@ const MAINTENANCE={f:1700,m:1900};
 // ║     macroElle / macroLui / macroEnfant                       ║
 // ║     facteurTablee                                            ║
 // ║  4. Ne JAMAIS modifier sauf demande EXPLICITE :              ║
-// ║     - Constantes RATIO_*, PRIX_*, BUDGET_MAX (80€)           ║
+// ║     - Constantes RATIO_*, PRIX_*, BUDGET_MAX (81.60€)        ║
 // ║     - Le tableau prixParKg (prix Leclerc/Intermarché 2024)   ║
-// ║  5. Vérifier avec verif_calculs.py après chaque modif        ║
+// ║  5. Aucun script de vérification automatisé n'existe pour    ║
+// ║     l'instant — relire et tester manuellement après modif    ║
 // ╚══════════════════════════════════════════════════════════════╝
 
 // ── Constantes figées — source unique de vérité ─────────────
 const RATIO_ELLE          = TARGETS.f / (TARGETS.f + TARGETS.m); // 0.469
 const RATIO_LUI           = TARGETS.m / (TARGETS.f + TARGETS.m); // 0.531
 const RATIO_ENFANT        = 0.6;    // 60% d'un adulte
-const BUDGET_MAX          = 80;     // €/semaine — FIGÉ, ne pas modifier sauf demande explicite
+const BUDGET_MAX          = 81.60;  // €/semaine — ajusté le 30/06/2026 (+2% suivant l'inflation des prix), FIGÉ sinon, ne pas modifier sauf demande explicite
 const MAX_PERSONNES       = 4;      // par repas
 const SEUIL_WARN_BUDGET   = 0.85;   // 85% → couleur ambre
 const SEMAINES_PAR_MOIS   = 4.3;
@@ -883,58 +884,6 @@ function renderPlanning(){
 }
 
 // ── DETAIL ───────────────────────────────────────────────────
-function calcPortions(m, nbPersons){
-  // Les macros du repas sont pour 1 adulte (base recette)
-  // On calcule le total pour toute la tablée puis on répartit
-  const est4 = m.portions === PORTIONS_FAMILLE;
-  const nbAdultes = 2; // toujours 2 adultes
-  const nbEnfants = est4 ? 2 : 0;
-
-  // Ratio de répartition entre adultes basé sur objectifs caloriques
-  const ratioElle = 1520 / (1520 + 1720); // ~0.469
-  const ratioLui  = 1720 / (1520 + 1720); // ~0.531
-  const ratioEnfantC = 0.6; // 60% d\'un adulte moyen
-
-  // Total de la tablée = (macros × 2 adultes) + (enfants × 60%)
-  // Les macros du repas sont pour 1 adulte → ×2 pour les 2 adultes
-  const totalKcal = Math.round(m.kcal * (nbAdultes + nbEnfants * ratioEnfantC));
-  const totalP    = Math.round(m.p    * (nbAdultes + nbEnfants * ratioEnfantC));
-  const totalG    = Math.round(m.g    * (nbAdultes + nbEnfants * ratioEnfantC));
-  const totalL    = Math.round(m.l    * (nbAdultes + nbEnfants * ratioEnfantC));
-
-  // Portion adulte moyenne = total / (2 + nbEnfants*0.6)
-  const diviseur = nbAdultes + nbEnfants * ratioEnfantC;
-
-  // Portions individuelles = part du total
-  const elleKcal = Math.round(totalKcal * ratioElle * nbAdultes / diviseur);
-  const luiKcal  = Math.round(totalKcal * ratioLui  * nbAdultes / diviseur);
-  const enfKcal  = nbEnfants > 0 ? Math.round(m.kcal * ratioEnfantC) : 0;
-
-  const elleP = Math.round(totalP * ratioElle * nbAdultes / diviseur);
-  const luiP  = Math.round(totalP * ratioLui  * nbAdultes / diviseur);
-  const elleG = Math.round(totalG * ratioElle * nbAdultes / diviseur);
-  const luiG  = Math.round(totalG * ratioLui  * nbAdultes / diviseur);
-  const elleL = Math.round(totalL * ratioElle * nbAdultes / diviseur);
-  const luiL  = Math.round(totalL * ratioLui  * nbAdultes / diviseur);
-
-  // Vérification : elleKcal + luiKcal + enfKcal*nbEnfants ≈ totalKcal ✓
-
-  // Poids assiette calculé depuis le total réel des ingrédients
-  // On passe le total des ingrédients en paramètre depuis buildIngredientsTotal
-  // Pour l'instant on retourne -1, le vrai poids sera calculé après
-  const ellePoids = -1;
-  const luiPoids  = -1;
-  const enfPoids  = -1;
-
-  return {
-    elleKcal,luiKcal,enfKcal,
-    elleP,luiP,elleG,luiG,elleL,luiL,
-    ellePoids,luiPoids,enfPoids,
-    ratioElle,ratioLui,ratioEnfantC,diviseur,
-    nbEnfants,totalKcal,totalP,totalG,totalL
-  };
-}
-
 function buildIngredientsTotal(m, nbPersons){
   // Les ingrédients sont pour 1 adulte (base recette)
   // On calcule pour toute la tablée selon le nombre réel de personnes
@@ -1306,7 +1255,6 @@ function renderCourses(){
           : '';
         const recettesMap = buildIngRecettesMap(w);
         const recettes = recettesMap[it.key]||[];
-        const recettesJson = JSON.stringify(recettes).replace(/'/g,"\\'").replace(/"/g,'&quot;');
         return `<div class="course-item" onclick="toggleCourse(${w},'${it.key.replace(/'/g,"\\'")}')">
           <div class="ccheck${d?' done':''}"></div>
           <div class="clabel">
@@ -1475,12 +1423,25 @@ function extractIngName(ing){
     .replace(/x\d+/gi,'').replace(/\s+/g,' ').trim();
 }
 
+// Cherche la clé la plus spécifique (la plus longue) parmi les correspondances
+// possibles, pour éviter qu'un nom court ("Boeuf") n'écrase à tort un nom plus
+// précis ("Boeuf haché maigre") rencontré plus tard dans l'itération.
+function findPrixUserKey(clean){
+  let bestKey = null, bestLen = -1;
+  for(const k of Object.keys(prixUser)){
+    const kl = k.toLowerCase();
+    if((clean.includes(kl)||kl.includes(clean)) && kl.length > bestLen){
+      bestKey = k; bestLen = kl.length;
+    }
+  }
+  return bestKey;
+}
+
 function getPrix(nomIng){
   // D'abord vérifier si l'utilisateur a modifié ce prix
   const clean = extractIngName(nomIng).toLowerCase();
-  for(const [k,v] of Object.entries(prixUser)){
-    if(clean.includes(k.toLowerCase())||k.toLowerCase().includes(clean)) return v;
-  }
+  const key = findPrixUserKey(clean);
+  if(key !== null) return prixUser[key];
   return PRIX_DEFAUT_ING;
 }
 
@@ -1522,9 +1483,15 @@ function getPrixReel(nomIng, qtyG, qtyPieces){
       }
     }
   }
-  for(const [k,v] of Object.entries(prixUser)){
-    if(clean.includes(k.toLowerCase().replace(/[éèê]/g,'e').replace(/[àâ]/g,'a'))||
-       k.toLowerCase().replace(/[éèê]/g,'e').includes(clean)) return v;
+  {
+    let bestKey = null, bestLen = -1;
+    for(const k of Object.keys(prixUser)){
+      const kClean = k.toLowerCase().replace(/[éèê]/g,'e').replace(/[àâ]/g,'a');
+      if((clean.includes(kClean)||kClean.includes(clean)) && kClean.length > bestLen){
+        bestKey = k; bestLen = kClean.length;
+      }
+    }
+    if(bestKey !== null) return prixUser[bestKey];
   }
   // Condiments/épices/aromates sans quantité : coût négligeable
   const condiments = ['ail','oignon','herbe','epice','curry','cumin','curcuma',
@@ -1673,15 +1640,9 @@ function renderCouts(){
 function updatePrix(ingName, newPrix){
   if(isNaN(newPrix)||newPrix<=0) return;
   const clean = extractIngName(ingName).toLowerCase();
-  let found = false;
-  for(const k of Object.keys(prixUser)){
-    if(clean.includes(k.toLowerCase())||k.toLowerCase().includes(clean)){
-      prixUser[k] = newPrix;
-      found = true;
-      break;
-    }
-  }
-  if(!found) prixUser[ingName] = newPrix;
+  const key = findPrixUserKey(clean);
+  if(key !== null) prixUser[key] = newPrix;
+  else prixUser[ingName] = newPrix;
   // Sauvegarder les prix modifiés
   fbSync.savePrixUser(prixUser);
   renderCouts();
