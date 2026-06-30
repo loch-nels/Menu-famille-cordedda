@@ -50,7 +50,15 @@
 
   window.fbSignIn = function () {
     renderAuthBar('loading');
-    auth.signInWithRedirect(provider);
+    auth.signInWithPopup(provider).catch(err => {
+      console.warn('[FB] Erreur connexion:', err.code, err.message);
+      if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+        // Repli sur la redirection si la popup est bloquée par le navigateur
+        auth.signInWithRedirect(provider);
+      } else {
+        renderAuthBar('signed-out');
+      }
+    });
   };
 
   window.fbSignOut = function () {
