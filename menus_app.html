@@ -188,7 +188,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .prix-nom{flex:1;font-size:13px;color:var(--text)}
 .prix-pers{font-size:11px;color:var(--muted);min-width:50px;text-align:center}
 .prix-input-wrap{display:flex;align-items:center;gap:4px}
-.prix-input{width:58px;padding:4px 6px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:var(--mono);color:var(--g1);background:var(--white);text-align:right}
+.prix-input{width:74px;padding:4px 6px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:var(--mono);color:var(--g1);background:var(--white);text-align:right}
 .prix-unit{font-size:11px;color:var(--muted)}
 .prix-total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--g5);border-radius:0 0 var(--r) var(--r)}
 .prix-total-lbl{font-size:12px;font-weight:600;color:var(--g1)}
@@ -369,9 +369,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
     <div class="info-t">Préférences alimentaires</div>
     <div class="info-txt">
       <strong>Elle n'aime pas :</strong><br>
-      <span class="pref-chip">🚫 Concombre</span><span class="pref-chip">🚫 Bleu</span><br><br>
+      <span class="pref-chip">🚫 Concombre</span><span class="pref-chip">🚫 Bleu</span><span class="pref-chip">🚫 Aubergine</span><span class="pref-chip">🚫 Mangue</span><span class="pref-chip">🚫 Betterave</span><span class="pref-chip">🚫 Lait de coco</span><span class="pref-chip">🚫 Châtaignes</span><br><br>
       <strong>Lui n'aime pas :</strong><br>
-      <span class="pref-chip">🚫 Fromage de chèvre</span><span class="pref-chip">🚫 Fromage de brebis</span><span class="pref-chip">🚫 Bleu</span>
+      <span class="pref-chip">🚫 Fromage de chèvre</span><span class="pref-chip">🚫 Fromage de brebis</span><span class="pref-chip">🚫 Bleu</span><span class="pref-chip">🚫 Agneau</span><span class="pref-chip">🚫 Mouton</span><br><br>
+      <strong>Aucun des deux :</strong><br>
+      <span class="pref-chip">🚫 Fenouil</span>
     </div>
   </div>
   <div class="info-block">
@@ -428,17 +430,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
   <div class="info-block">
     <div class="info-t">Aliments habituels intégrés</div>
     <div class="hab-grid">
-      <div class="hab-chip"><div class="hab-name">Skyr</div><div class="hab-val">~54 kcal/100g · 9g prot.</div></div>
-      <div class="hab-chip"><div class="hab-name">Flocons d'avoine</div><div class="hab-val">~358 kcal/100g · fibres</div></div>
-      <div class="hab-chip"><div class="hab-name">Amandes</div><div class="hab-val">~580 kcal/100g · bons lipides</div></div>
-      <div class="hab-chip"><div class="hab-name">Oeufs</div><div class="hab-val">~143 kcal/100g · 13g prot.</div></div>
-      <div class="hab-chip"><div class="hab-name">Patate douce</div><div class="hab-val">~86 kcal/100g · IG modéré</div></div>
-      <div class="hab-chip"><div class="hab-name">Pois chiches</div><div class="hab-val">~138 kcal/100g · fibres</div></div>
-      <div class="hab-chip"><div class="hab-name">Beurre cacahuète</div><div class="hab-val">~590 kcal/100g · rassasiant</div></div>
-      <div class="hab-chip"><div class="hab-name">Chocolat noir 70%+</div><div class="hab-val">~530 kcal/100g · magnésium</div></div>
+      <div class="hab-chip"><div class="hab-name">Skyr</div><div class="hab-val">57 kcal/100g · 10g prot.</div></div>
+      <div class="hab-chip"><div class="hab-name">Flocons d'avoine</div><div class="hab-val">369 kcal/100g · 11g fibres</div></div>
+      <div class="hab-chip"><div class="hab-name">Amandes</div><div class="hab-val">615 kcal/100g · bons lipides</div></div>
+      <div class="hab-chip"><div class="hab-name">Oeufs</div><div class="hab-val">140 kcal/100g · 13g prot.</div></div>
+      <div class="hab-chip"><div class="hab-name">Patate douce</div><div class="hab-val">81 kcal/100g (cru) · IG modéré</div></div>
+      <div class="hab-chip"><div class="hab-name">Pois chiches</div><div class="hab-val">350 kcal/100g (sec) · fibres</div></div>
+      <div class="hab-chip"><div class="hab-name">Beurre cacahuète</div><div class="hab-val">643 kcal/100g · rassasiant</div></div>
+      <div class="hab-chip"><div class="hab-name">Chocolat noir 70%+</div><div class="hab-val">591 kcal/100g · magnésium</div></div>
       <div class="hab-chip"><div class="hab-name">Riz complet / basmati</div><div class="hab-val">IG bas à modéré · fibres</div></div>
       <div class="hab-chip"><div class="hab-name">Pâtes complètes</div><div class="hab-val">IG bas · satiété durable</div></div>
     </div>
+    <div class="info-txt" style="margin-top:8px;font-size:11px">Valeurs CIQUAL 2025 (ANSES), skyr : étiquette produit. Mis à jour le 29/09/2026.</div>
   </div>
 </div>
 
@@ -701,6 +704,26 @@ function prixReference(nomIng, qtyG, qtyPieces){
   if(!v) return null;
   if(v.u === 'pièce') return qtyPieces > 0 ? Math.round(qtyPieces * v.p * 100) / 100 : null;
   return qtyG > 0 ? Math.round(qtyG / 1000 * v.p * 100) / 100 : null;   // €/kg ou €/L (1 g ≈ 1 ml)
+}
+// Prix saisis à la main dans l'onglet Coûts (29/09/2026) : prix UNITAIRE (€/kg, €/L, €/pièce),
+// rangé dans prixUser sous la clé '✎' + nom exact (synchronisé comme le reste de prixUser).
+// Prioritaire sur reference_prix.js. Saisir 0 = revenir au prix de référence.
+function cleSurcharge(nom){ const n=(nom||'').trim(); return '✎' + (ALIAS_REF[n] || n); }
+function prixUnitaireCourant(nom){
+  const n=(nom||'').trim(), v=REF_IDX[n], s=prixUser[cleSurcharge(n)];
+  if(typeof s === 'number' && s > 0) return {p:s, u:(v ? v.u : 'kg'), user:true};
+  return v ? {p:v.p, u:v.u, user:false} : null;
+}
+function coutDepuisUnitaire(pu, qtyG, qtyPieces){
+  if(pu.u === 'pièce') return qtyPieces > 0 ? Math.round(qtyPieces * pu.p * 100) / 100 : null;
+  return qtyG > 0 ? Math.round(qtyG / 1000 * pu.p * 100) / 100 : null;
+}
+function updatePrixUnitaire(nom, v){
+  const k = cleSurcharge(nom);
+  if(isNaN(v) || v <= 0) delete prixUser[k]; else prixUser[k] = Math.round(v * 100) / 100;
+  fbSync.savePrixUser(prixUser);
+  renderCouts();
+  renderCourses();
 }
 
 // Garder prixDefaut pour compatibilité avec l'ancienne logique
@@ -1449,9 +1472,9 @@ function getPrix(nomIng){
 
 function getPrixReel(nomIng, qtyG, qtyPieces){
   // Calcul basé sur prix/kg × quantité totale hebdomadaire
-  // 1) Prix de référence (reference.txt) par nom exact — ajouté le 29/09/2026
-  const prixRef = prixReference(nomIng, qtyG, qtyPieces);
-  if(prixRef !== null) return prixRef;
+  // 1) Prix saisi à la main (✎), sinon prix de référence (reference.txt), par nom exact — 29/09/2026
+  const pu = prixUnitaireCourant(nomIng);
+  if(pu){ const c = coutDepuisUnitaire(pu, qtyG, qtyPieces); if(c !== null) return c; }
   const clean = extractIngName(nomIng).toLowerCase()
     .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[îï]/g,'i')
     .replace(/[ôö]/g,'o').replace(/[ûü]/g,'u').replace(/ç/g,'c');
@@ -1554,7 +1577,7 @@ function renderCouts(){
     const prixAjuste = Math.max(0.10, getPrixReel(data.nom, qtyG, data.totalPieces||0));
     totalBase += prixAjuste;
     const qtyStr = data.totalQty>0?`${Math.ceil(data.totalQty)}${data.unit||''}`:'';
-    lignes.push({ing:data.nom, qtyStr, prix:prixAjuste, prixBase:prixAjuste, persons:data.maxPersons, key});
+    lignes.push({ing:data.nom, qtyStr, prix:prixAjuste, prixBase:prixAjuste, persons:data.maxPersons, key, pu:prixUnitaireCourant(data.nom)});
   });
 
   const total = Math.round(totalBase * 100) / 100;
@@ -1580,7 +1603,7 @@ function renderCouts(){
         <div class="cout-sub">Estimation courses — ${semaineLabels[w]}</div>
       </div>
       <div style="font-size:10px;color:var(--muted);text-align:right;line-height:1.6">
-        Prix modifiables<br>ci-dessous
+        Prix au kg modifiables<br>✎ = saisi · 0 = référence
       </div>
     </div>
     <div class="cout-grid">
@@ -1622,14 +1645,14 @@ function renderCouts(){
     arr.forEach((l,idx)=>{
       const safeKey = l.ing.replace(/'/g,"\\'").replace(/"/g,'&quot;');
       html += `<div class="prix-item">
-        <div class="prix-nom">${l.ing}${l.qtyStr?' <span style="font-size:11px;color:var(--g3);font-weight:500">'+l.qtyStr+'</span>':''}</div>
+        <div class="prix-nom">${l.ing}${l.qtyStr?' <span style="font-size:11px;color:var(--g3);font-weight:500">'+l.qtyStr+'</span>':''}${l.pu?' <span style="font-size:11px;color:var(--muted)">= '+l.prix.toFixed(2)+' €</span>':''}</div>
         <div class="prix-pers">${l.persons} pers.</div>
         <div class="prix-input-wrap">
-          <input class="prix-input" type="number" min="0.10" max="50" step="0.10"
-            value="${l.prixBase.toFixed(2)}"
-            onchange="updatePrix('${safeKey}', parseFloat(this.value))"
+          <input class="prix-input" type="number" min="0" max="100" step="${l.pu?'0.01':'0.10'}"
+            value="${(l.pu ? l.pu.p : l.prixBase).toFixed(2)}"
+            onchange="${l.pu ? 'updatePrixUnitaire' : 'updatePrix'}('${safeKey}', parseFloat(this.value))"
             onclick="event.stopPropagation()" />
-          <span class="prix-unit">€</span>
+          <span class="prix-unit">${l.pu ? '€/'+(l.pu.u==='pièce'?'pce':l.pu.u)+(l.pu.user?' ✎':'') : '€'}</span>
         </div>
       </div>`;
     });
