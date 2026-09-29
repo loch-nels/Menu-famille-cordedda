@@ -524,7 +524,7 @@ const MAINTENANCE={f:1700,m:1900};
 // ║     facteurTablee                                            ║
 // ║  4. Ne JAMAIS modifier sauf demande EXPLICITE :              ║
 // ║     - Constantes RATIO_*, PRIX_*, BUDGET_MAX (90€, 29/09/26) ║
-// ║     - Le tableau prixParKg (prix Leclerc/Intermarché 2024)   ║
+// ║     - prixParKg (secours 2024) ; prix réels : reference_prix ║
 // ║  5. Vérifier avec verif_calculs.py (créé le 30/06/2026)       ║
 // ║     après chaque modif des règles de calcul ci-dessus        ║
 // ╚══════════════════════════════════════════════════════════════╝
@@ -606,11 +606,11 @@ try{
 
 let coutWeek = 0;
 
-// Prix estimés en euros (modifiables par l'utilisateur, stockés localement)
-// Prix par kg/L réels Leclerc — utilisés pour calculer le coût
-// basé sur la quantité totale hebdomadaire
+// Table de SECOURS (prix 2024) — depuis le 29/09/2026, les prix viennent de
+// reference_prix.js (généré depuis reference.txt). Cette table ne sert plus que
+// si reference_prix.js n'a pas pu être chargé, et pour les épices/condiments.
 const prixParKg = {
-  // ── PRIX FIGÉS — Leclerc/Intermarché 2024 ────────────────
+  // ── SECOURS — Leclerc/Intermarché 2024 ────────────────────
   // Viandes (€/kg)
   'poulet':      11.00,  // blanc poulet
   'cuisses':      7.50,
@@ -1460,14 +1460,6 @@ function findPrixUserKey(clean){
     }
   }
   return bestKey;
-}
-
-function getPrix(nomIng){
-  // D'abord vérifier si l'utilisateur a modifié ce prix
-  const clean = extractIngName(nomIng).toLowerCase();
-  const key = findPrixUserKey(clean);
-  if(key !== null) return prixUser[key];
-  return PRIX_DEFAUT_ING;
 }
 
 function getPrixReel(nomIng, qtyG, qtyPieces){
