@@ -1,15 +1,15 @@
 // ── Service Worker — Mes Menus ────────────────────────────────
 // Stratégie :
 //   - App shell (HTML, manifest, firebase-sync) : cache-first
-//   - menus_data.js : network-first → mise à jour hebdo propagée
+//   - menus_data.js, reference_prix.js : network-first → mise à jour propagée
 //   - Polices Google : cache-first après premier chargement
 //
-// ⚠️ 20260915-0934 est remplacé automatiquement par la date du jour
+// ⚠️ 20260929-1147 est remplacé automatiquement par la date du jour
 //    lors de chaque upload via _github_upload_test.html
 //    → force tous les navigateurs à vider l'ancien cache
 
-const CACHE_APP  = 'menus-app-20260915-0934';
-const CACHE_DATA = 'menus-data-20260915-0934';
+const CACHE_APP  = 'menus-app-20260929-1147';
+const CACHE_DATA = 'menus-data-20260929-1147';
 
 const APP_SHELL = [
   './menus_app.html',
@@ -44,8 +44,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = event.request.url;
 
-  // menus_data.js → network-first (les menus changent chaque semaine)
-  if (url.includes('menus_data.js')) {
+  // menus_data.js et reference_prix.js → network-first (mis à jour à chaque run)
+  if (url.includes('menus_data.js') || url.includes('reference_prix.js')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
