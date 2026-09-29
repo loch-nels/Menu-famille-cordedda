@@ -412,7 +412,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
       <span class="pref-chip">☐ Fermeture OK</span><br><br>
       <strong>4. Courses & Budget</strong><br>
       <span class="pref-chip">☐ Pas de doublons</span>
-      <span class="pref-chip">☐ Budget entre 50€ et 81.60€</span>
+      <span class="pref-chip">☐ Budget ≤ 85€ (plafond 90€)</span>
       <span class="pref-chip">☐ Cases cochées mémorisées</span><br><br>
       <strong>5. Mémoire</strong><br>
       <span class="pref-chip">☐ Changer nb personnes → courses s'adapte</span>
@@ -420,7 +420,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
       <span class="pref-chip">☐ Fermer/rouvrir → tout mémorisé</span><br><br>
       <strong>6. Cowork (chaque lundi 21h)</strong><br>
       <span class="pref-chip">☐ Nouveau planning généré</span>
-      <span class="pref-chip">☐ Budget ≤ 81.60€</span>
+      <span class="pref-chip">☐ Budget ≤ 85€ (plafond 90€)</span>
       <span class="pref-chip">☐ Aucun poisson le soir</span>
       <span class="pref-chip">☐ Repas semaine &lt; 20 min</span>
     </div>
@@ -469,6 +469,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
   </div>
 </div>
 
+<script src="reference_prix.js"></script>
 <script src="menus_data.js"></script>
 <script>
 const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
@@ -519,7 +520,7 @@ const MAINTENANCE={f:1700,m:1900};
 // ║     macroElle / macroLui / macroEnfant                       ║
 // ║     facteurTablee                                            ║
 // ║  4. Ne JAMAIS modifier sauf demande EXPLICITE :              ║
-// ║     - Constantes RATIO_*, PRIX_*, BUDGET_MAX (81.60€)        ║
+// ║     - Constantes RATIO_*, PRIX_*, BUDGET_MAX (90€, 29/09/26) ║
 // ║     - Le tableau prixParKg (prix Leclerc/Intermarché 2024)   ║
 // ║  5. Vérifier avec verif_calculs.py (créé le 30/06/2026)       ║
 // ║     après chaque modif des règles de calcul ci-dessus        ║
@@ -529,9 +530,9 @@ const MAINTENANCE={f:1700,m:1900};
 const RATIO_ELLE          = TARGETS.f / (TARGETS.f + TARGETS.m); // 0.469
 const RATIO_LUI           = TARGETS.m / (TARGETS.f + TARGETS.m); // 0.531
 const RATIO_ENFANT        = 0.6;    // 60% d'un adulte
-const BUDGET_MAX          = 81.60;  // €/semaine — ajusté le 30/06/2026 (+2% suivant l'inflation des prix), FIGÉ sinon, ne pas modifier sauf demande explicite
+const BUDGET_MAX          = 90.00;  // €/semaine — plafond ; revu le 29/09/2026 sur demande de Nelson (cible 85 € + marge 5 €) après mise à jour des prix réels, FIGÉ sinon
 const MAX_PERSONNES       = 4;      // par repas
-const SEUIL_WARN_BUDGET   = 0.85;   // 85% → couleur ambre
+const SEUIL_WARN_BUDGET   = 85/90;  // ambre au-delà de la cible 85 € (revu le 29/09/2026)
 const SEMAINES_PAR_MOIS   = 4.3;
 const KCAL_PAR_KG         = 7700;   // physiologique
 const PRIX_DEFAUT_ING     = 1.50;   // € si prix inconnu
@@ -684,6 +685,23 @@ const prixParKg = {
   'graines':      8.00,
   'bouillon':     1.00,
 };
+
+// ── PRIX DE RÉFÉRENCE (ajouté le 29/09/2026) ─────────────────
+// reference_prix.js est généré depuis reference.txt (même source que le contrôle budget).
+// Correspondance par NOM EXACT, après le même parseIng que la liste de courses.
+// Absent du fichier (épices, anciens noms) ou fichier non chargé -> ancienne logique prixParKg.
+const ALIAS_REF = {'Citron herbes fraîches':'Citron','Dinde':'Dinde filet','Flocons avoine mixés':'Flocons avoine'};
+const REF_IDX = {};
+if(typeof PRIX_REF !== 'undefined'){
+  for(const [nom, v] of Object.entries(PRIX_REF)) REF_IDX[parseIng(nom+' 1g').nom] = v;
+  for(const [ancien, nom] of Object.entries(ALIAS_REF)) if(PRIX_REF[nom]) REF_IDX[parseIng(ancien+' 1g').nom] = PRIX_REF[nom];
+}
+function prixReference(nomIng, qtyG, qtyPieces){
+  const v = REF_IDX[(nomIng||'').trim()];
+  if(!v) return null;
+  if(v.u === 'pièce') return qtyPieces > 0 ? Math.round(qtyPieces * v.p * 100) / 100 : null;
+  return qtyG > 0 ? Math.round(qtyG / 1000 * v.p * 100) / 100 : null;   // €/kg ou €/L (1 g ≈ 1 ml)
+}
 
 // Garder prixDefaut pour compatibilité avec l'ancienne logique
 const prixDefaut = {
@@ -1096,61 +1114,39 @@ function closeDetail(e){
 // ── Parsing ingrédient : extraire nom de base + quantité + unité ──
 function parseIng(ing){
   const raw = ing.split('\n')[0].trim();
-  // Extraire quantité et unité
-  const qMatch = raw.match(/(\d+[\d,.]*)\s*(g|kg|ml|l|cl|pièces?|boîtes?|sachets?|tranches?|gousses?|pots?|bouteilles?|plaquettes?)?/i);
-  let qty = 0, unit = '';
-  if(qMatch){
-    qty = parseFloat(qMatch[1].replace(',','.')) || 0;
-    unit = (qMatch[2]||'').toLowerCase().replace(/s$/,'');
+  // Corrigé le 29/09/2026 : la quantité est le nombre + unité EN FIN de texte
+  // ("Chocolat noir 70%+ 15g" -> 15 g ; avant, le premier nombre était pris : 70).
+  const UNITS = '(g|kg|ml|l|cl|pièces?|boîtes?|sachets?|tranches?|gousses?|pots?|bouteilles?|plaquettes?)';
+  const fin = raw.match(new RegExp('(\\d+(?:[.,]\\d+)?)\\s*' + UNITS + '\\s*$', 'i'));
+  let qty = 0, unit = '', nom;
+  if(fin){
+    qty = parseFloat(fin[1].replace(',','.')) || 0;
+    unit = (fin[2]||'').toLowerCase().replace(/s$/,'');
+    nom = raw.slice(0, fin.index).trim();
+  } else {
+    // Format inattendu (pas de quantité en fin) : ancienne lecture, par sécurité
+    const qMatch = raw.match(/(\d+[\d,.]*)\s*(g|kg|ml|l|cl|pièces?|boîtes?|sachets?|tranches?|gousses?|pots?|bouteilles?|plaquettes?)?/i);
+    if(qMatch){ qty = parseFloat(qMatch[1].replace(',','.')) || 0; unit = (qMatch[2]||'').toLowerCase().replace(/s$/,''); }
+    nom = raw
+      .replace(/(\d+[\d,.]*\s*(g|kg|ml|l|cl|pièces?|boîtes?|sachets?|tranches?|gousses?|pots?|bouteilles?|plaquettes?|cru|min|c\.à\.c)?)/gi,'')
+      .replace(/x\d+/gi,'').replace(/\s+/g,' ').trim();
   }
   // Normaliser unités
   if(unit==='kg') { qty*=1000; unit='g'; }
   if(unit==='l')  { qty*=100;  unit='cl'; }
-  // Nom de base = texte sans chiffres et unités
-  const nom = raw
-    .replace(/(\d+[\d,.]*\s*(g|kg|ml|l|cl|pièces?|boîtes?|sachets?|tranches?|gousses?|pots?|bouteilles?|plaquettes?|cru|min|c\.à\.c)?)/gi,'')
-    .replace(/x\d+/gi,'').replace(/\s+/g,' ').trim()
-    .replace(/^[•\-]\s*/,'');
+  nom = nom.replace(/^[•\-]\s*/,'');
   return {nom, qty, unit, raw};
 }
 
 function normalizeIngKey(nom){
-  return nom.toLowerCase()
-    // Supprimer "x 2", "x2", "x 4" etc.
-    .replace(/\bx\s*\d+\b/g,'')
-    // Supprimer qualificatifs de cuisson/état/texture
-    .replace(/\b(cuit|cuits|cuite|cuites|cru|crus|crude|crues|dur|durs|dure|dures|rôti|rôtis|rôtie|rôties|grillé|grillés|grillée|grillées|fumé|fumés|fumée|fumées|vapeur|poêlé|poêlés|poêlée|poêlées|mijoté|mijotés|mijotée|mijotées|haché|hachés|hachée|hachées|râpé|râpés|râpée|râpées|effilé|effilés|effilée|effilées|entier|entiers|entière|entières|frais|fraîche|fraîches|séché|séchés|séchée|séchées|confit|confits|confite|confites|mixé|mixés|mixée|mixées|nature|légère|léger|doux|douce|complet|complète|basmati|maigre|mince|sans|morceaux|végétal|végétale|corail|fumée|noire|noir|verte|vert|rouge|effilées?)\b/g,'')
-    // Supprimer "+ citron", "+ vinaigre", "à la", "de", etc.
-    .replace(/[+&].*$/,'')
-    .replace(/\b(à|au|aux|de|du|des|la|le|les|avec|et)\b/g,' ')
-    // Supprimer les chiffres isolés en fin
-    .replace(/\s+\d+$/,'')
-    // Fusionner variantes communes
-    .replace(/tomates? cerise.*/,'tomate cerise')
-    .replace(/tomates? concassée.*/,'tomate concassee')
-    .replace(/yaourt.*/,'yaourt')
-    .replace(/beurre.?cacahuète.*/,'beurre cacahuete')
-    .replace(/beurre.?cacahuete.*/,'beurre cacahuete')
-    .replace(/huile.?olive.*/,'huile olive')
-    .replace(/ail.*/,'ail')
-    .replace(/herbes?.*/,'herbes')
-    .replace(/cumin.*/,'cumin')
-    .replace(/lentilles?.*/,'lentille')
-    .replace(/pois.chiches?.*/,'pois chiche')
-    .replace(/amandes?.effilées?.*/,'amande')
-    .replace(/amandes?.*/,'amande')
-    .replace(/flocons?.*/,'flocons avoine')
-    .replace(/pâtes?.complètes?.*/,'pates completes')
-    .replace(/riz.complet.*/,'riz complet')
-    .replace(/riz.basmati.*/,'riz basmati')
-    .replace(/épinards?.*/,'epinard')
-    .replace(/carottes?.*/,'carotte')
-    .replace(/courgettes?.*/,'courgette')
-    .replace(/champignons?.*/,'champignon')
-    .replace(/oignons?.*/,'oignon')
-    .replace(/citrons?.*/,'citron')
-    .replace(/s$/,'')
-    .replace(/\s+/g,' ').trim();
+  // Corrigé le 29/09/2026 : les noms d'ingrédients sont uniques (reference.txt),
+  // on regroupe donc par NOM EXACT. Avant, des mots étaient retirés ("complet",
+  // "basmati", "rouge", "vert"...) et des produits différents étaient fusionnés
+  // (riz complet + riz basmati, lentilles vertes + corail, yaourt nature + fruits).
+  // Seuls les anciens noms connus sont ramenés à leur nom officiel (ALIAS_REF).
+  const n = (nom||'').trim();
+  const officiel = (typeof ALIAS_REF !== 'undefined' && ALIAS_REF[n]) ? ALIAS_REF[n] : n;
+  return officiel.toLowerCase();
 }
 
 function renderCourses(){
@@ -1453,6 +1449,9 @@ function getPrix(nomIng){
 
 function getPrixReel(nomIng, qtyG, qtyPieces){
   // Calcul basé sur prix/kg × quantité totale hebdomadaire
+  // 1) Prix de référence (reference.txt) par nom exact — ajouté le 29/09/2026
+  const prixRef = prixReference(nomIng, qtyG, qtyPieces);
+  if(prixRef !== null) return prixRef;
   const clean = extractIngName(nomIng).toLowerCase()
     .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[îï]/g,'i')
     .replace(/[ôö]/g,'o').replace(/[ûü]/g,'u').replace(/ç/g,'c');
