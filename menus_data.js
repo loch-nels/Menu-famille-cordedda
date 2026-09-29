@@ -1,5 +1,5 @@
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  DONNÉES MENUS — mis à jour chaque mardi par cowork          ║
+// ║  DONNÉES MENUS — mis à jour chaque lundi par run_hebdo.py    ║
 // ║  Ne modifier que semaine1 et semaine2                        ║
 // ╚══════════════════════════════════════════════════════════════╝
 
