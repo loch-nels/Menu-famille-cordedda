@@ -4,12 +4,12 @@
 //   - menus_data.js, reference_prix.js : network-first → mise à jour propagée
 //   - Polices Google : cache-first après premier chargement
 //
-// ⚠️ 20260929-1156 est remplacé automatiquement par la date du jour
-//    lors de chaque upload via _github_upload_test.html
+// ⚠️ 20260929-1334 est remplacé automatiquement par la date du jour
+//    lors de chaque upload (scripts de publication ou _github_upload_test.html)
 //    → force tous les navigateurs à vider l'ancien cache
 
-const CACHE_APP  = 'menus-app-20260929-1156';
-const CACHE_DATA = 'menus-data-20260929-1156';
+const CACHE_APP  = 'menus-app-20260929-1334';
+const CACHE_DATA = 'menus-data-20260929-1334';
 
 const APP_SHELL = [
   './menus_app.html',
