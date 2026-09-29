@@ -4,12 +4,12 @@
 //   - menus_data.js, reference_prix.js : network-first → mise à jour propagée
 //   - Polices Google : cache-first après premier chargement
 //
-// ⚠️ 20260929-1147 est remplacé automatiquement par la date du jour
+// ⚠️ 20260929-1149 est remplacé automatiquement par la date du jour
 //    lors de chaque upload via _github_upload_test.html
 //    → force tous les navigateurs à vider l'ancien cache
 
-const CACHE_APP  = 'menus-app-20260929-1147';
-const CACHE_DATA = 'menus-data-20260929-1147';
+const CACHE_APP  = 'menus-app-20260929-1149';
+const CACHE_DATA = 'menus-data-20260929-1149';
 
 const APP_SHELL = [
   './menus_app.html',
@@ -23,7 +23,9 @@ const APP_SHELL = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_APP)
-      .then(cache => cache.addAll(APP_SHELL))
+      // cache:'reload' : ignore le cache HTTP du navigateur (corrigé le 29/09/2026 — sinon
+      // la nouvelle version pouvait mettre en cache l'ancienne page encore en cache HTTP)
+      .then(cache => cache.addAll(APP_SHELL.map(u => new Request(u, {cache: 'reload'}))))
       .then(() => self.skipWaiting())
   );
 });
