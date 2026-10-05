@@ -1,5 +1,5 @@
 // Généré automatiquement depuis reference.txt par run_hebdo.py — NE PAS MODIFIER À LA MAIN
-// Généré le 2026-09-29 — 111 prix (v = vérifié, sinon estimation)
+// Généré le 2026-10-05 — 111 prix (v = vérifié, sinon estimation)
 const PRIX_REF = {
   'Blanc poulet': {p: 16.97, u: 'kg', v: true},
   'Cuisses poulet désossées': {p: 14.36, u: 'kg', v: true},
