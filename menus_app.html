@@ -30,6 +30,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
 .auth-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 14px;font-size:11px;background:var(--g6);color:var(--g2);border-bottom:1px solid var(--border);flex-shrink:0}
 .auth-bar.ok{background:var(--g5);color:var(--g1)}
 .auth-bar.err{background:var(--red-l);color:var(--red)}
+.menus-alerte{display:none;padding:8px 14px;font-size:12px;line-height:1.45;background:var(--amber-l);color:#856404;border-bottom:1px solid #F3D98B;flex-shrink:0}
+.menus-alerte.show{display:block}
+.menus-alerte.grave{background:var(--red-l);color:var(--red);border-bottom-color:#FECACA}
 .auth-bar button{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;font-family:var(--font);white-space:nowrap}
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .content{padding:14px 14px 32px;display:none}
@@ -288,6 +291,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
   </div>
 </nav>
 <div class="auth-bar" id="auth-bar"><span>Connexion en cours…</span></div>
+<div class="menus-alerte" id="menus-alerte" role="status"></div>
 <div class="scroll-area">
 
 <!-- PLANNING -->
@@ -420,7 +424,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex
       <span class="pref-chip">☐ Changer nb personnes → courses s'adapte</span>
       <span class="pref-chip">☐ Désactiver repas → retiré des courses</span>
       <span class="pref-chip">☐ Fermer/rouvrir → tout mémorisé</span><br><br>
-      <strong>6. Cowork (chaque lundi 21h)</strong><br>
+      <strong>6. Cowork (chaque lundi 21h, rattrapage mardi 21h)</strong><br>
       <span class="pref-chip">☐ Nouveau planning généré</span>
       <span class="pref-chip">☐ Budget ≤ 85€ (plafond 90€)</span>
       <span class="pref-chip">☐ Aucun poisson le soir</span>
@@ -1759,7 +1763,31 @@ function renderAnnexe(){
     </div>`).join('');
 }
 
+// ── ALERTE MENUS (13/10/2026) ────────────────────────────────
+// menusInfo est écrit par run_hebdo.py dans menus_data.js : statut 'ok' | 'repli' | 'secours'.
+// Bandeau si la semaine suivante est une semaine de secours ou publiée avec écarts,
+// ou si les menus n'ont pas été régénérés depuis plus de 8 jours (run du lundi et du mardi ratés).
+function renderAlerteMenus(){
+  const el = document.getElementById('menus-alerte');
+  if(!el || typeof menusInfo === 'undefined' || !menusInfo || !menusInfo.genere_le) return;
+  const jm = iso => `${parseInt(iso.slice(8,10),10)}/${parseInt(iso.slice(5,7),10)}`;
+  const jours = Math.floor((Date.now() - new Date(menusInfo.genere_le + 'T12:00:00').getTime()) / 86400000);
+  let msg = '', grave = false;
+  if(jours > 8){
+    msg = `⚠️ Menus pas mis à jour depuis le ${jm(menusInfo.genere_le)} : la génération automatique n'a pas eu lieu.`; grave = true;
+  } else if(menusInfo.statut === 'secours'){
+    msg = `⚠️ Semaine suivante = semaine de secours (menus du ${menusInfo.source ? jm(menusInfo.source) : '?'} réutilisés) : la génération automatique a échoué.`; grave = true;
+  } else if(menusInfo.statut === 'repli'){
+    msg = `ℹ️ Semaine suivante publiée avec des écarts (${menusInfo.details || 'voir le compte-rendu'}).`;
+  }
+  if(!msg) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  el.classList.toggle('grave', grave);
+}
+
 loadChecked();
+renderAlerteMenus();
 renderPlanning();
 renderCourses();
 renderResume();
