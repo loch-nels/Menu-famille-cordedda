@@ -210,3 +210,4 @@ const semaine2=[
 
 const semaines=[semaine1, semaine2];
 const semaineLabels=['Semaine en cours','Semaine suivante'];
+const menusInfo={"genere_le": "2026-10-13", "statut": "ok", "details": "", "source": ""};
