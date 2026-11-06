@@ -4,12 +4,12 @@
 //   - menus_data.js, reference_prix.js : network-first → mise à jour propagée
 //   - Polices Google : cache-first après premier chargement
 //
-// ⚠️ 20261013-0920 est remplacé automatiquement par la date du jour
-//    lors de chaque upload (scripts de publication ou _github_upload_test.html)
+// ⚠️ 20261106-1157 est remplacé par la date et l'heure (AAAAMMJJ-HHMM) dans le texte
+//    ENVOYÉ par « run_hebdo.py publish-app » (05/11/2026) ; ce fichier local garde le marqueur
 //    → force tous les navigateurs à vider l'ancien cache
 
-const CACHE_APP  = 'menus-app-20261013-0920';
-const CACHE_DATA = 'menus-data-20261013-0920';
+const CACHE_APP  = 'menus-app-20261106-1157';
+const CACHE_DATA = 'menus-data-20261106-1157';
 
 const APP_SHELL = [
   './menus_app.html',
