@@ -1726,6 +1726,12 @@ function resetAnnexeChecked(){
   renderAnnexe();
 }
 
+// Échappement HTML (05/11/2026, audit M22) : le nom et la catégorie des articles Divers sont saisis
+// dans l'app et synchronisés par Firestore ; affichés via innerHTML, ils doivent être échappés.
+function escHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function renderAnnexe(){
   const total = annexeItems.length;
   const done = annexeItems.filter(i=>i.done).length;
@@ -1749,15 +1755,15 @@ function renderAnnexe(){
   document.getElementById('annexe-list').innerHTML = sorted.map(([cat,items])=>`
     <div class="annexe-section">
       <div class="annexe-cat-hd">
-        <span>${cat}</span>
+        <span>${escHtml(cat)}</span>
         <span style="opacity:.7;font-weight:400">${items.filter(i=>i.done).length}/${items.length}</span>
       </div>
       <div class="annexe-items">
         ${items.map(it=>`
           <div class="annexe-item">
-            <div class="annexe-check${it.done?' done':''}" onclick="toggleAnnexeItem(${it.id})"></div>
-            <span class="annexe-label${it.done?' done':''}" onclick="toggleAnnexeItem(${it.id})">${it.nom}</span>
-            <button class="annexe-del" onclick="delAnnexeItem(${it.id})">×</button>
+            <div class="annexe-check${it.done?' done':''}" onclick="toggleAnnexeItem(${Number(it.id)})"></div>
+            <span class="annexe-label${it.done?' done':''}" onclick="toggleAnnexeItem(${Number(it.id)})">${escHtml(it.nom)}</span>
+            <button class="annexe-del" onclick="delAnnexeItem(${Number(it.id)})">×</button>
           </div>`).join('')}
       </div>
     </div>`).join('');
