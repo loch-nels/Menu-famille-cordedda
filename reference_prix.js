@@ -1,5 +1,5 @@
 // Généré automatiquement depuis reference.txt par run_hebdo.py — NE PAS MODIFIER À LA MAIN
-// Généré le 2026-11-02 — 111 prix (v = vérifié, sinon estimation)
+// Généré le 2026-11-09 — 114 prix (v = vérifié, sinon estimation)
 const PRIX_REF = {
   'Blanc poulet': {p: 16.97, u: 'kg', v: true},
   'Cuisses poulet désossées': {p: 14.36, u: 'kg', v: true},
@@ -25,6 +25,8 @@ const PRIX_REF = {
   'Crème légère': {p: 4.08, u: 'kg', v: false},
   'Riz complet': {p: 4.05, u: 'kg', v: true},
   'Riz basmati': {p: 4.02, u: 'kg', v: true},
+  'Riz blanc': {p: 1.81, u: 'kg', v: true},
+  'Pâtes blanches': {p: 1.78, u: 'kg', v: true},
   'Pâtes complètes': {p: 2.45, u: 'kg', v: false},
   'Flocons avoine': {p: 1.68, u: 'kg', v: true},
   'Lentilles corail': {p: 2.24, u: 'kg', v: false},
@@ -35,6 +37,7 @@ const PRIX_REF = {
   'Semoule complète': {p: 2.55, u: 'kg', v: false},
   'Farine complète': {p: 1.02, u: 'kg', v: false},
   'Pain complet': {p: 2.83, u: 'kg', v: true},
+  'Pain blanc': {p: 2.3, u: 'kg', v: true},
   'Tortillas complètes': {p: 5.1, u: 'kg', v: false},
   'Courgette': {p: 2.24, u: 'kg', v: false},
   'Carotte': {p: 1.22, u: 'kg', v: false},
